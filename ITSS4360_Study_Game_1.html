@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ITSS 4360 Study Game</title>
+<style>
+:root{
+  --bg:#F1F3F5; --surf:#FFFFFF; --surf2:#F7F9FA; --line:#DCE2E8; --line2:#BFCAD4;
+  --ink:#11161B; --ink2:#4A5763; --ink3:#78868F;
+  --accent:#2F5BD7; --accent-soft:#E5EBFA;
+  --good:#1B7A4B; --good-soft:#E1F1E8;
+  --bad:#BE3A1D; --bad-soft:#FBE7E1;
+  --warn:#8A6410; --warn-soft:#F8F0DA;
+  --l0:#C9D2DA; --l1:#9CB6E8; --l2:#5C85DE; --l3:#1B7A4B;
+  --sh:0 1px 2px rgba(17,22,27,.05),0 4px 14px rgba(17,22,27,.05);
+  --radius:8px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1116; --surf:#151C23; --surf2:#1B242C; --line:#28333D; --line2:#3A4854;
+    --ink:#E7EDF2; --ink2:#A4B2BE; --ink3:#78878F;
+    --accent:#7FA2F0; --accent-soft:#17233B;
+    --good:#66BE93; --good-soft:#12291F;
+    --bad:#E68A6C; --bad-soft:#2E1A14;
+    --warn:#D4AF54; --warn-soft:#2C2512;
+    --l0:#2E3B45; --l1:#33507E; --l2:#4E7AC7; --l3:#66BE93;
+    --sh:0 1px 2px rgba(0,0,0,.45),0 4px 14px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1116; --surf:#151C23; --surf2:#1B242C; --line:#28333D; --line2:#3A4854;
+  --ink:#E7EDF2; --ink2:#A4B2BE; --ink3:#78878F;
+  --accent:#7FA2F0; --accent-soft:#17233B;
+  --good:#66BE93; --good-soft:#12291F;
+  --bad:#E68A6C; --bad-soft:#2E1A14;
+  --warn:#D4AF54; --warn-soft:#2C2512;
+  --l0:#2E3B45; --l1:#33507E; --l2:#4E7AC7; --l3:#66BE93;
+  --sh:0 1px 2px rgba(0,0,0,.45),0 4px 14px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  font-feature-settings:"kern" 1;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px 90px}
+h1,h2,h3{margin:0;letter-spacing:-.015em;text-wrap:balance}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+header{padding:26px 0 14px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+h1{font-size:clamp(26px,5.4vw,36px);font-weight:750;margin-top:7px;line-height:1.05}
+.tagline{color:var(--ink2);margin:9px 0 0;font-size:15.5px;max-width:62ch}
+
+/* progress */
+.pwrap{background:var(--surf);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--sh);padding:14px 16px;margin-top:18px}
+.ptop{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.ptop .lbl{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.ptop .val{font-size:14px;color:var(--ink2)}
+.ptop .val b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--l0);gap:1px}
+.bar span{display:block;transition:width .3s ease}
+.bar .s0{background:var(--l0)} .bar .s1{background:var(--l1)}
+.bar .s2{background:var(--l2)} .bar .s3{background:var(--l3)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:10px;font-size:12.5px;color:var(--ink2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend b{font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* tabs */
+nav.tabs{position:sticky;top:0;z-index:30;background:var(--bg);padding:12px 0 10px;margin-top:18px;
+  border-bottom:1px solid var(--line)}
+.tabrow{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:var(--surf);border:1px solid var(--line);border-radius:99px;padding:7px 16px;
+  font-size:14px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.tab:hover{border-color:var(--line2);color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .tab.on,:root:not([data-theme="light"]) .tab.on{color:#0C1116}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .tab.on{color:#fff}}
+.iconbtn{background:var(--surf);border:1px solid var(--line);border-radius:99px;padding:7px 13px;
+  font-size:13px;font-weight:600;cursor:pointer;color:var(--ink2);margin-left:auto}
+.iconbtn:hover{border-color:var(--line2);color:var(--ink)}
+
+.panel{display:none;padding-top:22px}
+.panel.on{display:block}
+
+/* controls */
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+.seg{display:inline-flex;background:var(--surf);border:1px solid var(--line);border-radius:99px;padding:3px;gap:2px}
+.seg button{background:transparent;border:none;border-radius:99px;padding:6px 13px;font-size:13.5px;
+  font-weight:600;cursor:pointer;color:var(--ink2)}
+.seg button.on{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button.on,:root:not([data-theme="light"]) .seg button.on{color:#0C1116}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .seg button.on{color:#fff}}
+select{background:var(--surf);border:1px solid var(--line);border-radius:99px;padding:7px 12px;
+  font-size:13.5px;font-weight:600;color:var(--ink2);cursor:pointer;max-width:100%}
+.mini{font-size:12.5px;color:var(--ink3);margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* card */
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--sh);padding:22px;margin-bottom:14px}
+.qmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.pill{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  border:1px solid var(--line2);border-radius:99px;padding:2px 9px;color:var(--ink3)}
+.pill.src{border-color:var(--accent);color:var(--accent)}
+.pill.lvl0{border-color:var(--l0);color:var(--ink3)}
+.pill.lvl1{border-color:var(--l1);color:var(--l1)}
+.pill.lvl2{border-color:var(--l2);color:var(--l2)}
+.q{font-size:clamp(18px,3.4vw,23px);font-weight:650;line-height:1.35;margin:0 0 18px}
+
+/* MC */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;text-align:left;width:100%;
+  background:var(--surf2);border:1px solid var(--line);border-radius:6px;padding:12px 14px;cursor:pointer;
+  font-size:16px;line-height:1.45}
+.opt:hover:not(:disabled){border-color:var(--line2)}
+.opt kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;font-weight:700;
+  background:var(--surf);border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--ink3)}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.right kbd{border-color:var(--good);color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong kbd{border-color:var(--bad);color:var(--bad)}
+.opt:disabled{cursor:default}
+
+/* fill */
+.fillrow{display:flex;gap:9px;flex-wrap:wrap}
+.fillrow input{flex:1 1 220px;background:var(--surf2);border:1px solid var(--line2);border-radius:6px;
+  padding:12px 14px;font:inherit;font-size:17px;color:var(--ink)}
+.fillrow input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.btn{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:6px;
+  padding:12px 22px;font-size:15px;font-weight:650;cursor:pointer}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#0C1116}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn:hover{opacity:.9}
+.btn.ghost{background:var(--surf);color:var(--ink2);border-color:var(--line2)}
+.btn.sm{padding:8px 15px;font-size:13.5px}
+
+/* matching */
+.mgrid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:620px){.mgrid{grid-template-columns:1fr 1fr;gap:12px}}
+.mcol h4{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.mcol .stack{display:flex;flex-direction:column;gap:7px}
+.mbtn{text-align:left;background:var(--surf2);border:1px solid var(--line);border-radius:6px;
+  padding:11px 13px;cursor:pointer;font-size:15px;line-height:1.4}
+.mbtn:hover:not(:disabled){border-color:var(--line2)}
+.mbtn.sel{background:var(--accent-soft);border-color:var(--accent)}
+.mbtn.done{background:var(--good-soft);border-color:var(--good);color:var(--good);cursor:default}
+.mbtn.miss{background:var(--bad-soft);border-color:var(--bad)}
+.mbtn:disabled{cursor:default}
+
+/* feedback */
+.fb{border-radius:var(--radius);padding:16px 18px;margin-top:16px;border:1px solid var(--line);
+  border-left-width:4px}
+.fb.ok{background:var(--good-soft);border-left-color:var(--good)}
+.fb.no{background:var(--bad-soft);border-left-color:var(--bad)}
+.fb .hd{font-size:17px;font-weight:750;margin-bottom:6px}
+.fb.ok .hd{color:var(--good)} .fb.no .hd{color:var(--bad)}
+.fb .ans{font-size:16px;line-height:1.5}
+.fb .ans b{font-weight:700}
+.fb .why{margin-top:9px;font-size:14.5px;color:var(--ink2)}
+.fb .src{margin-top:9px;font-size:12px;color:var(--ink3)}
+
+/* notes */
+.note{border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--warn-soft);
+  border-radius:var(--radius);padding:14px 16px;margin-bottom:16px}
+.note p{margin:0;font-size:14.5px}
+.note p+p{margin-top:8px}
+.note b{font-weight:700}
+.note.info{border-left-color:var(--accent);background:var(--accent-soft)}
+
+/* weak spots */
+.weak{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.wrow{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--surf);padding:10px 14px}
+.wrow .t{font-size:15px;font-weight:600}
+.wrow .t small{display:block;font-weight:400;color:var(--ink3);font-size:12.5px;margin-top:1px}
+.wrow .n{font-size:13px;font-weight:700;color:var(--bad);white-space:nowrap;font-variant-numeric:tabular-nums}
+.empty{color:var(--ink3);font-size:15px;padding:16px 0}
+
+/* stats */
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-bottom:18px}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--sh)}
+.stat .n{font-size:26px;font-weight:750;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-top:3px}
+
+/* topic table */
+.ttab{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.trow{display:grid;grid-template-columns:1fr 70px 96px;gap:10px;background:var(--surf);padding:9px 14px;
+  align-items:center;font-size:14.5px}
+.trow.h{background:var(--surf2);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.trow .mb{height:7px;border-radius:99px;background:var(--l0);overflow:hidden}
+.trow .mb i{display:block;height:100%;background:var(--l3)}
+.trow .c{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:13px}
+
+/* activities */
+.subtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;-webkit-overflow-scrolling:touch}
+.subtab{flex:none;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 13px;
+  font-size:13px;font-weight:600;cursor:pointer;color:var(--ink2);white-space:nowrap}
+.subtab:hover{border-color:var(--line2)}
+.subtab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .subtab.on,:root:not([data-theme="light"]) .subtab.on{color:#0C1116}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .subtab.on{color:#fff}}
+.acthd{margin-bottom:6px;font-size:19px;font-weight:700}
+.actsub{font-size:13.5px;color:var(--ink3);margin:0 0 16px}
+.selfrow{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.reveal{background:var(--surf2);border:1px dashed var(--line2);border-radius:6px;padding:14px 16px;margin-top:14px}
+.reveal .lab{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.reveal .txt{font-size:16px;line-height:1.5}
+.scoreline{font-size:14px;color:var(--ink2);margin-top:14px}
+.scoreline b{color:var(--ink);font-weight:700}
+
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink3)}
+footer p{margin:0 0 7px}
+.kbdhint{font-size:12.5px;color:var(--ink3);margin-top:12px}
+.kbdhint kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--surf2);
+  border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">ITSS 4360 &middot; Network &amp; Information Security</div>
+  <h1>Study Game</h1>
+  <p class="tagline">Built only from your Week&nbsp;1, Week&nbsp;2 and Week&nbsp;4 lecture decks, the Quiz&nbsp;1 Review Sheet, and the Exam&nbsp;1 Review Guide. Every item shows which document it came from.</p>
+
+  <div class="pwrap">
+    <div class="ptop">
+      <span class="lbl">Mastery</span>
+      <span class="val"><b id="retCount">0</b> retired of <b id="totCount">0</b></span>
+    </div>
+    <div class="bar" id="bar">
+      <span class="s3" id="b3" style="width:0%"></span>
+      <span class="s2" id="b2" style="width:0%"></span>
+      <span class="s1" id="b1" style="width:0%"></span>
+      <span class="s0" id="b0" style="width:100%"></span>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--l0)"></i>Unseen <b id="n0">0</b></span>
+      <span><i style="background:var(--l1)"></i>Level 1 <b id="n1">0</b></span>
+      <span><i style="background:var(--l2)"></i>Level 2 <b id="n2">0</b></span>
+      <span><i style="background:var(--l3)"></i>Retired <b id="n3">0</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabrow">
+    <button class="tab on" data-tab="drill" type="button">Drill</button>
+    <button class="tab" data-tab="acts" type="button">Class activities</button>
+    <button class="tab" data-tab="prog" type="button">Progress</button>
+    <button class="iconbtn" id="themeBtn" type="button">Theme</button>
+  </div>
+</nav>
+
+<!-- ============ DRILL ============ -->
+<div class="panel on" id="panel-drill">
+  <div class="ctrls">
+    <div class="seg" id="fmtSeg">
+      <button data-fmt="mc" type="button">Multiple choice</button>
+      <button data-fmt="match" type="button">Matching</button>
+      <button data-fmt="fill" type="button">Fill in blank</button>
+    </div>
+    <select id="srcSel" aria-label="Filter by week or document"></select>
+    <select id="topicSel" aria-label="Filter by topic"></select>
+    <span class="mini" id="poolInfo"></span>
+  </div>
+  <div id="drillArea"></div>
+  <p class="kbdhint">Multiple choice: press <kbd>1</kbd>&ndash;<kbd>4</kbd> to answer, <kbd>Enter</kbd> for next. Fill in the blank: <kbd>Enter</kbd> to submit, then <kbd>Enter</kbd> again for next.</p>
+</div>
+
+<!-- ============ ACTIVITIES ============ -->
+<div class="panel" id="panel-acts">
+  <div class="note">
+    <p><b>About the answer keys.</b> Only one activity in your materials has an answer key printed in it &mdash; the Week&nbsp;4 endpoint Knowledge Check, whose key is in the slide's speaker notes. Every other Knowledge Check appears in the decks as questions only, with no correct answer marked.</p>
+    <p>For those, the answers below are resolved from definitions stated elsewhere in your own documents, and each one is labelled with where. Nothing outside your five documents was used.</p>
+  </div>
+  <div class="subtabs" id="actTabs"></div>
+  <div id="actArea"></div>
+</div>
+
+<!-- ============ PROGRESS ============ -->
+<div class="panel" id="panel-prog">
+  <div class="stats">
+    <div class="stat"><div class="n" id="sAns">0</div><div class="l">Answered</div></div>
+    <div class="stat"><div class="n" id="sAcc">&mdash;</div><div class="l">Accuracy</div></div>
+    <div class="stat"><div class="n" id="sStreak">0</div><div class="l">Best streak</div></div>
+    <div class="stat"><div class="n" id="sRet">0</div><div class="l">Retired</div></div>
+  </div>
+
+  <h3 style="font-size:16px;margin:24px 0 10px">Weak spots</h3>
+  <p class="actsub">Items you have missed most. Retired items are excluded.</p>
+  <div id="weakBox"></div>
+  <div style="margin-top:12px"><button class="btn sm" id="drillWeak" type="button">Drill only these</button></div>
+
+  <h3 style="font-size:16px;margin:28px 0 10px">By week and document</h3>
+  <p class="actsub">An item counts under every document it appears in, so these totals overlap.</p>
+  <div class="ttab" id="srcTab"></div>
+
+  <h3 style="font-size:16px;margin:28px 0 10px">By topic</h3>
+  <div class="ttab" id="topicTab"></div>
+
+  <div style="margin-top:28px;display:flex;gap:9px;flex-wrap:wrap">
+    <button class="btn ghost sm" id="resetBtn" type="button">Reset all progress</button>
+  </div>
+</div>
+
+<footer>
+  <p><b>Sources.</b> W1 = ITSS-4360_LectureWk1_8-24-26.pptx &middot; W2 = ITSS-4360_LectureWk2_8-31-26.pptx &middot; W4 = ITSS-4360_LectureWk4_9-14-26.pptx &middot; QR = Quiz1_Review_9-14-26.docx &middot; ER = ITSS_4360_Exam1_Review_Final.pdf</p>
+  <p>Progress is stored in this browser only. No network connection is used.</p>
+</footer>
+
+</div>
+<script>
+/* ============================================================
+   ITEM BANK — every entry traced to one of the five documents.
+   [topic, prompt, answer, acceptableAlternates, source]
+   ============================================================ */
+var ITEMS=[
+
+/* ---------- CIA & Risk ---------- */
+["CIA & Risk","Which CIA pillar is violated when data is altered?","Integrity",["integrity pillar"],"W1 s12, QR"],
+["CIA & Risk","Which CIA pillar is violated when data is viewed by someone unauthorized?","Confidentiality",["confidentiality pillar"],"W1 s10, QR"],
+["CIA & Risk","Which CIA pillar does a DDoS attack violate?","Availability",["availability pillar"],"W1 s14, QR"],
+["CIA & Risk","Primary security controls for Confidentiality","Encryption, MFA, and access controls",["encryption mfa access control"],"W1 s9, QR"],
+["CIA & Risk","Primary security controls for Integrity","Hashing (SHA-256), digital signatures, and change control",["hashing digital signatures change control"],"W1 s11, QR"],
+["CIA & Risk","Primary security controls for Availability","Redundancy, UPS and generators, and DDoS protection",["redundancy ups generators ddos protection"],"W1 s13, QR"],
+["CIA & Risk","What is a threat?","Anything capable of causing harm to an information asset",["anything capable of causing harm"],"W1 s15"],
+["CIA & Risk","What is a vulnerability?","A weakness that a threat can exploit",["weakness a threat exploits","a weakness"],"W1 s15, QR"],
+["CIA & Risk","What is an asset?","Anything of value to the organization",["anything of value"],"W1 s15"],
+["CIA & Risk","What does asset value determine?","The impact",["impact"],"W1 s15"],
+["CIA & Risk","State the risk calculation","Risk = Threat x Vulnerability x Asset Value",["threat times vulnerability times asset value","t x v x av"],"W1 s16, QR, ER"],
+["CIA & Risk","What is the goal strategy of a security program?","Reduce vulnerabilities",["reducing vulnerabilities"],"W1 s16, ER"],
+["CIA & Risk","Rather than eliminating threats, security manages risk to what?","An acceptable level",["acceptable level of risk"],"W1 s16"],
+["CIA & Risk","The three parts of the definition of information security","Protection of information; balance usability and security; an ongoing process",["protection balance ongoing"],"W1 s7"],
+["CIA & Risk","Is security a one-time task?","No - it is an ongoing process",["no","ongoing process"],"W1 s7"],
+["CIA & Risk","Nickname the review guide gives Confidentiality","The Privacy Pillar",["privacy"],"ER s1"],
+["CIA & Risk","Nickname the review guide gives Integrity","The Accuracy Pillar",["accuracy"],"ER s1"],
+["CIA & Risk","Nickname the review guide gives Availability","The Access Pillar",["access"],"ER s1"],
+["CIA & Risk","Confidentiality controls listed in the Exam 1 Review Guide","Least privilege and need-to-know, encryption (AES at rest, TLS in transit), ACLs, data masking, MFA",["least privilege encryption acls data masking mfa"],"ER s1"],
+["CIA & Risk","Integrity controls listed in the Exam 1 Review Guide","Hashing algorithms, digital signatures, strict change management, and File Integrity Monitoring",["hashing digital signatures change management fim"],"ER s1"],
+["CIA & Risk","Availability controls listed in the Exam 1 Review Guide","High Availability architectures, hardware redundancy such as RAID, load balancing, UPS, off-site backups, Disaster Recovery Plans",["ha raid load balancing ups backups drp"],"ER s1"],
+["CIA & Risk","Common threats to Confidentiality per the review guide","Man-in-the-Middle attacks, credential stuffing, and insider threats leaking data",["mitm credential stuffing insider threats"],"ER s1"],
+["CIA & Risk","Common threats to Integrity per the review guide","Unauthorized database modifications, malware altering system files, packet injection, accidental user errors",["database modification malware packet injection user error"],"ER s1"],
+["CIA & Risk","Common threats to Availability per the review guide","DDoS attacks, ransomware, hardware failures, and natural disasters",["ddos ransomware hardware failure natural disaster"],"ER s1"],
+["CIA & Risk","What does File Integrity Monitoring (FIM) protect?","Integrity",["integrity pillar"],"ER s1"],
+["CIA & Risk","Why does SHA-256 prove integrity?","Its output changes entirely if even one character in a file is modified",["output changes entirely if one character changes"],"ER s1"],
+["CIA & Risk","The core challenge for security professionals per the review guide","The security versus usability trade-off",["security vs usability","security usability tradeoff"],"ER s1"],
+
+/* ---------- Frameworks ---------- */
+["Frameworks","The five functions of the NIST Cybersecurity Framework","Identify, Protect, Detect, Respond, Recover",["identify protect detect respond recover"],"ER s2"],
+["Frameworks","What does ISO/IEC 27001 require an organization to have?","An Information Security Management System (ISMS)",["isms","information security management system"],"W1 s33, ER s2"],
+["Frameworks","What does ISO 27001 use to decide which controls are necessary?","A risk assessment",["risk assessment"],"W1 s33, ER s2"],
+["Frameworks","How does ISO 27001 implement Confidentiality?","It mandates strict access control policies so only authorized roles see sensitive data",["access control policies"],"W1 s33"],
+["Frameworks","How does ISO 27001 implement Integrity?","It requires change management processes so data is not altered without a record",["change management"],"W1 s33"],
+["Frameworks","How does ISO 27001 implement Availability?","It requires business continuity planning so systems recover quickly after a disaster",["business continuity planning"],"W1 s33"],
+
+/* ---------- Threat Actors ---------- */
+["Threat Actors","Script kiddies","Low skill; they use pre-made tools",["low skill pre made tools"],"W1 s20, QR, ER s3"],
+["Threat Actors","Hacktivists","Driven by political or social motives; DDoS and website defacement",["political or social motives"],"W1 s21, QR, ER s3"],
+["Threat Actors","State-sponsored actors","Advanced Persistent Threats; long-term espionage; highly targeted",["apts long term espionage"],"W1 s22, QR, ER s3"],
+["Threat Actors","Insider threats","Trusted access; can be malicious or accidental",["trusted access malicious or accidental"],"W1 s24, QR, ER s3"],
+["Threat Actors","Organized crime actors","Profit-driven; operate models like Ransomware-as-a-Service",["profit driven ransomware as a service"],"W1 s25, QR, ER s3"],
+["Threat Actors","Shadow IT","Unauthorized systems deployed by users without IT knowledge, creating security blind spots",["unauthorized systems security blind spots"],"W1 s26, QR, ER s3"],
+["Threat Actors","Which threat actor has the most resources?","State-sponsored actors",["state sponsored"],"W1 s22 & s27"],
+["Threat Actors","The four attacker motivations listed in Week 1","Financial, ideological, espionage, and holding captive",["financial ideological espionage holding captive"],"W1 s18"],
+["Threat Actors","What is Ransomware-as-a-Service?","A cybercrime business model",["cybercrime business model"],"W1 s25"],
+["Threat Actors","The two axes Week 1 uses to sort threat actors","Internal vs external, and skill levels vary",["internal vs external and skill level"],"W1 s19"],
+["Threat Actors","The Angler exploit kit","Discovered 2013; attacked Java, Silverlight and Flash; used transposition encryption",["2013 java silverlight flash"],"W1 s28"],
+["Threat Actors","The HanJuan exploit kit","Used in 2015 for malware advertising attacks with shortened URLs and false ads",["2015 malvertising shortened urls"],"W1 s28"],
+["Threat Actors","The three challenges to security listed in Week 1","Speed of attacks, complex networks, and exploit kits",["speed of attacks complex networks exploit kits"],"W1 s28"],
+
+/* ---------- Kill Chain ---------- */
+["Kill Chain","List the seven phases of the Cyber Kill Chain in order","Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command & Control, Actions on Objective",["recon weaponize deliver exploit install c2 objective"],"ER s3 & App B, QR"],
+["Kill Chain","Who developed the Cyber Kill Chain?","Lockheed Martin",["lockheed"],"ER App B"],
+["Kill Chain","Kill chain phase 1 - Reconnaissance","Select the target; defend by reducing exposure and monitoring probes",["select target reduce exposure monitor probes"],"QR"],
+["Kill Chain","Kill chain phase 2 - Weaponization","Build the payload; defend with threat intelligence and secure development",["build payload threat intelligence secure development"],"QR"],
+["Kill Chain","Kill chain phase 3 - Delivery","Send the payload; defend with filtering, training and media controls",["send payload filtering training media controls"],"QR"],
+["Kill Chain","Kill chain phase 4 - Exploitation","Trigger the flaw; defend by patching, hardening and validating input",["trigger flaw patch harden validate input"],"QR"],
+["Kill Chain","Kill chain phase 5 - Installation","Gain persistence; defend with endpoint and application controls",["gain persistence endpoint application controls"],"QR"],
+["Kill Chain","Kill chain phase 6 - Command & Control","Reach an outside server; defend by monitoring, segmenting and filtering egress",["reach outside server monitor segment filter egress"],"QR"],
+["Kill Chain","Kill chain phase 7 - Actions on Objective","Exfiltrate or disrupt; defend with DLP, backups and response",["exfiltrate or disrupt dlp backups response"],"QR"],
+["Kill Chain","Passive reconnaissance examples","Searching public records, social media, harvesting email addresses",["public records social media harvesting emails"],"ER App B"],
+["Kill Chain","Active reconnaissance examples","Port scanning and network mapping",["port scanning network mapping"],"ER App B"],
+["Kill Chain","What happens during Weaponization?","A RAT or malware is coupled with an exploit into a deliverable format such as a malicious PDF or Office document",["couple rat with exploit into deliverable format"],"ER App B"],
+["Kill Chain","What does Command & Control open?","A two-way communication channel to the attacker's infrastructure",["two way communication channel"],"ER App B"],
+["Kill Chain","What can the attacker do at Actions on Objectives?","Data exfiltration, lateral movement, data destruction, or deploying ransomware",["exfiltration lateral movement destruction ransomware"],"ER App B"],
+
+/* ---------- Controls ---------- */
+["Controls","What does a control's CATEGORY describe?","How it is implemented: technical, administrative or physical",["how it is implemented"],"QR"],
+["Controls","What does a control's FUNCTION describe?","Its purpose: preventive, detective, corrective, deterrent, compensating or directive",["its purpose"],"QR"],
+["Controls","Classify a firewall or MFA","Technical and preventive",["technical preventive"],"QR"],
+["Controls","Classify an IDS or audit log","Technical and detective",["technical detective"],"QR"],
+["Controls","Classify a security camera","Physical; detective or deterrent",["physical detective or deterrent"],"QR"],
+["Controls","Classify a policy or training","Administrative and directive",["administrative directive"],"QR"],
+["Controls","Classify a patch or quarantine","Technical and corrective",["technical corrective"],"QR"],
+["Controls","Purpose and examples of deterrent controls","Discourage attacks; security warnings and account lockout",["discourage attacks security warnings account lockout"],"W1 s41"],
+["Controls","Purpose and examples of compensating controls","An alternative when the primary control fails; MFA and network segmentation",["alternative when primary control fails"],"W1 s41"],
+["Controls","Purpose and examples of directive controls","Guide user behavior; security policies, training and SOPs",["guide user behavior policies training sops"],"W1 s41"],
+["Controls","Examples of technical controls","Access controls, firewalls, network authentication, encryption",["access controls firewalls network authentication encryption"],"W1 s36"],
+["Controls","Examples of administrative controls","User management, privilege management, employee security and clearance, training and awareness",["user management privilege management training"],"W1 s37"],
+["Controls","Examples of physical controls","Surveillance cameras, biometrics, identity cards, alarm systems",["cameras biometrics identity cards alarms"],"W1 s38"],
+["Controls","Control categories with examples per the Exam 1 Review Guide","Technical (firewalls, encryption), Administrative (policies, training, hiring), Physical (cameras, locks, fences)",["technical administrative physical"],"ER s3"],
+["Controls","The seven layers of defense-in-depth per the Quiz 1 sheet","Policy, physical, perimeter, network, host, application, and data",["policy physical perimeter network host application data"],"QR"],
+["Controls","The layers of defense-in-depth per the Exam 1 Review Guide","Perimeter, Internal Network, Host, Application, Data, Physical, Policies",["perimeter internal network host application data physical policies"],"ER s3"],
+["Controls","Define least privilege","Minimal access needed to perform duties, to limit the blast radius",["minimum access blast radius"],"W1 s31, QR, ER s3"],
+
+/* ---------- Attack Surfaces ---------- */
+["Attack Surfaces","Define the attack surface","The total set of possible entry points",["total set of possible entry points"],"QR"],
+["Attack Surfaces","Define Zero Trust","Verifies each request even when it begins inside the network",["verify every request even internal"],"QR"],
+["Attack Surfaces","What does OS hardening involve?","Removing unnecessary services, disabling default accounts, and closing unused ports",["remove services disable default accounts close ports"],"W2 s4, QR"],
+["Attack Surfaces","The three steps of patch management per the Quiz 1 sheet","Identify, test, and install updates",["identify test install"],"W2 s4, QR"],
+["Attack Surfaces","What makes a vulnerability a zero day?","It is unknown to the vendor and has no patch",["unknown to vendor no patch"],"W1 s42, QR, W4 s26"],
+["Attack Surfaces","The three application security items on the Quiz 1 sheet","Validate input against SQL injection; build security into the SDLC; scan repositories for exposed secrets",["input validation sdlc scan repositories"],"QR"],
+["Attack Surfaces","What is a TPM?","A dedicated chip on the motherboard that stores cryptographic keys",["trusted platform module chip stores keys"],"W2 s6, W4 s12, QR, ER s4"],
+["Attack Surfaces","What is the Secure Enclave?","Apple's hardware-based security processor, isolated from the main processor, handling sensitive data like FaceID and Apple Pay keys",["apple hardware security processor isolated"],"W2 s6, QR"],
+["Attack Surfaces","What is supply chain security concerned with?","Ensuring hardware has not been tampered with before it reaches the data center",["hardware not tampered with before data center"],"W2 s6, ER s4"],
+["Attack Surfaces","What does MDM support?","Remote wipe, geofencing, and separation of business data",["remote wipe geofencing separation of business data"],"W2 s14, QR"],
+["Attack Surfaces","What is SCADA?","Supervisory Control and Data Acquisition - systems that control national infrastructure like power and water",["supervisory control and data acquisition"],"W2 s15, QR"],
+["Attack Surfaces","The security challenge with ICS and IoT devices","Many were never designed with internet security in mind",["never designed with internet security in mind"],"W2 s15, QR"],
+["Attack Surfaces","The core concept of pervasive attack surfaces per the review guide","You cannot trust software if you cannot trust the hardware",["cannot trust software if you cannot trust hardware"],"ER s4"],
+
+/* ---------- Social Engineering ---------- */
+["Social Engineering","Define social engineering","Manipulating individuals into divulging confidential information or performing actions that compromise security",["manipulating people into divulging information"],"W2 s8, ER s4"],
+["Social Engineering","What does social engineering target?","Human psychology - emotions and cognitive biases, rather than software vulnerabilities",["human hardware emotions and cognitive biases"],"W2 s8, ER s4"],
+["Social Engineering","The Authority principle","Attackers impersonate leadership, law enforcement or IT support",["impersonating a ceo or it manager"],"W2 s8, QR, ER s4"],
+["Social Engineering","The Urgency principle","Creating fake deadlines that pressure targets into bypassing normal security protocols",["forces action before verification"],"W2 s8, QR, ER s4"],
+["Social Engineering","The Social Proof principle","Targets are led to believe colleagues or peers have already complied",["claims everyone else complied","consensus"],"W2 s8, QR, ER s4"],
+["Social Engineering","The Scarcity and Fear principle","Threatening severe consequences or claiming limited availability to force hasty decisions",["limited time or availability"],"W2 s8, QR, ER s4"],
+["Social Engineering","The Familiarity and Liking principle","Attackers establish rapport, offer false compliments, or leverage mutual acquaintances",["rapport false compliments mutual acquaintances"],"ER s4 only"],
+["Social Engineering","Phishing","Mass email scams",["deceptive email"],"QR, ER s4"],
+["Social Engineering","Spear phishing","Custom-tailored messages aimed at specific targets using gathered OSINT",["tailored using osint"],"W4 s23, ER s4"],
+["Social Engineering","Whaling","High-value attacks specifically targeting C-suite executives",["targets c suite executives"],"ER s4 only"],
+["Social Engineering","Vishing","Voice phishing - exploiting voice communication to trick victims into sharing OTPs or personal data",["voice call deception"],"W2 s10, QR, ER s4"],
+["Social Engineering","Smishing","SMS phishing - text messaging used to trick victims",["text message deception"],"W2 s10, QR, ER s4"],
+["Social Engineering","Pretexting","Creating an elaborate fabricated scenario or persona to coax out credentials or data",["fabricated story to obtain access"],"W2 s10, QR, ER s4"],
+["Social Engineering","Watering hole attack","Infecting a legitimate website that a target organization or group regularly visits",["compromise a site the group visits"],"W2 s10, QR, ER s4"],
+["Social Engineering","Tailgating","Following an authorized employee through a badge-protected door without scanning in",["following someone into a secured area"],"W2 s10, QR, ER s4"],
+["Social Engineering","Baiting","Leaving infected USB drives in public areas hoping someone plugs them into a work PC",["infected usb drives left in public"],"W4 s24, ER s4"],
+["Social Engineering","Administrative defenses against social engineering","Mandatory Security Awareness Training, routine phishing simulations, and out-of-band verification",["sat phishing simulations out of band verification"],"ER s4"],
+["Social Engineering","Technical defenses against social engineering","MFA, email verification protocols SPF, DKIM and DMARC, and EDR agents",["mfa spf dkim dmarc edr"],"ER s4"],
+["Social Engineering","What is out-of-band verification?","Confirming a request through a separate channel, such as phone confirmation for large wire transfers",["phone confirmation for wire transfers"],"ER s4"],
+["Social Engineering","The primary defense named in Week 2","Security Awareness Training",["sat","security awareness training"],"W2 s10"],
+["Social Engineering","The primary defenses on the Quiz 1 review sheet","Security awareness, independent identity verification, and MFA - and recovery and MFA reset procedures must also verify identity",["awareness identity verification mfa"],"QR"],
+
+/* ---------- Physical Security ---------- */
+["Physical Security","What forms the outermost layer of perimeter defense?","Fences, walls, bollards, security lighting, guards and CCTV cameras",["fences walls bollards lighting guards cctv"],"ER s4"],
+["Physical Security","What do bollards prevent?","Vehicle ramming",["vehicle ramming"],"ER s4"],
+["Physical Security","What is an access control vestibule?","A specialized enclosure with two interlocking doors where the second will not open until the first closes and locks",["mantrap two interlocking doors"],"W2 s19, QR, ER s4"],
+["Physical Security","What does an access control vestibule prevent?","Tailgating and piggybacking",["tailgating and piggybacking"],"ER s4"],
+["Physical Security","What is a Faraday cage?","An enclosure lined with conductive material that blocks external electromagnetic fields and wireless signals",["blocks electromagnetic signals"],"W2 s12, QR, ER s4"],
+["Physical Security","What does a Faraday cage protect against besides signal interception?","Electromagnetic interference (EMI) and EMPs",["emi and emp"],"ER s4"],
+["Physical Security","What are cable locks for?","Securing individual endpoints such as workstations or laptops to fixed objects to prevent physical theft",["securing laptops to desks"],"W2 s12, QR, ER s4"],
+["Physical Security","What do locked cabinets and cages ensure?","That even authorized office employees cannot plug a USB device directly into a server",["prevent usb access to servers"],"W2 s12"],
+["Physical Security","What do HVAC systems maintain in a data center?","Optimal temperature and humidity, preventing hardware overheating or static electricity accumulation",["temperature and humidity"],"ER s4"],
+["Physical Security","Which fire suppression agents does the review guide name?","Clean agents such as FM-200 or Novec 1230",["fm 200 novec 1230 clean agents"],"ER s4"],
+["Physical Security","Why use clean agents instead of water sprinklers?","To extinguish fires without damaging sensitive electronic equipment",["no damage to electronics"],"W2 s16, QR, ER s4"],
+["Physical Security","What provides power redundancy?","UPS for short-term power conditioning and emergency backup diesel generators for long-term outages",["ups and generators"],"QR, ER s4"],
+["Physical Security","Which CIA pillar does power redundancy maintain?","Availability",["availability"],"QR, ER s4"],
+["Physical Security","What is degaussing?","Exposing magnetic media to a powerful magnetic field, neutralizing the magnetic domains and destroying the data",["magnet destroys magnetic media"],"W2 s13, QR, ER s4"],
+["Physical Security","Why does degaussing not work on SSDs?","Because SSDs use flash memory rather than magnetic storage",["ssds use flash memory not magnetic storage"],"ER s4"],
+["Physical Security","What media does physical shredding and destruction cover?","HDDs, SSDs, CDs and paper documents",["hdds ssds cds and paper"],"ER s4"],
+["Physical Security","What is pulping?","Reducing paper to a liquid slurry",["paper to liquid slurry"],"W2 s13, QR"],
+["Physical Security","What does a clean desk policy require?","Sensitive physical documents stored in locked drawers and disposed of using cross-cut shredders or locked shredding bins",["locked drawers cross cut shredders"],"ER s4"],
+["Physical Security","What does certified destruction provide?","Documentation of disposal - a Certificate of Destruction",["certificate of destruction"],"W2 s13, QR"],
+
+/* ---------- Data & Governance ---------- */
+["Data & Governance","How is data at rest protected?","Full Disk Encryption (FDE) and Self-Encrypting Drives (SED)",["fde and sed"],"W2 s20, QR, ER s5"],
+["Data & Governance","How is data in transit protected?","TLS and IPsec",["tls and ipsec"],"W2 s20, QR, ER s5"],
+["Data & Governance","What does DLP do?","Monitors or blocks sensitive data leaving",["blocks data leaving"],"QR"],
+["Data & Governance","What does DRM do?","Controls use after access",["controls use after access"],"QR"],
+["Data & Governance","What is PII?","Personally Identifiable Information - data that identifies a person, such as an SSN or passport number",["identifies a person"],"W2 s22, QR, ER s5"],
+["Data & Governance","What is PHI?","Protected Health Information - medical information, governed by HIPAA",["health information"],"W2 s22, QR, ER s5"],
+["Data & Governance","What is PCI DSS?","Payment Card Industry Data Security Standard - requirements for payment-card data",["payment card industry standards"],"W2 s23, QR, ER s5"],
+["Data & Governance","What counts as intellectual property?","Patents, source code, and trade secrets",["patents source code trade secrets"],"W2 s23, QR"],
+["Data & Governance","The four commercial classification levels in order","Public, Sensitive, Private, Confidential",["public sensitive private confidential"],"W2 s21, QR, ER s5"],
+["Data & Governance","The government classification levels in the lecture","Unclassified, Secret, Top Secret",["unclassified secret top secret"],"W2 s21, QR, ER s5"],
+["Data & Governance","Commercial level: Public","No risk if disclosed, such as marketing brochures",["no risk if disclosed"],"W2 s21"],
+["Data & Governance","Commercial level: Sensitive","Internal data that is not high-stakes but is not public, such as employee handbooks",["internal not public not high stakes"],"W2 s21"],
+["Data & Governance","Commercial level: Private","Information about individuals, such as HR records",["information about individuals"],"W2 s21"],
+["Data & Governance","Commercial level: Confidential","The highest level; serious damage if leaked, such as merger and acquisition plans",["highest level serious damage if leaked"],"W2 s21"],
+["Data & Governance","What does the data owner do?","A senior executive who decides the classification level and required protection",["decides classification"],"W2 s24, QR, ER s5"],
+["Data & Governance","What does the data custodian do?","IT and security staff who implement the technical controls - backups, encryption, access controls",["implements technical controls"],"W2 s24, QR, ER s5"],
+["Data & Governance","What does the DPO do?","Ensures compliance with privacy laws such as GDPR",["gdpr compliance"],"W2 s24, QR, ER s5"],
+["Data & Governance","Under the shared responsibility model, what does the provider secure?","The physical infrastructure - security OF the cloud",["physical infrastructure security of the cloud"],"W2 s17, QR"],
+["Data & Governance","Under the shared responsibility model, what does the customer secure?","Data, identities, configurations and encryption - security IN the cloud",["data identities configurations encryption"],"QR"],
+
+/* ---------- Cryptography ---------- */
+["Cryptography","The four protections cryptography provides","Confidentiality, Integrity, Availability, and Non-repudiation",["confidentiality integrity availability non repudiation"],"W2 s25, W4 s3, ER s6"],
+["Cryptography","What is non-repudiation?","The sender cannot deny sending the message",["sender cannot deny sending"],"W4 s3, ER s6"],
+["Cryptography","What is plaintext?","Unencrypted data",["unencrypted data","readable information"],"W4 s3, ER s8"],
+["Cryptography","What is ciphertext?","Scrambled data - encrypted and unreadable without the proper key",["encrypted unreadable data"],"W4 s3, ER s8"],
+["Cryptography","What is cleartext?","Data transmitted without any encryption",["data sent with no encryption"],"W4 s3"],
+["Cryptography","Symmetric cryptography","Uses one private key; fast and efficient for large files; example AES",["one key fast aes"],"W4 s4, ER s6"],
+["Cryptography","The challenge with symmetric cryptography","How to share the key securely",["sharing the key securely"],"W4 s4, ER s6"],
+["Cryptography","Asymmetric cryptography","Uses a public/private key pair; slower but solves the key exchange problem; examples RSA and ECC",["key pair rsa ecc"],"W4 s4, ER s6"],
+["Cryptography","How does HTTPS use both types of encryption?","Asymmetric encryption securely exchanges a symmetric key, which then carries the session",["asymmetric exchanges a symmetric key"],"W4 s4"],
+["Cryptography","To send Bob a message only he can read, which key do you encrypt with?","Bob's public key",["bobs public key","recipients public key"],"W2 s36, W4 s14"],
+["Cryptography","What is hashing?","A one-way function that acts as a digital fingerprint",["one way function digital fingerprint"],"W4 s6, ER s6"],
+["Cryptography","Which hashing algorithm is secure?","SHA-256",["sha256"],"W4 s6, ER s6"],
+["Cryptography","Which hashing algorithm is deprecated and why?","MD5, because it is susceptible to collisions",["md5 collisions"],"W4 s6, ER s6"],
+["Cryptography","What is a collision?","When two different pieces of data produce the same hash",["two inputs same hash"],"W4 s6"],
+["Cryptography","How are passwords stored properly?","The hash of the password is stored, never the password itself",["store the hash not the password"],"W4 s6"],
+["Cryptography","What is steganography?","Hiding the existence of data within a non-secret file",["hiding existence of data"],"W4 s7, ER s6"],
+["Cryptography","What is the Least Significant Bit technique?","Altering the very edges of pixels in an image to hide binary code",["lsb altering pixels"],"W4 s7, ER s6"],
+["Cryptography","What is PKI?","The hardware, software, people and policies needed to manage digital certificates",["manages digital certificates"],"W4 s8"],
+["Cryptography","What does a Certificate Authority do?","It is the trusted third party that signs and issues digital certificates binding a public key to an entity",["trusted third party issues certificates"],"W4 s8, ER s6"],
+["Cryptography","What does a Registration Authority do?","Handles identity proofing before a certificate is issued",["identity proofing"],"W4 s8"],
+["Cryptography","What is a digital signature?","A hash encrypted with the sender's private key, providing non-repudiation",["hash encrypted with senders private key"],"W4 s9, ER s6"],
+["Cryptography","What is a digital certificate?","An electronic document that binds a public key to an entity, issued by a CA",["binds a public key to an entity"],"W4 s9"],
+["Cryptography","What is revocation?","Canceling a certificate before it expires",["canceling a certificate early"],"W4 s10"],
+["Cryptography","What is a CRL?","Certificate Revocation List - a blacklist of canceled certificates",["blacklist of canceled certificates"],"W4 s10, ER s6"],
+["Cryptography","What is OCSP?","Online Certificate Status Protocol - a faster, real-time way to check if a certificate is still valid",["real time certificate check"],"W4 s10, ER s6"],
+["Cryptography","What does every extra bit of key length do?","Doubles the work for an attacker",["doubles the attackers work"],"W4 s11"],
+["Cryptography","What is entropy?","The measure of randomness in cryptographic keys",["measure of randomness"],"W4 s11, ER s6, ER s8"],
+["Cryptography","What is key stretching and which methods are named?","Running a password through thousands of iterations to resist brute force; PBKDF2 and bcrypt",["pbkdf2 and bcrypt"],"W4 s11, ER s6"],
+["Cryptography","What is a Self-Encrypting Drive?","A hard drive that encrypts data automatically at the hardware level",["sed encrypts at hardware level"],"W4 s12, ER s5"],
+["Cryptography","What is Quantum Key Distribution?","Using the laws of physics to detect if an eavesdropper is watching a key exchange",["physics detects eavesdropper"],"W4 s13"],
+["Cryptography","What are ephemeral keys / perfect forward secrecy?","Using a different key for every session so that if one key is stolen, past communications remain safe",["different key each session"],"W4 s13"],
+["Cryptography","What is Post-Quantum Cryptography?","New math being developed to withstand quantum computers breaking current asymmetric math",["pqc resists quantum computers"],"W4 s13, ER s6"],
+["Cryptography","What is key exchange?","The process where cryptographic keys are exchanged between parties",["exchanging keys between parties"],"ER s8"],
+
+/* ---------- Endpoint & Malware ---------- */
+["Endpoint & Malware","What is an endpoint?","Any device that connects to a network - laptops, desktops, phones, servers, IoT",["any device connecting to a network"],"W4 s15, ER s7"],
+["Endpoint & Malware","Why are endpoints the number one target?","Humans click things, apps are complex, patching is delayed, remote work expanded exposure, and stolen credentials start most attacks",["humans click patching delayed remote work"],"W4 s16, ER s7"],
+["Endpoint & Malware","The core causes of endpoint vulnerability","Unpatched OS and software, misconfiguration, weak passwords, excess privileges, unsafe user behavior",["unpatched misconfiguration weak passwords excess privileges"],"W4 s17, ER s7"],
+["Endpoint & Malware","How is malware delivered?","By email, web, USB, and supply chain",["email web usb supply chain"],"W4 s19"],
+["Endpoint & Malware","Virus","Requires a legitimate host program or file to attach to, and typically relies on human interaction to execute and spread",["needs a host and human interaction"],"W4 s20, ER s7"],
+["Endpoint & Malware","Worm","A standalone piece of malware that exploits vulnerabilities to self-propagate without human interaction or a host file",["standalone self propagates"],"W4 s20, ER s7"],
+["Endpoint & Malware","Trojan","Malware disguised as legitimate software; can create backdoors known as RATs, steal data, or download more malware",["disguised as legitimate software"],"W4 s20, ER s7"],
+["Endpoint & Malware","What is a RAT?","A Remote Access Trojan - a backdoor created by a Trojan",["remote access trojan"],"ER s7"],
+["Endpoint & Malware","Ransomware","Malware that encrypts files or systems and demands a ransom, usually in cryptocurrency, for the decryption key",["encrypts and demands ransom"],"W4 s20, ER s7"],
+["Endpoint & Malware","What is double extortion?","Stealing the data first and threatening to leak it publicly if the ransom is not paid",["steal data first then threaten to leak"],"W4 s21, ER s7"],
+["Endpoint & Malware","Spyware","Malware that secretly observes and gathers information, exfiltrating it to the attacker; a common subtype is a keylogger",["secretly observes and exfiltrates"],"W4 s20, ER s7"],
+["Endpoint & Malware","Rootkit","A clandestine set of tools that gains root or system-level control while actively hiding its presence, modifying the OS to conceal processes and files from antivirus",["gains system control while hiding itself"],"ER s7 only"],
+["Endpoint & Malware","Botnet","A network of compromised internet-connected devices, or zombies, controlled collectively by an attacker known as a botmaster",["zombies controlled by a botmaster"],"ER s7 only"],
+["Endpoint & Malware","Logic bomb","Malicious code inserted into a system that stays dormant until a specific time-based or event-based condition triggers it; closely associated with insider threats",["dormant code with a trigger"],"ER s7 only"],
+["Endpoint & Malware","Adware","Software that aggressively displays or downloads unwanted advertisements; malicious variants track browsing and redirect users to unsafe websites",["unwanted ads and redirects"],"ER s7 only"],
+["Endpoint & Malware","The five phases of the ransomware lifecycle","Initial Access, Privilege Escalation, Lateral Movement, Data Exfiltration, Encryption and Extortion",["initial access privilege escalation lateral movement exfiltration encryption"],"W4 s21, ER s7"],
+["Endpoint & Malware","What is the difference between phishing and BEC?","Phishing steals credentials; Business Email Compromise steals money",["phishing steals credentials bec steals money"],"W4 s23"],
+["Endpoint & Malware","Brute force","Trying many passwords against an account",["guessing many passwords"],"W4 s25, ER s7"],
+["Endpoint & Malware","Password spraying","Trying one common password against many accounts",["one password many accounts"],"W4 s25"],
+["Endpoint & Malware","Credential stuffing","Using leaked username and password pairs from other breaches to log into accounts automatically",["leaked pairs from other breaches"],"W4 s25 & s30, ER s7"],
+["Endpoint & Malware","Token or session hijacking","Stealing the session rather than the password",["stealing the session"],"W4 s25"],
+["Endpoint & Malware","What does zero-day defense rely on?","Behavior detection",["behavior detection"],"W4 s26"],
+["Endpoint & Malware","How do attackers establish persistence on endpoints?","Run keys and startup items, scheduled tasks, services and daemons, living-off-the-land tools, and backdoors",["run keys scheduled tasks services lotl backdoors"],"W4 s27"],
+["Endpoint & Malware","Why are supply chain attacks so dangerous?","They exploit trusted vendors and updates, bypass user suspicion, and spread to many organizations quickly",["exploit trusted vendors bypass suspicion spread quickly"],"W4 s28 & s30"],
+["Endpoint & Malware","What techniques are used in lateral movement?","Credential harvesting, pass-the-hash attacks, scanning the internal network, and pivoting to servers",["credential harvesting pass the hash scanning pivoting"],"W4 s29"],
+["Endpoint & Malware","What is the goal of lateral movement?","Domain-wide control",["domain wide control"],"W4 s29"],
+["Endpoint & Malware","The five endpoint defense principles","Least privilege, defense in depth, secure configuration baselines, continuous monitoring, and an assume breach mindset",["least privilege defense in depth baselines monitoring assume breach"],"W4 s31"],
+["Endpoint & Malware","What is the difference between traditional AV and EDR?","AV uses signatures; EDR uses behavior and telemetry and supports threat hunting",["av signatures edr behavior"],"W4 s32, ER s7"],
+["Endpoint & Malware","The five steps of patch and vulnerability management in Week 4","Inventory assets, prioritize critical CVEs, test patches, deploy quickly, verify remediation",["inventory prioritize test deploy verify"],"W4 s33"],
+["Endpoint & Malware","What does MFA done right involve?","Training for phishing patterns, phishing-resistant MFA where possible, password managers, and a report culture",["phishing resistant mfa password managers report culture"],"W4 s34"],
+["Endpoint & Malware","What actually stops breaches per the Week 4 wrap-up?","Strong crypto and key management, fast patching, EDR visibility, and segmentation plus backups",["crypto patching edr segmentation backups"],"W4 s35"],
+["Endpoint & Malware","Endpoint defenses listed in the Exam 1 Review Guide","EDR paired with traditional AV, strong patch management, segmentation, and continuous monitoring",["edr with av patch management segmentation monitoring"],"ER s7"],
+
+/* ---------- Glossary (ER section 8) ---------- */
+["Glossary","Access Control","Granting or denying specific requests to obtain or use information",["granting or denying requests"],"ER s8"],
+["Glossary","Advanced Persistent Threat (APT)","A stealthy threat actor, often nation-state, which gains unauthorized network access undetected for an extended period",["stealthy long term nation state intrusion"],"ER s8"],
+["Glossary","Authentication","Verifying the identity claimed by an entity",["verifying identity"],"ER s8"],
+["Glossary","Authorization","Ensuring requested access is possible given the identity's privileges",["what the identity is allowed to do"],"ER s8"],
+["Glossary","Business Continuity Plan (BCP)","A plan to ensure business processes continue during a disaster",["keeps business running during a disaster"],"ER s8"],
+["Glossary","Data Exfiltration","Unauthorized transfer of data",["unauthorized transfer of data"],"ER s8"],
+["Glossary","DDoS","Multiple compromised systems target a single system, causing denial of service",["many systems flood one"],"ER s8"],
+["Glossary","EDR","Technology that monitors an endpoint to mitigate cyber threats",["monitors an endpoint"],"ER s8"],
+["Glossary","Malware","Software designed to disrupt, damage, or gain unauthorized access",["software designed to disrupt or damage"],"ER s8"],
+["Glossary","MFA","Authentication requiring two or more verification factors",["two or more verification factors"],"ER s8"],
+["Glossary","Penetration Testing","Authorized simulated cyberattack",["authorized simulated attack"],"ER s8"],
+["Glossary","Threat Intelligence","Information about threats and actors providing context to help protection",["context about threats and actors"],"ER s8"],
+["Glossary","Vulnerability Assessment","Identifying and quantifying vulnerabilities",["identifying and quantifying vulnerabilities"],"ER s8"],
+["Glossary","Zero-Day Exploit","A cyber attack occurring the same day a software weakness is discovered",["attack the day a weakness is found"],"ER s8"],
+
+/* ---------- Case Studies ---------- */
+["Case Studies","Stuxnet","State-sponsored malware that targeted industrial systems and caused physical damage",["state malware physical damage"],"W1 s23, ER s3"],
+["Case Studies","The Target breach of 2013 - what happened?","Attackers entered through third-party HVAC vendor access and stole 40 million credit cards",["hvac vendor 40 million cards"],"W1 s34, W2 s23"],
+["Case Studies","The Target breach of 2013 - what is the lesson?","Third-party vendor risk",["third party vendor risk"],"W1 s34"],
+["Case Studies","What did Target fail to do with its PCI data?","Isolate it from the rest of the network, a failure of pervasive controls",["isolate pci data from the network"],"W2 s23"],
+["Case Studies","The Equifax breach of 2017 - what happened?","A known vulnerability in Apache Struts was left unpatched for months; 147M records exposed",["unpatched apache struts 147M records"],"W1 s44, W2 s4"],
+["Case Studies","The Equifax breach of 2017 - what is the lesson?","Patch management of systems",["patch management"],"W1 s44"],
+["Case Studies","The 2020 Twitter vishing attack","Hackers called Twitter employees pretending to be internal IT and obtained credentials for an internal tool, hijacking high-profile accounts",["called employees posing as it"],"W2 s8"],
+["Case Studies","Which social engineering principle does the 2020 Twitter attack illustrate?","Authority and urgency",["authority urgency"],"W2 s9"],
+["Case Studies","The MGM Resorts ransomware attack of 2023","Attackers used LinkedIn to find an employee's name, called the help desk, and convinced the agent to reset that employee's MFA; over $100 million in losses",["help desk reset mfa 100 million"],"W2 s10"],
+["Case Studies","The 2021 Colonial Pipeline attack","It started with a leaked password on a VPN and forced the shutdown of operational technology systems",["leaked vpn password ot shutdown"],"W2 s15"],
+["Case Studies","The 2011 DigiNotar breach","Hackers compromised this Certificate Authority and issued fake certificates for Google, forcing browsers to update their CRLs",["compromised ca issued fake google certificates"],"W4 s10"],
+["Case Studies","The Meta / Cambridge Analytica scandal","Meta had to significantly empower their DPOs to oversee how data owners were allowing third-party apps to access user data",["empowered dpos over data owners"],"W2 s24"],
+["Case Studies","The healthcare ransomware scenario in Week 4","Hospitals forced to divert patients, systems down for days or weeks, patient safety impacted, costs exceeding the ransom; backups and segmentation save lives",["hospitals divert patients costs exceed ransom"],"W4 s22"]
+];
+
+/* ============================================================
+   IN-CLASS ACTIVITIES — reproduced from the decks.
+   keyType: "printed" = an answer key exists in the document.
+            "derived" = the deck gives questions only; the answer
+            is resolved from definitions stated elsewhere in the
+            same five documents, cited per question.
+   ============================================================ */
+var ACTS=[
+{id:"w1kc1",tab:"W1 · Check 1",title:"Week 1, Slide 17 — Knowledge Check 1",
+ sub:"Open-ended short answer. The deck prints no answer key.",keyType:"derived",type:"self",
+ items:[
+  {q:"Which CIA pillar is affected when data is altered?",
+   a:"Integrity.",
+   why:"Week 1 slide 11 defines Integrity as the accuracy of data, and slide 12's violation examples are all alterations: an edited bank balance, web defacement, and packet manipulation."},
+  {q:"What is a vulnerability?",
+   a:"A weakness that a threat can exploit.",
+   why:"Stated verbatim on Week 1 slide 15, with examples: unpatched software, weak or reused passwords, a misconfigured firewall, lack of employee training."},
+  {q:"Is security a one-time task?",
+   a:"No — it is an ongoing process.",
+   why:"Week 1 slide 7 lists 'ongoing process' as part of the definition of information security. Slide 16 adds that we manage risk to an acceptable level rather than eliminating threats."}
+ ]},
+
+{id:"w1kc2",tab:"W1 · Check 2",title:"Week 1, Slide 27 — Knowledge Check 2",
+ sub:"Open-ended short answer. The deck prints no answer key.",keyType:"derived",type:"self",
+ items:[
+  {q:"Which actor do you think has the most resources?",
+   a:"State-sponsored actors.",
+   why:"Week 1 slide 22 attributes Advanced Persistent Threats and long-term espionage to state-sponsored actors; the Exam 1 Review Guide adds 'highly targeted'. Slide 23's Stuxnet case is the deck's example."},
+  {q:"What motivates hacktivists?",
+   a:"Political or social causes.",
+   why:"Week 1 slide 21 states 'political or social motives' and lists DDoS and website defacement as their methods."},
+  {q:"Why are insiders dangerous?",
+   a:"They have trusted access — and they may act maliciously or accidentally.",
+   why:"Week 1 slide 24 gives exactly 'trusted access' and 'malicious or accidental'. The Quiz 1 review sheet repeats both halves."},
+  {q:"What is Shadow IT?",
+   a:"Unauthorized systems that create security blind spots.",
+   why:"Week 1 slide 26. The Exam 1 Review Guide adds that they are 'deployed by users without IT knowledge'."}
+ ]},
+
+{id:"w1kc3",tab:"W1 · Check 3",title:"Week 1, Slide 35 — Knowledge Check 3",
+ sub:"Open-ended short answer. The deck prints no answer key.",keyType:"derived",type:"self",
+ items:[
+  {q:"What is defense-in-depth?",
+   a:"Layered security — overlapping policy, physical, perimeter, network, host, application and data layers.",
+   why:"The layer list comes from the Quiz 1 review sheet; the Exam 1 Review Guide gives it as Perimeter, Internal Network, Host, Application, Data, Physical, Policies. Week 2 slide 18 supplies the governing idea: no single control is 100% effective."},
+  {q:"Goal of least privilege?",
+   a:"Grant the minimum required access, to limit the blast radius.",
+   why:"Week 1 slide 31 says 'minimum access — limit blast radius'. Both review sheets repeat the phrase 'blast radius'."},
+  {q:"What lesson did we learn from the Target breach?",
+   a:"Third-party vendor risk.",
+   why:"Week 1 slide 34 states the lesson directly alongside 'third-party HVAC access' and '40M credit cards stolen'. Week 2 slide 23 adds a second lesson: Target failed to isolate PCI data from the rest of the network."}
+ ]},
+
+{id:"w2kc1",tab:"W2 · Slide 9",title:"Week 2, Slide 9 — Knowledge Check",
+ sub:"Four-option multiple choice. The deck prints the questions but marks no correct answer.",keyType:"derived",type:"mc",
+ items:[
+  {q:"In the context of application security, what is the purpose of \"Input Validation\"?",
+   opts:["To ensure the user has a strong password.","To verify that the software license is valid.","To prevent malicious code (like SQL Injection) from being processed by the app.","To encrypt data while it is in transit."],
+   correct:2,
+   why:"The Quiz 1 review sheet states under Application security: 'validate input against SQL injection'. The Exam 1 Review Guide repeats it. Nothing in either document connects input validation to passwords, licensing or transit encryption.",
+   src:"Resolved from QR (Pervasive Attack Surfaces) and ER §6"},
+  {q:"A security professional is choosing a control to protect data on a lost laptop. Which combination is most effective?",
+   opts:["SDLC and Input Validation","TPM and Full Disk Encryption (FDE)","Patch Management and Social Proof","Digital Rights Management (DRM) and Hashing"],
+   correct:1,
+   why:"Week 4 slide 12 states the TPM 'stores the keys for Full Disk Encryption' and gives the BitLocker example of a laptop left in a taxi staying inaccessible. The Quiz 1 sheet lists FDE under data at rest.",
+   src:"Resolved from W4 s12 and QR (Data Protection)"},
+  {q:"The 2020 Twitter attack, where hackers called employees to gain internal access, is an example of which Social Engineering principle?",
+   opts:["Scarcity","Authority/Urgency","Redundancy","Least Privilege"],
+   correct:1,
+   why:"Week 2 slide 8 presents the Twitter case directly beneath the Authority and Urgency principles, describing hackers 'pretending to be from the internal IT department'. Redundancy and least privilege are not social-engineering principles in any of your documents.",
+   src:"Resolved from W2 s8"}
+ ]},
+
+{id:"w2kc2",tab:"W2 · Slide 19",title:"Week 2, Slide 19 — Knowledge Check",
+ sub:"Four-option multiple choice. The deck prints the questions but marks no correct answer.",keyType:"derived",type:"mc",
+ items:[
+  {q:"A high-security facility uses a small room with two interlocking doors to prevent \"tailgating.\" What is this physical control called?",
+   opts:["A Faraday Cage","A Bollard","An Access Control Vestibule (Mantrap)","A Hot/Cold Aisle"],
+   correct:2,
+   why:"The Exam 1 Review Guide defines the access control vestibule as 'two interlocking doors where the second door will not open until the first closes and locks', directly preventing tailgating and piggybacking. The other three are each defined elsewhere in the same guide with different jobs: Faraday cages block electromagnetic fields, bollards prevent vehicle ramming, hot/cold aisles are HVAC.",
+   src:"Resolved from ER §4 and QR (Human and Physical Security)"},
+  {q:"Which regulatory classification specifically protects patient health records and medical history?",
+   opts:["PII (Personally Identifiable Information)","PHI (Protected Health Information)","PCI DSS","Proprietary/Trade Secret"],
+   correct:1,
+   why:"Week 2 slide 22 defines PHI as 'any data related to health status or healthcare provision (medical records, insurance IDs)' and uses the Walgreens example to separate it from PII, which is the customer's name.",
+   src:"Resolved from W2 s22 and ER §5"},
+  {q:"According to the \"Shared Responsibility Model\" in cloud computing, who is typically responsible for securing the physical data center hardware?",
+   opts:["The Cloud Service Provider (e.g., AWS/Azure)","The Customer","The Data Owner","The Data Custodian"],
+   correct:0,
+   why:"The Quiz 1 review sheet states: 'provider secures the physical infrastructure, or security of the cloud. The customer secures data, identities, configurations, and encryption in the cloud.' Data owner and custodian are governance roles, not parties to this model.",
+   src:"Resolved from QR (Data Protection and Governance)"},
+  {q:"Which data destruction method uses a powerful magnetic field to disrupt a hard drive's storage?",
+   opts:["Pulping","Shredding","Burning","Degaussing"],
+   correct:3,
+   why:"Week 2 slide 13 defines degaussing as 'using a powerful magnet to disrupt the magnetic field on a hard drive' and notes it is ineffective for SSDs. Pulping is defined on the same slide as reducing paper to slurry.",
+   src:"Resolved from W2 s13, QR and ER §4"}
+ ]},
+
+{id:"w2kc3",tab:"W2 · Slide 36",title:"Week 2, Slide 36 — Knowledge Check",
+ sub:"Four-option multiple choice on cryptography. The deck prints the questions but marks no correct answer.",keyType:"derived",type:"mc",
+ items:[
+  {q:"Which cryptographic pillar ensures that a sender cannot later deny they sent a specific message?",
+   opts:["Confidentiality","Integrity","Availability","Non-repudiation"],
+   correct:3,
+   why:"Week 2 slide 25 and Week 4 slide 3 both list non-repudiation among the protections cryptography provides, and Week 4 slide 9 states a digital signature 'provides Non-repudiation (the sender can't deny they sent it)'.",
+   src:"Resolved from W2 s25, W4 s3 & s9, ER §6"},
+  {q:"In Asymmetric Encryption, if Alice wants to send an encrypted message to Bob that ONLY he can read, which key should she use to lock it?",
+   opts:["Alice's Private Key","Alice's Public Key","Bob's Private Key","Bob's Public Key"],
+   correct:3,
+   why:"Week 4 slide 4 states the benefit of asymmetric encryption: 'You can post your Public Key on a billboard; only your Private Key can decrypt the messages sent to you.' So locking with Bob's public key means only Bob's private key opens it.",
+   src:"Resolved from W4 s4"},
+  {q:"Which component of a PKI acts as the \"Trusted Third Party\" that signs and issues digital certificates?",
+   opts:["The Registration Authority (RA)","The Certificate Authority (CA)","The Certificate Revocation List (CRL)","The Trusted Platform Module (TPM)"],
+   correct:1,
+   why:"Week 4 slide 8 defines the CA as 'the trusted third party that signs certificates' and the RA as handling 'identity proofing before a certificate is issued'. The CRL is defined on slide 10 as a blacklist; the TPM on slide 12 as a motherboard chip.",
+   src:"Resolved from W4 s8, s10, s12"},
+  {q:"Which hashing algorithm is currently considered insecure and should be avoided because it is susceptible to collisions?",
+   opts:["SHA-256","SHA-3","MD5","AES"],
+   correct:2,
+   why:"Week 4 slide 6 names 'SHA-256 (Secure) and MD5 (Now considered insecure/deprecated)' and defines a collision on the same slide. AES appears in your documents only as a symmetric encryption standard, never as a hash.",
+   src:"Resolved from W4 s6, ER §6"}
+ ]},
+
+{id:"w4kc1",tab:"W4 · Slide 14",title:"Week 4, Slide 14 — Knowledge Check",
+ sub:"Identical to the Week 2 slide 36 check — the same four questions were given in two different lectures.",keyType:"derived",type:"mc",
+ items:[
+  {q:"Which cryptographic pillar ensures that a sender cannot later deny they sent a specific message?",
+   opts:["Confidentiality","Integrity","Availability","Non-repudiation"],
+   correct:3,
+   why:"Same question as Week 2 slide 36. A digital signature is a hash encrypted with the sender's private key, which is what delivers non-repudiation.",
+   src:"Resolved from W4 s3 & s9"},
+  {q:"In Asymmetric Encryption, if Alice wants to send an encrypted message to Bob that ONLY he can read, which key should she use to lock it?",
+   opts:["Alice's Private Key","Alice's Public Key","Bob's Private Key","Bob's Public Key"],
+   correct:3,
+   why:"Public key locks, private key unlocks — and only Bob holds Bob's private key.",
+   src:"Resolved from W4 s4"},
+  {q:"Which component of a PKI acts as the \"Trusted Third Party\" that signs and issues digital certificates?",
+   opts:["The Registration Authority (RA)","The Certificate Authority (CA)","The Certificate Revocation List (CRL)","The Trusted Platform Module (TPM)"],
+   correct:1,
+   why:"The CA signs and issues; the RA only does identity proofing beforehand.",
+   src:"Resolved from W4 s8"},
+  {q:"Which hashing algorithm is currently considered insecure and should be avoided because it is susceptible to collisions?",
+   opts:["SHA-256","SHA-3","MD5","AES"],
+   correct:2,
+   why:"MD5 is marked deprecated on Week 4 slide 6. AES is the trap — it is symmetric encryption, not a hash.",
+   src:"Resolved from W4 s6"}
+ ]},
+
+{id:"w4kc2",tab:"W4 · Slide 30 ★",title:"Week 4, Slide 30 — Endpoint Knowledge Check",
+ sub:"The only activity in your materials with an instructor answer key printed in the document. The answers below are his, verbatim from the slide notes.",keyType:"printed",type:"self",
+ items:[
+  {q:"Why are endpoints easier to compromise than servers?",
+   a:"Users interact with them, they run more apps, get patched slower, and are exposed to phishing and unsafe behavior.",
+   why:"Verbatim from the instructor answer key in the speaker notes of Week 4 slide 30."},
+  {q:"What are the 5 major phases of a ransomware attack?",
+   a:"Initial access → privilege escalation → lateral movement → data exfiltration → encryption/extortion.",
+   why:"Verbatim from the instructor answer key on Week 4 slide 30. Slide 21 gives the same five phases."},
+  {q:"What is credential stuffing?",
+   a:"Using leaked username/password pairs from other breaches to log into accounts automatically.",
+   why:"Verbatim from the instructor answer key on Week 4 slide 30."},
+  {q:"Why are supply chain attacks so dangerous?",
+   a:"They exploit trusted vendors/updates, bypass user suspicion, and spread to many organizations quickly.",
+   why:"Verbatim from the instructor answer key on Week 4 slide 30. Slide 28 lists the same points."}
+ ]},
+
+{id:"cases",tab:"Case scenarios",title:"Case studies from the lectures",
+ sub:"Every case study named in your decks, each testing the lesson the deck attaches to it.",keyType:"derived",type:"mc",
+ items:[
+  {q:"Attackers entered through a third-party HVAC vendor's access and stole 40 million credit cards. Which breach, and what is the stated lesson?",
+   opts:["Equifax 2017 — patch management","Target 2013 — third-party vendor risk","Colonial Pipeline 2021 — operational technology","MGM 2023 — help desk verification"],
+   correct:1,
+   why:"Week 1 slide 34 gives all three facts: third-party HVAC access, 40M credit cards stolen, and '3rd Party Vendor Risk Lesson'. Week 2 slide 23 adds that Target failed to isolate PCI data, costing over $18M in settlements.",
+   src:"W1 s34, W2 s23"},
+  {q:"A known vulnerability in Apache Struts was left unpatched for months, exposing 147M records. Which breach, and what is the stated lesson?",
+   opts:["Target 2013 — vendor risk","DigiNotar 2011 — certificate authorities","Equifax 2017 — patch management","Stuxnet — industrial systems"],
+   correct:2,
+   why:"Week 1 slide 44 states 'unpatched vulnerability', '147M records' and 'patch management of systems'. Week 2 slide 4 names the specific flaw as Apache Struts.",
+   src:"W1 s44, W2 s4"},
+  {q:"State-sponsored malware targeted industrial systems and caused physical damage. Which case is this?",
+   opts:["Stuxnet","Colonial Pipeline","DigiNotar","Cambridge Analytica"],
+   correct:0,
+   why:"Week 1 slide 23 lists exactly these three points for Stuxnet: state-sponsored malware, targeted industrial systems, physical damage impact.",
+   src:"W1 s23, ER §3"},
+  {q:"Attackers used LinkedIn to find an employee's name, called the tech support help desk, and convinced the agent to reset that employee's MFA. Which case, and what did it cost?",
+   opts:["Twitter 2020 — hijacked accounts","MGM Resorts 2023 — over $100 million","Colonial Pipeline 2021 — fuel shutdown","Equifax 2017 — 147M records"],
+   correct:1,
+   why:"Week 2 slide 10 gives the full sequence and states the loss as 'over $100 million'. The Quiz 1 review sheet draws the lesson: recovery and MFA reset procedures must also verify identity.",
+   src:"W2 s10, QR"},
+  {q:"An attack that started with a leaked password on a VPN forced the shutdown of operational technology systems. Which case?",
+   opts:["Stuxnet","MGM Resorts 2023","The 2021 Colonial Pipeline attack","The 2020 Twitter attack"],
+   correct:2,
+   why:"Week 2 slide 15 presents Colonial Pipeline under ICS and IoT, noting it 'started with a leaked password on a VPN' and 'forced the shutdown of operational technology (OT) systems', demonstrating how pervasive connectivity can halt physical energy delivery.",
+   src:"W2 s15"},
+  {q:"Hackers compromised a Certificate Authority and issued fake certificates for Google, forcing browsers to update their blacklists. Which case?",
+   opts:["The 2011 DigiNotar breach","The 2013 Target breach","The 2017 Equifax breach","The 2020 Twitter attack"],
+   correct:0,
+   why:"Week 4 slide 10 presents DigiNotar under Certificate Lifecycle & Revocation, and explains browsers had to quickly update their CRLs to stop users being redirected to a fake Gmail.",
+   src:"W4 s10"},
+  {q:"After which scandal did Meta have to significantly empower their DPOs to oversee how data owners were allowing third-party apps to access user data?",
+   opts:["The Equifax breach","Cambridge Analytica","The Colonial Pipeline attack","The DigiNotar breach"],
+   correct:1,
+   why:"Week 2 slide 24 gives this as the corporate example for Data Roles and Governance, illustrating the relationship between the DPO and data owners.",
+   src:"W2 s24"},
+  {q:"In the Week 4 healthcare ransomware scenario, what does the deck say about the cost?",
+   opts:["The ransom is the largest single cost","Costs exceed the ransom","Insurance covers most of the cost","The cost is mainly regulatory fines"],
+   correct:1,
+   why:"Week 4 slide 22 lists: hospitals forced to divert patients, systems down for days or weeks, patient safety impacted, 'costs exceed ransom', and backups plus segmentation save lives.",
+   src:"W4 s22"}
+ ]}
+];
+
+/* ============================================================
+   ENGINE
+   ============================================================ */
+(function(){
+"use strict";
+var KEY="itss4360.game.v1";
+var S={items:{},stats:{ans:0,right:0,streak:0,best:0},fmt:"mc",topic:"ALL",src:"ALL",seq:0};
+
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){var p=JSON.parse(raw);
+      if(p&&typeof p==="object"){
+        S.items=p.items||{};S.stats=p.stats||S.stats;S.fmt=p.fmt||"mc";
+        S.topic=p.topic||"ALL";S.src=p.src||"ALL";S.seq=p.seq||0;
+      }}
+  }catch(e){}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function st(i){
+  if(!S.items[i])S.items[i]={lvl:0,miss:0,due:0,seen:0};
+  return S.items[i];
+}
+function $(id){return document.getElementById(id);}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+/* ---------- forgiving text match ---------- */
+var STOP={"the":1,"a":1,"an":1,"and":1,"or":1,"of":1,"to":1,"is":1,"are":1,"it":1,"that":1,"its":1,"for":1,"in":1,"on":1,"by":1,"with":1,"as":1};
+function norm(s){
+  return (s||"").toLowerCase()
+    .replace(/&/g," and ")
+    .replace(/[^a-z0-9 ]+/g," ")
+    .replace(/\s+/g," ").trim();
+}
+function core(s){
+  return norm(s).split(" ").filter(function(w){return w&&!STOP[w];}).join(" ");
+}
+function lev(a,b){
+  if(a===b)return 0;
+  var m=a.length,n=b.length;
+  if(!m)return n; if(!n)return m;
+  var prev=[],cur=[],i,j;
+  for(j=0;j<=n;j++)prev[j]=j;
+  for(i=1;i<=m;i++){
+    cur[0]=i;
+    for(j=1;j<=n;j++){
+      cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a.charAt(i-1)===b.charAt(j-1)?0:1));
+    }
+    for(j=0;j<=n;j++)prev[j]=cur[j];
+  }
+  return prev[n];
+}
+function close(a,b){
+  if(!a||!b)return false;
+  if(a===b)return true;
+  var d=lev(a,b), L=Math.max(a.length,b.length);
+  if(L<=4)return d===0;
+  if(L<=8)return d<=1;
+  if(L<=16)return d<=2;
+  return d<=Math.floor(L*0.18);
+}
+function accepts(input,item){
+  var got=core(input); if(!got)return false;
+  var cands=[item[2]].concat(item[3]||[]);
+  for(var i=0;i<cands.length;i++){
+    var want=core(cands[i]);
+    if(close(got,want))return true;
+    /* accept if the learner produced every significant word of a short answer */
+    var wl=want.split(" ");
+    if(wl.length<=4){
+      var gl=got.split(" "),all=true;
+      for(var k=0;k<wl.length;k++){
+        var hit=false;
+        for(var g=0;g<gl.length;g++){if(close(gl[g],wl[k])){hit=true;break;}}
+        if(!hit){all=false;break;}
+      }
+      if(all)return true;
+    }
+    /* accept a long answer if it carries most of the key words */
+    if(wl.length>4){
+      var gl2=got.split(" "),hits=0;
+      for(var q=0;q<wl.length;q++){
+        for(var g2=0;g2<gl2.length;g2++){if(close(gl2[g2],wl[q])){hits++;break;}}
+      }
+      if(hits/wl.length>=0.7)return true;
+    }
+  }
+  return false;
+}
+
+/* ---------- mastery ---------- */
+function record(idx,ok){
+  var s=st(idx);
+  S.seq++;
+  s.seen++;
+  S.stats.ans++;
+  if(ok){
+    S.stats.right++;
+    S.stats.streak++;
+    if(S.stats.streak>S.stats.best)S.stats.best=S.stats.streak;
+    s.lvl=Math.min(3,s.lvl+1);
+    s.due=S.seq+(s.lvl===1?6:s.lvl===2?14:9999);
+  }else{
+    S.stats.streak=0;
+    s.miss++;
+    s.lvl=0;
+    s.due=S.seq+2;
+  }
+  save();paint();
+}
+
+/* ---------- pools ---------- */
+var weakOnly=false;
+
+/* Each item's source string names every document it came from.
+   W1/W2/W4 = lecture decks, QR = Quiz 1 review sheet, ER = Exam 1 review guide. */
+var SRCS=[
+ {k:"W1",label:"Week 1 lecture",test:function(s){return /\bW1\b/.test(s);}},
+ {k:"W2",label:"Week 2 lecture",test:function(s){return /\bW2\b/.test(s);}},
+ {k:"W4",label:"Week 4 lecture",test:function(s){return /\bW4\b/.test(s);}},
+ {k:"QR",label:"Quiz 1 review sheet",test:function(s){return /\bQR\b/.test(s);}},
+ {k:"ER",label:"Exam 1 review guide",test:function(s){return /\bER\b/.test(s);}},
+ {k:"DECKS",label:"Any lecture deck",test:function(s){return /\bW[124]\b/.test(s);}},
+ {k:"ERONLY",label:"Only in the Exam 1 guide",test:function(s){return /\bER\b/.test(s)&&!/\bW[124]\b/.test(s)&&!/\bQR\b/.test(s);}}
+];
+function srcMatch(it,key){
+  if(key==="ALL")return true;
+  for(var i=0;i<SRCS.length;i++)if(SRCS[i].k===key)return SRCS[i].test(it[4]);
+  return true;
+}
+function topics(srcKey){
+  var key=(srcKey===undefined)?S.src:srcKey;
+  var t={},o=[];
+  ITEMS.forEach(function(it){
+    if(!srcMatch(it,key))return;
+    if(!t[it[0]]){t[it[0]]=0;o.push(it[0]);}
+    t[it[0]]++;
+  });
+  o.counts=t;
+  return o;
+}
+function pool(){
+  var out=[];
+  ITEMS.forEach(function(it,i){
+    if(!srcMatch(it,S.src))return;
+    if(S.topic!=="ALL"&&it[0]!==S.topic)return;
+    if(weakOnly&&!(st(i).miss>0&&st(i).lvl<3))return;
+    if(st(i).lvl>=3)return;
+    out.push(i);
+  });
+  return out;
+}
+function nextIdx(){
+  var p=pool();
+  if(!p.length)return -1;
+  p.sort(function(a,b){
+    var da=st(a).due,db=st(b).due;
+    if(da!==db)return da-db;
+    return st(a).seen-st(b).seen;
+  });
+  var head=p.slice(0,Math.min(4,p.length));
+  return head[Math.floor(Math.random()*head.length)];
+}
+
+/* ---------- progress bar ---------- */
+function paint(){
+  var n=[0,0,0,0];
+  ITEMS.forEach(function(_,i){n[st(i).lvl]++;});
+  var tot=ITEMS.length;
+  $("n0").textContent=n[0];$("n1").textContent=n[1];$("n2").textContent=n[2];$("n3").textContent=n[3];
+  $("retCount").textContent=n[3];$("totCount").textContent=tot;
+  $("b3").style.width=(n[3]/tot*100)+"%";
+  $("b2").style.width=(n[2]/tot*100)+"%";
+  $("b1").style.width=(n[1]/tot*100)+"%";
+  $("b0").style.width=(n[0]/tot*100)+"%";
+  $("sAns").textContent=S.stats.ans;
+  $("sAcc").textContent=S.stats.ans?Math.round(S.stats.right/S.stats.ans*100)+"%":"—";
+  $("sStreak").textContent=S.stats.best;
+  $("sRet").textContent=n[3];
+  var p=pool();
+  var lbl="";
+  if(S.src!=="ALL"){for(var q=0;q<SRCS.length;q++)if(SRCS[q].k===S.src)lbl=" · "+SRCS[q].label;}
+  $("poolInfo").textContent=p.length+" item"+(p.length===1?"":"s")+" in play"+lbl+(weakOnly?" · weak only":"");
+}
+
+/* ---------- drill rendering ---------- */
+var cur=-1,answered=false,area;
+
+function drill(){
+  area=$("drillArea");
+  area.innerHTML="";
+  cur=nextIdx();
+  answered=false;
+  if(cur<0){
+    var c=el("div","card");
+    c.appendChild(el("h2",null,weakOnly?"No weak items left here.":"Everything in this filter is retired."));
+    var p=el("p",null,weakOnly?"Turn off the weak filter, or widen the source and topic filters.":"Widen the source or topic filter, or reset progress on the Progress tab to run it again.");
+    p.style.color="var(--ink2)";p.style.marginTop="8px";
+    c.appendChild(p);
+    if(weakOnly){
+      var b=el("button","btn sm","Show all items");b.type="button";
+      b.style.marginTop="14px";
+      b.onclick=function(){weakOnly=false;paint();drill();};
+      c.appendChild(b);
+    }
+    area.appendChild(c);
+    return;
+  }
+  if(S.fmt==="match")return renderMatch();
+  if(S.fmt==="fill")return renderFill();
+  renderMC();
+}
+
+function headerBits(card,idx){
+  var it=ITEMS[idx],m=el("div","qmeta");
+  m.appendChild(el("span","pill",it[0]));
+  m.appendChild(el("span","pill src",it[4]));
+  var l=st(idx).lvl;
+  m.appendChild(el("span","pill lvl"+l,l===0?"Unseen":"Level "+l));
+  card.appendChild(m);
+}
+
+function feedback(card,ok,idx,extra){
+  var it=ITEMS[idx];
+  var f=el("div","fb "+(ok?"ok":"no"));
+  f.appendChild(el("div","hd",ok?"Correct":"Not quite"));
+  var a=el("div","ans");
+  a.innerHTML="<b>"+(ok?"":"Answer: ")+"</b>";
+  a.appendChild(document.createTextNode(it[2]));
+  f.appendChild(a);
+  if(extra){var w=el("div","why",extra);f.appendChild(w);}
+  f.appendChild(el("div","src","Source: "+it[4]));
+  card.appendChild(f);
+  var row=el("div","selfrow");
+  var nb=el("button","btn","Next");nb.type="button";nb.onclick=drill;
+  row.appendChild(nb);
+  card.appendChild(row);
+  nb.focus();
+}
+
+function renderMC(){
+  var idx=cur,it=ITEMS[idx];
+  var card=el("div","card");
+  headerBits(card,idx);
+  card.appendChild(el("h2","q",it[1]));
+  /* distractors from the same topic first */
+  var same=[],other=[];
+  ITEMS.forEach(function(o,i){
+    if(i===idx)return;
+    if(core(o[2])===core(it[2]))return;
+    (o[0]===it[0]?same:other).push(o[2]);
+  });
+  var picks=shuffle(same).slice(0,3);
+  if(picks.length<3)picks=picks.concat(shuffle(other).slice(0,3-picks.length));
+  var opts=shuffle([it[2]].concat(picks));
+  var correct=opts.indexOf(it[2]);
+  var box=el("div","opts");
+  opts.forEach(function(o,i){
+    var b=el("button","opt");b.type="button";
+    var k=el("kbd",null,String(i+1));
+    var s=el("span",null,o);
+    b.appendChild(k);b.appendChild(s);
+    b.onclick=function(){pick(i);};
+    box.appendChild(b);
+  });
+  card.appendChild(box);
+  area.appendChild(card);
+  function pick(i){
+    if(answered)return;answered=true;
+    var kids=box.children;
+    for(var k=0;k<kids.length;k++){
+      kids[k].disabled=true;
+      if(k===correct)kids[k].className="opt right";
+      else if(k===i)kids[k].className="opt wrong";
+    }
+    var ok=(i===correct);
+    record(idx,ok);
+    feedback(card,ok,idx,null);
+  }
+  window.__pick=pick;
+}
+
+function renderFill(){
+  var idx=cur,it=ITEMS[idx];
+  var card=el("div","card");
+  headerBits(card,idx);
+  card.appendChild(el("h2","q",it[1]));
+  var row=el("div","fillrow");
+  var inp=document.createElement("input");
+  inp.type="text";inp.autocomplete="off";inp.autocapitalize="off";inp.spellcheck=false;
+  inp.placeholder="Type your answer";inp.setAttribute("aria-label","Your answer");
+  var go=el("button","btn","Check");go.type="button";
+  row.appendChild(inp);row.appendChild(go);
+  card.appendChild(row);
+  var hint=el("p",null,"Spelling, abbreviations and word order are forgiven — get the substance right.");
+  hint.style.cssText="font-size:13px;color:var(--ink3);margin:10px 0 0";
+  card.appendChild(hint);
+  area.appendChild(card);
+  inp.focus();
+  function submit(){
+    if(answered)return;answered=true;
+    var ok=accepts(inp.value,it);
+    inp.disabled=true;go.disabled=true;
+    inp.style.borderColor=ok?"var(--good)":"var(--bad)";
+    record(idx,ok);
+    feedback(card,ok,idx,ok?null:"You typed: “"+(inp.value||"(nothing)")+"”");
+  }
+  go.onclick=submit;
+  inp.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();submit();}});
+}
+
+function renderMatch(){
+  var p=pool();
+  if(S.topic==="ALL"){
+    /* keep a matching round inside one topic so pairs are related */
+    var tps=topics(S.src).filter(function(t){
+      return p.some(function(i){return ITEMS[i][0]===t;});
+    });
+    var t=tps[Math.floor(Math.random()*tps.length)];
+    p=p.filter(function(i){return ITEMS[i][0]===t;});
+  }
+  var set=shuffle(p).slice(0,Math.min(5,p.length));
+  if(set.length<3){renderMC();return;}  /* too few pairs to be a real match */
+  var card=el("div","card");
+  var m=el("div","qmeta");
+  m.appendChild(el("span","pill",ITEMS[set[0]][0]));
+  m.appendChild(el("span","pill","Match all "+set.length));
+  card.appendChild(m);
+  card.appendChild(el("h2","q","Pair each prompt with its answer."));
+  var grid=el("div","mgrid");
+  var cl=el("div","mcol"),cr=el("div","mcol");
+  cl.appendChild(el("h4",null,"Prompt"));cr.appendChild(el("h4",null,"Answer"));
+  var sl=el("div","stack"),sr=el("div","stack");
+  cl.appendChild(sl);cr.appendChild(sr);
+  grid.appendChild(cl);grid.appendChild(cr);
+  card.appendChild(grid);
+  var status=el("p",null,"Pick a prompt, then its answer.");
+  status.style.cssText="font-size:14px;color:var(--ink2);margin:14px 0 0";
+  card.appendChild(status);
+  area.appendChild(card);
+
+  var sel=null,done=0,wrongOnce={};
+  shuffle(set).forEach(function(i){
+    var b=el("button","mbtn",ITEMS[i][1]);b.type="button";b.dataset.i=i;
+    b.onclick=function(){
+      if(b.classList.contains("done"))return;
+      for(var k=0;k<sl.children.length;k++)sl.children[k].classList.remove("sel");
+      b.classList.add("sel");sel=b;status.textContent="Now pick its answer.";
+    };
+    sl.appendChild(b);
+  });
+  shuffle(set).forEach(function(i){
+    var b=el("button","mbtn",ITEMS[i][2]);b.type="button";b.dataset.i=i;
+    b.onclick=function(){
+      if(b.classList.contains("done"))return;
+      if(!sel){status.textContent="Pick a prompt on the left first.";return;}
+      var li=+sel.dataset.i, ri=+b.dataset.i;
+      if(li===ri){
+        sel.className="mbtn done";b.className="mbtn done";
+        sel.disabled=true;b.disabled=true;
+        record(li,!wrongOnce[li]);
+        sel=null;done++;
+        status.textContent=done===set.length?"Set complete.":"Matched — keep going.";
+        if(done===set.length){
+          var row=el("div","selfrow");
+          var nb=el("button","btn","Next set");nb.type="button";nb.onclick=drill;
+          row.appendChild(nb);card.appendChild(row);nb.focus();
+        }
+      }else{
+        wrongOnce[li]=1;
+        var s2=sel;
+        b.classList.add("miss");s2.classList.add("miss");
+        status.textContent="Not that one. The correct answer for “"+ITEMS[li][1]+"” is: "+ITEMS[li][2];
+        setTimeout(function(){b.classList.remove("miss");s2.classList.remove("miss");},700);
+      }
+    };
+    sr.appendChild(b);
+  });
+}
+
+/* ---------- weak spots ---------- */
+function paintWeak(){
+  var box=$("weakBox");box.innerHTML="";
+  var rows=[];
+  ITEMS.forEach(function(it,i){
+    var s=st(i);
+    if(s.miss>0&&s.lvl<3)rows.push({i:i,m:s.miss});
+  });
+  rows.sort(function(a,b){return b.m-a.m;});
+  if(!rows.length){
+    box.appendChild(el("p","empty","Nothing missed yet. Answer some questions and anything you get wrong will collect here."));
+    return;
+  }
+  var w=el("div","weak");
+  rows.slice(0,15).forEach(function(r){
+    var it=ITEMS[r.i];
+    var row=el("div","wrow");
+    var t=el("div","t",it[1]);
+    var sm=el("small",null,it[0]+" · "+it[4]);
+    t.appendChild(sm);
+    row.appendChild(t);
+    row.appendChild(el("div","n",r.m+"×"));
+    w.appendChild(row);
+  });
+  box.appendChild(w);
+}
+
+/* ---------- topic table ---------- */
+function paintTopics(){
+  var box=$("topicTab");box.innerHTML="";
+  var h=el("div","trow h");
+  h.appendChild(el("div",null,"Topic"));
+  h.appendChild(el("div",null,"Retired"));
+  h.appendChild(el("div",null,""));
+  box.appendChild(h);
+  topics("ALL").forEach(function(t){
+    var tot=0,ret=0;
+    ITEMS.forEach(function(it,i){if(it[0]===t){tot++;if(st(i).lvl>=3)ret++;}});
+    var row=el("div","trow");
+    row.appendChild(el("div",null,t));
+    row.appendChild(el("div","c",ret+"/"+tot));
+    var mb=el("div","mb");var fi=document.createElement("i");
+    fi.style.width=(tot?ret/tot*100:0)+"%";mb.appendChild(fi);
+    row.appendChild(mb);
+    box.appendChild(row);
+  });
+}
+
+/* ---------- by-source table ---------- */
+function paintSources(){
+  var box=$("srcTab");if(!box)return;box.innerHTML="";
+  var h=el("div","trow h");
+  h.appendChild(el("div",null,"Document"));
+  h.appendChild(el("div",null,"Retired"));
+  h.appendChild(el("div",null,""));
+  box.appendChild(h);
+  SRCS.forEach(function(sd){
+    if(sd.k==="DECKS")return;
+    var tot=0,ret=0;
+    ITEMS.forEach(function(it,i){
+      if(!sd.test(it[4]))return;
+      tot++;if(st(i).lvl>=3)ret++;
+    });
+    if(!tot)return;
+    var row=el("div","trow");
+    row.appendChild(el("div",null,sd.label));
+    row.appendChild(el("div","c",ret+"/"+tot));
+    var mb=el("div","mb");var fi=document.createElement("i");
+    fi.style.width=(tot?ret/tot*100:0)+"%";mb.appendChild(fi);
+    row.appendChild(mb);
+    box.appendChild(row);
+  });
+}
+
+/* ---------- activities ---------- */
+var actCur=0;
+function paintActs(){
+  var tabs=$("actTabs");tabs.innerHTML="";
+  ACTS.forEach(function(a,i){
+    var b=el("button","subtab"+(i===actCur?" on":""),a.tab);b.type="button";
+    b.onclick=function(){actCur=i;paintActs();};
+    tabs.appendChild(b);
+  });
+  var A=ACTS[actCur],box=$("actArea");box.innerHTML="";
+  box.appendChild(el("div","acthd",A.title));
+  var sub=el("p","actsub",A.sub);box.appendChild(sub);
+  var note=el("div","note"+(A.keyType==="printed"?" info":""));
+  var np=el("p");
+  np.innerHTML=A.keyType==="printed"
+    ? "<b>Answer key printed in your document.</b> These answers are the instructor's own wording from the slide's speaker notes."
+    : "<b>No answer key in the document.</b> The deck gives the questions only. Each answer below cites where in your five documents it is resolved from.";
+  note.appendChild(np);box.appendChild(note);
+
+  if(A.type==="mc")return actMC(A,box);
+  actSelf(A,box);
+}
+
+function actMC(A,box){
+  var score=0,done=0;
+  A.items.forEach(function(q,qi){
+    var card=el("div","card");
+    var m=el("div","qmeta");
+    m.appendChild(el("span","pill","Q"+(qi+1)));
+    m.appendChild(el("span","pill src",q.src));
+    card.appendChild(m);
+    card.appendChild(el("h2","q",q.q));
+    var opts=el("div","opts");
+    q.opts.forEach(function(o,oi){
+      var b=el("button","opt");b.type="button";
+      b.appendChild(el("kbd",null,String(oi+1)));
+      b.appendChild(el("span",null,o));
+      b.onclick=function(){
+        if(card.dataset.done)return;card.dataset.done="1";done++;
+        for(var k=0;k<opts.children.length;k++){
+          opts.children[k].disabled=true;
+          if(k===q.correct)opts.children[k].className="opt right";
+          else if(k===oi)opts.children[k].className="opt wrong";
+        }
+        var ok=(oi===q.correct);
+        if(ok)score++;
+        var f=el("div","fb "+(ok?"ok":"no"));
+        f.appendChild(el("div","hd",ok?"Correct":"Not quite"));
+        var a=el("div","ans");
+        a.innerHTML="<b>Answer: </b>";
+        a.appendChild(document.createTextNode(String.fromCharCode(65+q.correct)+") "+q.opts[q.correct]));
+        f.appendChild(a);
+        f.appendChild(el("div","why",q.why));
+        f.appendChild(el("div","src",A.keyType==="printed"?"Instructor answer key":q.src));
+        card.appendChild(f);
+        sl.textContent="";
+        sl.appendChild(document.createTextNode("Answered "));
+        var b1=el("b",null,String(done));sl.appendChild(b1);
+        sl.appendChild(document.createTextNode(" of "+A.items.length+" · correct "));
+        var b2=el("b",null,String(score));sl.appendChild(b2);
+      };
+      opts.appendChild(b);
+    });
+    card.appendChild(opts);
+    box.appendChild(card);
+  });
+  var sl=el("p","scoreline","Answered 0 of "+A.items.length);
+  box.appendChild(sl);
+}
+
+function actSelf(A,box){
+  A.items.forEach(function(q,qi){
+    var card=el("div","card");
+    var m=el("div","qmeta");
+    m.appendChild(el("span","pill","Q"+(qi+1)));
+    m.appendChild(el("span","pill src",A.keyType==="printed"?"Printed key":"Resolved"));
+    card.appendChild(m);
+    card.appendChild(el("h2","q",q.q));
+    var hint=el("p",null,"Say your answer out loud first, then reveal.");
+    hint.style.cssText="font-size:13.5px;color:var(--ink3);margin:0 0 14px";
+    card.appendChild(hint);
+    var row=el("div","selfrow");
+    var rb=el("button","btn","Reveal answer");rb.type="button";
+    row.appendChild(rb);card.appendChild(row);
+    rb.onclick=function(){
+      if(card.dataset.open)return;card.dataset.open="1";
+      rb.style.display="none";
+      var r=el("div","reveal");
+      r.appendChild(el("div","lab",A.keyType==="printed"?"Instructor answer key":"Answer"));
+      r.appendChild(el("div","txt",q.a));
+      var w=el("div","why",q.why);
+      w.style.cssText="margin-top:10px;font-size:14px;color:var(--ink2)";
+      r.appendChild(w);
+      card.appendChild(r);
+    };
+    box.appendChild(card);
+  });
+}
+
+/* ---------- tabs ---------- */
+function showTab(name){
+  ["drill","acts","prog"].forEach(function(t){
+    $("panel-"+t).classList.toggle("on",t===name);
+  });
+  var bs=document.querySelectorAll(".tab");
+  for(var i=0;i<bs.length;i++)bs[i].classList.toggle("on",bs[i].dataset.tab===name);
+  if(name==="prog"){paintWeak();paintTopics();paintSources();}
+}
+
+/* ---------- wiring ---------- */
+load();
+
+var sel=$("topicSel"), ssel=$("srcSel");
+
+function buildSrcSel(){
+  ssel.innerHTML="";
+  var all=document.createElement("option");
+  all.value="ALL";all.textContent="All sources ("+ITEMS.length+")";
+  ssel.appendChild(all);
+  SRCS.forEach(function(sd){
+    var n=0;ITEMS.forEach(function(it){if(sd.test(it[4]))n++;});
+    if(!n)return;
+    var o=document.createElement("option");o.value=sd.k;o.textContent=sd.label+" ("+n+")";
+    ssel.appendChild(o);
+  });
+  ssel.value=S.src;
+  if(ssel.value!==S.src){S.src="ALL";ssel.value="ALL";}
+}
+
+function buildTopicSel(){
+  var list=topics(S.src),counts=list.counts,total=0;
+  list.forEach(function(t){total+=counts[t];});
+  sel.innerHTML="";
+  var all=document.createElement("option");
+  all.value="ALL";all.textContent="All topics ("+total+")";
+  sel.appendChild(all);
+  list.forEach(function(t){
+    var o=document.createElement("option");o.value=t;o.textContent=t+" ("+counts[t]+")";
+    sel.appendChild(o);
+  });
+  sel.value=S.topic;
+  if(sel.value!==S.topic){S.topic="ALL";sel.value="ALL";}
+}
+
+buildSrcSel();
+buildTopicSel();
+
+ssel.onchange=function(){
+  S.src=ssel.value;
+  buildTopicSel();
+  save();paint();drill();
+};
+sel.onchange=function(){S.topic=sel.value;save();paint();drill();};
+
+var segBtns=document.querySelectorAll("#fmtSeg button");
+function setFmt(f){
+  S.fmt=f;save();
+  for(var i=0;i<segBtns.length;i++)segBtns[i].classList.toggle("on",segBtns[i].dataset.fmt===f);
+  drill();
+}
+for(var i=0;i<segBtns.length;i++){
+  (function(b){b.onclick=function(){setFmt(b.dataset.fmt);};})(segBtns[i]);
+}
+
+var tabBtns=document.querySelectorAll(".tab");
+for(var j=0;j<tabBtns.length;j++){
+  (function(b){b.onclick=function(){showTab(b.dataset.tab);};})(tabBtns[j]);
+}
+
+$("themeBtn").onclick=function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var sys=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var next=cur?(cur==="dark"?"light":"dark"):(sys?"light":"dark");
+  document.documentElement.setAttribute("data-theme",next);
+  try{localStorage.setItem(KEY+".theme",next);}catch(e){}
+};
+try{var th=localStorage.getItem(KEY+".theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+$("drillWeak").onclick=function(){
+  weakOnly=true;S.topic="ALL";S.src="ALL";
+  ssel.value="ALL";buildTopicSel();save();
+  showTab("drill");paint();drill();
+};
+
+$("resetBtn").onclick=function(){
+  if(!confirm("Reset all mastery levels, stats and weak spots? This cannot be undone."))return;
+  S.items={};S.stats={ans:0,right:0,streak:0,best:0};S.seq=0;
+  save();paint();paintWeak();paintTopics();paintSources();drill();
+};
+
+document.addEventListener("keydown",function(e){
+  if(!$("panel-drill").classList.contains("on"))return;
+  var tag=(e.target&&e.target.tagName)||"";
+  if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA")return;
+  if(e.key>="1"&&e.key<="4"&&S.fmt==="mc"&&!answered&&window.__pick){
+    e.preventDefault();window.__pick(parseInt(e.key,10)-1);
+  }else if(e.key==="Enter"&&answered){
+    e.preventDefault();drill();
+  }
+});
+
+setFmt(S.fmt);
+paint();
+paintActs();
+paintSources();
+showTab("drill");
+})();
+</script>
+</body>
+</html>
