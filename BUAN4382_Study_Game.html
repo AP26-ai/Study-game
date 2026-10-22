@@ -146,6 +146,10 @@ kbd{font-family:var(--sans);font-size:.75rem;border:1px solid var(--line);border
 table.cm{border-collapse:collapse;font-family:var(--sans);font-size:.9rem}
 table.cm td,table.cm th{border:1px solid var(--line);padding:4px 10px;text-align:center}
 table.cm th{font-weight:600;color:var(--ink-2);background:var(--surface)}
+.hintf{display:flex;gap:10px;align-items:baseline;background:var(--accent-soft);border-radius:10px;padding:9px 13px;margin:-6px 0 16px;font-size:.95rem}
+.hintf b{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);flex:none}
+.hintf span{font-family:var(--serif)}
+.pairhint{display:block;font-size:.78rem;color:var(--accent);margin-top:4px;font-family:var(--serif)}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -217,16 +221,6 @@ table.cm th{font-weight:600;color:var(--ink-2);background:var(--surface)}
 <script>
 const REVIEW_ITEMS=[
 // ---- Exam format & strategy
-{id:"ex1",t:"exam",src:"R:2",q:"How many topic areas does the midterm test bank cover?",a:"6",acc:["six"],d:["30","5","180"]},
-{id:"ex2",t:"exam",src:"R:2",q:"How many test-bank questions does each topic area contribute?",a:"30",acc:["thirty"],d:["6","16","180"]},
-{id:"ex3",t:"exam",src:"R:2",q:"Approximately what share of the test bank does each topic area make up?",a:"16.7%",acc:["16.7","16.7 percent"],d:["30%","6%","40%"]},
-{id:"ex4",t:"exam",src:"R:33",q:"How long is the midterm exam?",a:"180 minutes",acc:["180","180 min","3 hours","three hours"],d:["30 minutes","90 minutes","120 minutes"]},
-{id:"ex5",t:"exam",src:"R:33",q:"If the exam has 180 questions, what is the average pace?",a:"About one minute per question",d:["About two minutes per question","About 30 seconds per question","About five minutes per question"],fq:"Average pace if the exam has 180 questions: about ___ minute(s) per question.",fa:"1",facc:["one","1 minute","one minute"]},
-{id:"ex6",t:"exam",src:"R:33",q:"What should you do with a difficult question on exam day?",a:"Flag it and move on",need:[["flag"]],d:["Finish it before moving on","Answer from memorized wording","Pick the answer with the newest algorithm"],why:"It is better to secure points on questions you understand than to lose time early.",fq:"Difficult question? ___ it and move on.",fa:"flag",facc:["flag it"]},
-{id:"ex7",t:"exam",src:"R:3",q:"Most exam questions are ___-based.",a:"scenario",acc:["scenario based","scenarios","scenario-based"],d:["definition","code-writing","essay"]},
-{id:"ex8",t:"exam",src:"R:33",q:"Many questions ask for “best describes,” “most appropriate,” or ___.",a:"main issue",acc:["the main issue"],d:["fastest method","highest accuracy","newest algorithm"]},
-{id:"ex9",t:"exam",src:"R:33",q:"Elimination tip: eliminate answers that use the wrong ___.",a:"problem type",d:["metric name","variable name","programming language"],why:"For example, regression metrics rarely answer association-rule questions."},
-{id:"ex10",t:"exam",src:"R:4",q:"For Jupyter questions, what should you focus on?",a:"reproducibility",acc:["reproducible"],d:["visualization","speed","model accuracy"],why:"Restart kernel, run all cells, relative paths, imports, package errors, and notebook export."},
 // ---- Model selection & traps
 {id:"sl1",t:"sel",src:"R:5",q:"Business question: predict a number?",a:"Regression",g:"ptype",acc:["linear regression"]},
 {id:"sl2",t:"sel",src:"R:5",q:"Business question: predict a category?",a:"Classification",g:"ptype"},
@@ -371,6 +365,12 @@ const REVIEW_ITEMS=[
 ];
 // Drill items from Module 1-6 decks. src = "M<module>:<slide>"
 const MOD_ITEMS=[
+// ---- Just-in-case items (not named in the review; retire after one correct answer)
+{id:"jc1",t:"t3",src:"M3:10",easy:1,q:"Correct order of the data mining process",a:"Sampling → Preparation → Partitioning → Model construction → Model assessment",d:["Preparation → Sampling → Model construction → Partitioning → Model assessment","Sampling → Partitioning → Preparation → Model assessment → Model construction","Partitioning → Sampling → Preparation → Model construction → Model assessment"],fq:"Data mining steps: sampling, preparation, partitioning, model construction, and model ___.",fa:"assessment"},
+{id:"jc2",t:"t3",src:"M3:86",easy:1,q:"As the classification cutoff is lowered, what happens to the Class 1 and Class 0 error rates?",a:"Class 1 error falls; Class 0 error rises",d:["Class 1 error rises; Class 0 error falls","Both fall","Both rise"],fq:"As the cutoff is lowered, Class 1 error ___.",fa:"decreases",facc:["decrease","falls","goes down","drops"],hint:"Class 1 error = n10 ÷ (n11 + n10); Class 0 error = n01 ÷ (n01 + n00); overall error = (n01 + n10) ÷ total. A lower cutoff labels more records Class 1.",why:"More observations get classified as Class 1, so fewer actual Class 1 records are missed, but more Class 0 records are falsely flagged."},
+{id:"jc3",t:"t4",src:"M4:39",easy:1,q:"Credit score buckets 500–599, 600–699, 700–799 (each covers the same numeric range) are an example of ___.",a:"Equal interval bucketing",acc:["equal interval"],d:["Equal frequency bucketing","Dynamic discretization","Static discretization"],why:"Equal frequency gives each bucket about the same number of records. Static discretization makes buckets once before building the tree; dynamic lets the tree pick cutoffs at each node."},
+{id:"jc4",t:"t6",src:"M6:53",easy:1,q:"Net Promoter Score (NPS) buckets",a:"Detractors 0–6, Passives 7–8, Promoters 9–10",d:["Detractors 0–4, Passives 5–7, Promoters 8–10","Detractors 0–6, Promoters 7–8, Passives 9–10","Passives 0–6, Detractors 7–8, Promoters 9–10"],fq:"NPS: customers scoring 9–10 are ___.",fa:"Promoters",facc:["promoter"]},
+{id:"jc5",t:"t6",src:"M6:32",easy:1,q:"Which correctly describes these K-Means terms?",a:"k-means++ = smarter starting centers; n_init = number of initializations tried; random_state = reproducible results; K-Modes = for many categorical variables",d:["k-means++ = number of initializations tried; n_init = smarter starting centers; random_state = reproducible results; K-Modes = for many categorical variables","k-means++ = smarter starting centers; n_init = reproducible results; random_state = number of initializations tried; K-Modes = for many categorical variables","k-means++ = smarter starting centers; n_init = number of initializations tried; random_state = reproducible results; K-Modes = for many binary variables only"],fq:"The scikit-learn K-Means setting that makes results reproducible",fa:"random_state",facc:["random state"],why:"Module 6 slides 29 and 32: k-means++ picks better starting centers, n_init sets how many initializations are tested, random_state makes results reproducible, and K-Modes is an option when there are many categorical variables."},
 // ===================== MODULE 1 (Area 1) =====================
 {id:"m1a",t:"t1",src:"M1:19",q:"Artificial intelligence is the broad field of building systems that perform tasks that normally require ___.",a:"human intelligence",d:["large datasets","cloud computing","deep learning"]},
 {id:"m1b",t:"t1",src:"M1:19",q:"A major way AI systems improve from data",a:"Machine learning",acc:["ml"],d:["Generative AI","Data warehousing","Business intelligence"]},
@@ -380,8 +380,6 @@ const MOD_ITEMS=[
 {id:"m1f",t:"t1",src:"M1:21",q:"AI value pillar: reduce manual effort (summaries, routing, extraction, recommendations)",a:"Automate",g:"pillar",d:["Predict","Classify","Cluster"]},
 {id:"m1g",t:"t1",src:"M1:20",q:"Churn prediction, lead scoring, personalized offers, and customer service copilots fall under which AI-in-business area?",a:"Customer & revenue",acc:["customer and revenue"],d:["Operations & risk","Governance & compliance","Research & development"]},
 {id:"m1h",t:"t1",src:"M1:20",q:"Demand forecasting, fraud detection, credit/risk scoring, and supply chain optimization fall under which AI-in-business area?",a:"Operations & risk",acc:["operations and risk"],d:["Customer & revenue","Governance & compliance","Research & development"]},
-{id:"m1i",t:"t1",src:"M1:6",q:"This course is not a course where models are judged only by ___.",a:"accuracy",d:["interpretation","business value","reproducibility"]},
-{id:"m1j",t:"t1",src:"M1:8",q:"Assignment evaluation: the notebook runs from ___ without errors.",a:"top to bottom",acc:["top-to-bottom","start to finish"],d:["the last cell up","any cell","the markdown cells"]},
 {id:"m1k",t:"t1",src:"M1:9",q:"Tool used for regression, classification, clustering, and model evaluation",a:"Scikit-Learn",acc:["sklearn","scikit learn"],g:"tool",d:["Pandas","Matplotlib","NumPy"]},
 {id:"m1l",t:"t1",src:"M1:9",q:"Tools used for data manipulation",a:"Pandas and NumPy",need:[["pandas"],["numpy"]],g:"tool",d:["Matplotlib and Seaborn","Scikit-Learn and Keras","Jupyter and Colab"]},
 {id:"m1m",t:"t1",src:"M1:9",q:"Tool used for basic visualization",a:"Matplotlib",g:"tool",d:["Pandas","Scikit-Learn","NumPy"]},
@@ -408,29 +406,13 @@ const MOD_ITEMS=[
 {id:"m1ah",t:"t1",src:"M1:44",q:"Applied AI/ML workflow, step 4",a:"Turn results into business action",g:"wf",fq:"Workflow step 4: turn results into business ___.",fa:"action"},
 {id:"m1ai",t:"t1",src:"M1:44",q:"Predicting sales from ad spend gives R² = 0.9874. What can you say?",a:"Ad spend explains about 98.7% of the variation in sales",need:[["98"],["variation"]],d:["Predictions are off by about 0.99","The model is 98.7% accurate on each sale","Ad spend causes 98.7% of sales"],fq:"R² = 0.9874 means ad spend explains about ___% of the variation in sales.",fa:"98.7",facc:["98.74","99"]},
 {id:"m1aj",t:"t1",src:"M1:44",q:"Predicting insurance charges gives RMSE = 6000. What can you say?",a:"Predictions are typically off by about $6,000",need:[["6000","6,000"]],d:["The model explains 60% of the variation","6,000 predictions were wrong","The intercept is 6,000"],fq:"RMSE = 6000 on insurance charges: predictions are typically off by about $___.",fa:"6000",facc:["6,000"]},
-{id:"m1ak",t:"t1",src:"M1:44",q:"A model flags 100 transactions as fraud and 80 are actual fraud. Precision?",a:"80%",acc:["80","0.8","0.80"],d:["20%","100%","8%"]},
+{id:"m1ak",t:"t1",src:"M1:44",q:"A model flags 100 transactions as fraud and 80 are actual fraud. Precision?",a:"80%",acc:["80","0.8","0.80"],d:["20%","100%","8%"],hint:"Precision = TP ÷ (TP + FP): real fraud flagged ÷ everything flagged"},
 {id:"m1al",t:"t1",src:"M1:44",q:"High precision is important when ___ are costly.",a:"false alarms",acc:["false positives"],d:["missed positives","large datasets","outliers"]},
 {id:"m1am",t:"t1",src:"M1:16",q:"Course motivation: the hardest step is often defining the right ___.",a:"problem",d:["algorithm","metric","dataset"]},
 {id:"m1an",t:"t1",src:"M1:16",q:"Models can be accurate and still be harmful, costly, or ___.",a:"misused",acc:["misuse"],d:["unsupervised","overfit","scaled"]},
-{id:"m1ao",t:"t1",src:"M1:26",q:"Weak project: only ___ of code.",a:"screenshots",acc:["screenshot"],d:["comments","markdown cells","imports"]},
-{id:"m1ap",t:"t1",src:"M1:26",q:"Strong project: the recommendation is ___.",a:"actionable",d:["algorithmic","undocumented","optional"]},
 {id:"m1aq",t:"t1",src:"M1:14",q:"Risk/fraud discussion question: which error is worse, false positive or ___?",a:"false negative",d:["true positive","true negative","residual"]},
 {id:"m1ar",t:"t1",src:"M1:47",q:"Common beginner mistake: submitting a notebook full of code with no ___.",a:"explanation",acc:["explanations","markdown","interpretation"],d:["imports","outputs","charts"]},
 // ---- Module 1 extras
-{id:"x1a",t:"x",src:"M1:11",q:"Career: deploy and monitor models, build AI-powered applications, work with APIs, pipelines, and cloud services",a:"ML/AI Engineer",acc:["ml engineer","ai engineer"],g:"career"},
-{id:"x1b",t:"x",src:"M1:11",q:"Career: assess bias, privacy, and model risk; create AI policies and controls",a:"AI Governance / Risk",acc:["ai governance","governance","risk"],g:"career"},
-{id:"x1c",t:"x",src:"M1:11",q:"Career: translate business questions into data problems; build dashboards; explain results to stakeholders",a:"Business / Data Analyst",acc:["data analyst","business analyst"],g:"career"},
-{id:"x1d",t:"x",src:"M1:11",q:"Career: build predictive models and experiments; evaluate performance and uncertainty",a:"Data Scientist",g:"career"},
-{id:"x1e",t:"x",src:"M1:10",q:"AWS certification for foundational AI/ML/GenAI concepts",a:"Certified AI Practitioner",acc:["ai practitioner"],g:"cert"},
-{id:"x1f",t:"x",src:"M1:10",q:"Microsoft certification covering AI workloads and Azure services",a:"Azure AI Fundamentals",g:"cert"},
-{id:"x1g",t:"x",src:"M1:10",q:"Google Cloud certification for broad GenAI knowledge",a:"Generative AI Leader",acc:["genai leader"],g:"cert"},
-{id:"x1h",t:"x",src:"M1:10",q:"Google Cloud certification to design, build, deploy, and operationalize ML",a:"Professional ML Engineer",acc:["professional machine learning engineer"],g:"cert"},
-{id:"x1i",t:"x",src:"M1:10",q:"If you are new to AI, consider ___ certifications.",a:"foundational",acc:["foundation"],d:["engineering","MLOps","professional"]},
-{id:"x1j",t:"x",src:"M1:32",q:"Recommended way to install Jupyter Notebook",a:"Anaconda",d:["Homebrew","Docker","Google Colab"]},
-{id:"x1k",t:"x",src:"M1:32",q:"Mac with an M1, M2, M3, or M4 chip: which Anaconda installer?",a:"Apple Silicon",d:["Intel","Universal","ARM Linux"]},
-{id:"x1l",t:"x",src:"M1:37",q:"Mac shortcut to print the exported HTML to PDF",a:"Command + P",acc:["cmd+p","command p","cmd p"],d:["Ctrl + P","Command + S","Ctrl + E"]},
-{id:"x1m",t:"x",src:"M1:28",q:"Course email subject lines should include the course number and ___.",a:"section",acc:["section number"],d:["student ID","assignment due date","instructor name"]},
-{id:"x1n",t:"x",src:"M1:24",q:"Assignment 2 preview: what kind of models?",a:"Classification models (KNN, decision trees, logistic regression, random forests)",need:[["classif"]],d:["Clustering and association rules","Simple and multiple regression","NLP and image data"],fq:"Assignment 2 covers ___ models such as KNN, decision trees, logistic regression, or random forests.",fa:"classification"},
 
 // ===================== MODULE 2 (Area 2) =====================
 {id:"m2a",t:"t2",src:"M2:6",q:"Typing Print('Hello') instead of print('Hello') raises which error?",a:"NameError",d:["TypeError","SyntaxError","ValueError"],why:"Python is case-sensitive, so 'Print' is not a defined function."},
@@ -456,16 +438,16 @@ const MOD_ITEMS=[
 {id:"m2u",t:"t2",src:"M2:17",q:"Variables are implemented as ___.",a:"memory locations",acc:["memory location","memory"],d:["DataFrame columns","code cells","keywords"]},
 {id:"m2v",t:"t2",src:"M2:18",q:"Re-binding means ___.",a:"assigning a new value to an existing variable name",need:[["new"],["existing","variable"]],d:["recalculating every earlier variable","deleting the variable from memory","renaming a function"]},
 {id:"m2w",t:"t2",src:"M2:18",q:"pi = 3.14; radius = 2.2; area = pi*(radius**2); radius = radius + 1; print(area) shows",a:"15.1976",acc:["15.19","15.2"],d:["32.1536","3.2","2.2"],why:"area does not change until you tell Python to do the calculation again; it still uses the old radius."},
-{id:"m2x",t:"t2",src:"M2:19",q:"After re-binding radius to 3.2, recalculating area = pi*(radius**2) gives",a:"32.1536",acc:["32.15","32.2"],d:["15.1976","10.24","3.2"]},
+{id:"m2x",t:"t2",src:"M2:19",q:"pi = 3.14. After re-binding radius to 3.2, recalculating area = pi*(radius**2) gives",a:"32.1536",acc:["32.15","32.2"],d:["15.1976","10.24","3.2"]},
 {id:"m2y",t:"t2",src:"M2:18",q:"After re-binding, the previous value may still be in memory, but you lost the ___ for it.",a:"handle",d:["type","index","kernel"]},
 {id:"m2z",t:"t2",src:"M2:21",q:"i / j always returns a ___.",a:"float",d:["int","bool","string"]},
 {id:"m2aa",t:"t2",src:"M2:21",q:"If both i and j are ints, i + j returns a(n) ___.",a:"int",acc:["integer"],d:["float","bool","string"]},
 {id:"m2ab",t:"t2",src:"M2:21",q:"The operator i % j gives",a:"the remainder when i is divided by j",need:[["remainder"]],g:"op",d:["i to the power of j","the percent of i in j","integer division"]},
 {id:"m2ac",t:"t2",src:"M2:21",q:"The operator i ** j gives",a:"i to the power of j",need:[["power","exponent"]],g:"op",d:["the remainder when i is divided by j","i times j","i divided by j"]},
-{id:"m2ad",t:"t2",src:"M2:21",q:"print(10 % 3) outputs",a:"1",d:["3","3.33","0"]},
+{id:"m2ad",t:"t2",src:"M2:21",q:"print(10 % 3) outputs",a:"1",d:["3","3.33","0"],hint:"i % j = the remainder when i is divided by j"},
 {id:"m2ae",t:"t2",src:"M2:22",q:"Highest-precedence operator (without parentheses)",a:"**",d:["*","+","%"]},
-{id:"m2af",t:"t2",src:"M2:22",q:"result1 = 2 + 3 * 4",a:"14",d:["20","24","9"]},
-{id:"m2ag",t:"t2",src:"M2:22",q:"result2 = (2 + 3) * 4",a:"20",d:["14","24","9"]},
+{id:"m2af",t:"t2",src:"M2:22",q:"result1 = 2 + 3 * 4",a:"14",d:["20","24","9"],hint:"Order: ** first, then * / // %, then + − (left to right). Parentheses go first."},
+{id:"m2ag",t:"t2",src:"M2:22",q:"result2 = (2 + 3) * 4",a:"20",d:["14","24","9"],hint:"Order: ** first, then * / // %, then + − (left to right). Parentheses go first."},
 {id:"m2ah",t:"t2",src:"M2:22",q:"Operators with the same precedence are executed ___.",a:"left to right",acc:["left-to-right"],d:["right to left","in random order","inside out"]},
 {id:"m2ai",t:"t2",src:"M2:28",q:"The two core components of pandas",a:"Series and DataFrames",need:[["series"],["dataframe"]],d:["Lists and dictionaries","Arrays and tensors","Rows and indexes"]},
 {id:"m2aj",t:"t2",src:"M2:31",q:"df.shape returns",a:"the number of rows and columns",need:[["row"],["column"]],g:"pd"},
@@ -481,37 +463,30 @@ const MOD_ITEMS=[
 {id:"m2at",t:"t2",src:"M2:34",q:"high_avg = df[df['avg'] >= 90] does what?",a:"keeps only rows where avg is at least 90",need:[["row"],["90"]],d:["adds 90 to every avg","sorts by avg","drops the avg column"]},
 {id:"m2au",t:"t2",src:"M2:36",q:"df.to_csv(csv_path, index=False) does what?",a:"saves the DataFrame to a CSV file without the index",need:[["save","write","export"],["csv"]],d:["reads a CSV into a DataFrame","deletes the index column permanently","prints the CSV"]},
 {id:"m2av",t:"t2",src:"M2:36",q:"pd.read_csv(csv_path) does what?",a:"reads a CSV file into a DataFrame",need:[["read","load"]],d:["saves the DataFrame to CSV","converts CSV to HTML","counts rows in a CSV"]},
-{id:"m2aw",t:"t2",src:"M2:42",q:"With 10 rows and test_size=0.30, how many rows land in the test set?",a:"3",acc:["three"],d:["7","30","10"]},
+{id:"m2aw",t:"t2",src:"M2:42",q:"With 10 rows and test_size=0.30, how many rows land in the test set?",a:"3",acc:["three"],d:["7","30","10"],hint:"Test rows = total rows × test_size; train rows = the rest"},
 {id:"m2ax",t:"t2",src:"M2:42",q:"In X_train, X_test, y_train, y_test = train_test_split(...), X holds the ___.",a:"input features",acc:["features","inputs"],d:["target variable","predictions","residuals"]},
 {id:"m2ay",t:"t2",src:"M2:44",q:"Supervised learning uses historical examples where the correct answer is ___.",a:"known",acc:["already known"],d:["hidden","random","missing"]},
 {id:"m2az",t:"t2",src:"M2:45",q:"Regression target is ___; classification target is a label/class.",a:"continuous",acc:["a number","numeric"],d:["binary","categorical","unknown"]},
 {id:"m2ba",t:"t2",src:"M2:45",q:"Metric that answers “How well does the model fit overall?”",a:"R²",acc:["r2","r squared"],g:"mq",d:["RMSE","MAE","Accuracy"]},
 {id:"m2bb",t:"t2",src:"M2:45",q:"Metric that answers “How large are the errors, especially the big ones?”",a:"RMSE",g:"mq",d:["R²","MAE","Precision"]},
 {id:"m2bc",t:"t2",src:"M2:45",q:"Metric that answers “On average, how far off are we?”",a:"MAE",g:"mq",d:["R²","RMSE","Accuracy"]},
-{id:"m2bd",t:"t2",src:"M2:45",q:"Predicted grades [87, 85, 78] vs actual [90, 80, 75]. MAE?",a:"3.67",acc:["3.7","3.666"],d:["11","3","5"],why:"Absolute errors are [3, 5, 3]; their average is 3.67."},
+{id:"m2bd",t:"t2",src:"M2:45",q:"Predicted grades [87, 85, 78] vs actual [90, 80, 75]. MAE?",a:"3.67",acc:["3.7","3.666"],d:["11","3","5"],why:"Absolute errors are [3, 5, 3]; their average is 3.67.",hint:"MAE = average of |actual − predicted|"},
 {id:"m2be",t:"t2",src:"M2:45",q:"R² of 0.80 on student grades means",a:"the model explains about 80% of the variation in grades",need:[["80"],["variation"]],d:["predictions are off by 0.80 points","80% of predictions are exactly right","grades rise 0.80 per hour"]},
 {id:"m2bf",t:"t2",src:"M2:45",q:"Predicting a final grade with RMSE = 5.0 means",a:"predictions are off by about 5 points",need:[["5"]],d:["the model explains 5% of the variation","5 predictions were wrong","the slope is 5"]},
 {id:"m2bg",t:"t2",src:"M2:47",q:"LinearRegression(fit_intercept=True) means",a:"the model will calculate an intercept",need:[["intercept"]],d:["the intercept is forced to 0","coefficients must be positive","the data is copied"]},
 {id:"m2bh",t:"t2",src:"M2:48",q:"model.coef_ stores",a:"the coefficients (slope)",need:[["coef","slope"]],d:["the intercept","the predictions","R²"]},
 {id:"m2bi",t:"t2",src:"M2:48",q:"Equation sales_k = 2.57 + 2.18 × ad_spend_k. What does 2.18 mean?",a:"Each extra $1k of ad spend raises predicted sales by about $2.18k",need:[["2.18"]],d:["Sales are $2.18k when ad spend is 0","The model explains 2.18% of variation","Predictions are off by $2.18k"]},
 {id:"m2bj",t:"t2",src:"M2:48",q:"Same equation: what does the intercept 2.57 mean?",a:"Predicted sales are $2.57k when ad spend is 0",need:[["0","zero"]],d:["Each $1k of ads adds $2.57k","RMSE is 2.57","Sales grow 2.57% per year"]},
-{id:"m2bk",t:"t2",src:"M2:49",q:"sales_k = 2.57 + 2.18 × ad_spend_k: predicted sales when ad_spend_k = 9",a:"22.18 thousand dollars",acc:["22.18","22180","$22,180"],d:["19.62 thousand dollars","46.14 thousand dollars","11.75 thousand dollars"]},
+{id:"m2bk",t:"t2",src:"M2:49",q:"sales_k = 2.57 + 2.18 × ad_spend_k: predicted sales when ad_spend_k = 9",a:"22.18 thousand dollars",acc:["22.18","22180","$22,180"],d:["19.62 thousand dollars","46.14 thousand dollars","11.75 thousand dollars"],hint:"ŷ = intercept + slope × x"},
 {id:"m2bl",t:"t2",src:"M2:49",q:"Why use predicted_sales[0] after model.predict()?",a:"model.predict() returns an array of predictions",need:[["array","list"]],d:["predict() returns the intercept","[0] rounds the result","[0] selects the first feature"]},
-{id:"m2bm",t:"t2",src:"M2:51",q:"Final-grade model: feature with the largest positive coefficient",a:"assignment_avg (0.73)",acc:["assignment_avg","assignment average"],d:["participation_score (0.66)","quiz_avg (0.36)","study_hours (−0.003)"]},
 {id:"m2bn",t:"t2",src:"M2:51",q:"Why can study_hours get a negative coefficient in the final-grade model?",a:"The features are highly related to each other and overlap",need:[["related","overlap","correlat"]],d:["Studying less raises grades","The intercept is negative","The data was scaled"]},
 {id:"m2bo",t:"t2",src:"M2:53",q:"Why is R² = 0.9991 for the final-grade model not realistic?",a:"Tiny dataset and a target built predictably from the inputs (and evaluated on the training data)",need:[["small","tiny","training","predictabl"]],d:["R² cannot exceed 0.9","MAE was too large","The model was unscaled"]},
 {id:"m2bp",t:"t2",src:"M2:53",q:"RMSE (0.31) is close to MAE (0.28). What does that suggest?",a:"There are no huge prediction mistakes",need:[["no","not"],["large","huge","big"]],d:["The model is overfit","R² is low","Many large errors exist"]},
 {id:"m2bq",t:"t2",src:"M2:54",q:"Predicted vs. actual plot: a dot above the diagonal line means the model predicted ___.",a:"too high",acc:["higher","over","overpredicted"],d:["too low","exactly","the intercept"]},
-{id:"m2br",t:"t2",src:"M2:52",q:"Final-grade model prediction for the new student (6 hrs, 90 attendance, 88 assignments, 85 quizzes, 8 participation)",a:"87.12",acc:["87.1","87"],d:["90.85","84.00","76.00"]},
 
 // ===================== MODULE 3 (Area 3) =====================
 {id:"m3a",t:"t3",src:"M3:6",q:"Course topics that are supervised",a:"KNN, decision trees, logistic regression",need:[["knn","tree","logistic"]],d:["Association rules, K-Means","K-Means, hierarchical clustering","Apriori, association rules"]},
 {id:"m3b",t:"t3",src:"M3:5",q:"Common unsupervised examples",a:"Clustering and association rules",need:[["cluster"],["association"]],d:["Regression and classification","KNN and logistic regression","Decision trees and KNN"]},
-{id:"m3c",t:"t3",src:"M3:10",q:"Data mining step: extract a sample of data relevant to the business problem",a:"Data sampling",g:"dm"},
-{id:"m3d",t:"t3",src:"M3:10",q:"Data mining step: put the data into a form suitable for modeling",a:"Data preparation",g:"dm"},
-{id:"m3e",t:"t3",src:"M3:10",q:"Data mining step: divide the data for training, validation, and testing",a:"Data partitioning",g:"dm"},
-{id:"m3f",t:"t3",src:"M3:10",q:"Data mining step: apply the technique (e.g., KNN) to the training data",a:"Model construction",g:"dm"},
-{id:"m3g",t:"t3",src:"M3:10",q:"Data mining step: compare performance on the training and validation sets",a:"Model assessment",g:"dm"},
 {id:"m3h",t:"t3",src:"M3:10",q:"A prediction should connect to an ___: call, review, offer, approve, intervene.",a:"action",d:["algorithm","metric","dashboard"]},
 {id:"m3i",t:"t3",src:"M3:12",q:"A sample is representative if ___.",a:"you can draw the same conclusions from it as from the whole population",need:[["same"],["population","entire","whole"]],d:["it has no missing values","it is at least 1,000 rows","it is randomly sorted"]},
 {id:"m3j",t:"t3",src:"M3:13",q:"Why encode categories?",a:"ML models need numeric inputs",g:"prep3",fq:"Encode categories because ML models need ___ inputs.",fa:"numeric"},
@@ -532,16 +507,16 @@ const MOD_ITEMS=[
 {id:"m3y",t:"t3",src:"M3:21",q:"A regression line with slope b1 = 0 means",a:"no relationship",acc:["no linear relationship"],d:["positive relationship","negative relationship","perfect fit"]},
 {id:"m3z",t:"t3",src:"M3:23",q:"Least squares chooses the line that minimizes ___.",a:"the total squared prediction error",need:[["squar"]],d:["the number of features","the intercept","the average absolute error"]},
 {id:"m3aa",t:"t3",src:"M3:23",q:"Why does least squares square the errors?",a:"So positive and negative errors don't cancel, and bigger mistakes get a bigger penalty",need:[["cancel","penal"]],d:["To make all predictions positive","To scale the features","To compute R² directly"]},
-{id:"m3ab",t:"t3",src:"M3:24",q:"Travel time = 1.2739 + 0.0678 × miles. Predicted time for 100 miles?",a:"8.0539 hours",acc:["8.0539","8.05","8.054"],d:["9.3 hours","6.78 hours","7.4 hours"]},
+{id:"m3ab",t:"t3",src:"M3:24",q:"Travel time = 1.2739 + 0.0678 × miles. Predicted time for 100 miles?",a:"8.0539 hours",acc:["8.0539","8.05","8.054"],d:["9.3 hours","6.78 hours","7.4 hours"],hint:"ŷ = b₀ + b₁x"},
 {id:"m3ac",t:"t3",src:"M3:25",q:"Slope 0.0678 in the travel-time model means",a:"each additional mile adds 0.0678 hours (about 4 minutes)",need:[["0.0678","4"]],d:["each trip takes 0.0678 hours","the model explains 6.78%","travel time starts at 0.0678 hours"]},
-{id:"m3ad",t:"t3",src:"M3:25",q:"Actual 9.3 hours, predicted 8.0539. Residual?",a:"1.2461 (underpredicted)",acc:["1.2461","1.25","+1.2461"],d:["−1.2461 (overpredicted)","8.0539","0.1361"]},
+{id:"m3ad",t:"t3",src:"M3:25",q:"Actual 9.3 hours, predicted 8.0539. Residual?",a:"1.2461 (underpredicted)",acc:["1.2461","1.25","+1.2461"],d:["−1.2461 (overpredicted)","8.0539","0.1361"],hint:"Residual = actual − predicted (positive = underpredicted, negative = overpredicted)"},
 {id:"m3ae",t:"t3",src:"M3:25",q:"The intercept is not always meaningful when ___.",a:"X = 0 is unrealistic or outside the data range",need:[["0","zero"]],d:["the slope is positive","R² is high","there is one feature"]},
 {id:"m3af",t:"t3",src:"M3:29",q:"Why is MAE usually the easiest metric to explain?",a:"It is in the same unit as the target",need:[["unit"]],d:["It ranges from 0 to 1","It penalizes big errors","It ignores outliers"]},
 {id:"m3ag",t:"t3",src:"M3:29",q:"R² answers which question?",a:"How much better is the model than predicting the average every time?",need:[["average","baseline"]],d:["On average, how far off are we?","How large are the biggest errors?","How many predictions were correct?"]},
 {id:"m3ah",t:"t3",src:"M3:30",q:"R² ranges from ___.",a:"0 to 1",acc:["0-1","zero to one","0 and 1"],d:["−1 to +1","0 to 100","1 to ∞"]},
 {id:"m3ai",t:"t3",src:"M3:30",q:"R² = 0.66 means",a:"the model explains about 66% of the variation in the target",need:[["66"],["variation"]],d:["predictions are 66% accurate","errors average 0.66 hours","66% of trips were underpredicted"]},
-{id:"m3aj",t:"t3",src:"M3:31",q:"Absolute errors 1.2, 0.5, 0.6. MAE?",a:"0.77 hours",acc:["0.77","0.767"],d:["0.83 hours","2.3 hours","0.683 hours"]},
-{id:"m3ak",t:"t3",src:"M3:31",q:"Squared errors 1.44, 0.25, 0.36. RMSE?",a:"0.83 hours",acc:["0.83","0.826"],d:["0.77 hours","0.683 hours","2.05 hours"]},
+{id:"m3aj",t:"t3",src:"M3:31",q:"Absolute errors 1.2, 0.5, 0.6. MAE?",a:"0.77 hours",acc:["0.77","0.767"],d:["0.83 hours","2.3 hours","0.683 hours"],hint:"MAE = (sum of absolute errors) ÷ n"},
+{id:"m3ak",t:"t3",src:"M3:31",q:"Squared errors 1.44, 0.25, 0.36. RMSE?",a:"0.83 hours",acc:["0.83","0.826"],d:["0.77 hours","0.683 hours","2.05 hours"],hint:"RMSE = √(sum of squared errors ÷ n)"},
 {id:"m3al",t:"t3",src:"M3:31",q:"In R² = 1 − SSE/SST, what is SST?",a:"Squared error from the average-only baseline",need:[["baseline","average","mean"]],g:"sse",d:["Squared error from the regression model","Sum of the slopes","Standard error of the test set"]},
 {id:"m3am",t:"t3",src:"M3:31",q:"In R² = 1 − SSE/SST, what is SSE?",a:"Squared error from the regression model",need:[["model","regression"]],g:"sse",d:["Squared error from the average-only baseline","Sum of standardized estimates","Slope times intercept"]},
 {id:"m3an",t:"t3",src:"M3:34",q:"Resale-value model: expected sign of the vehicle_age coefficient",a:"Negative",g:"sign",d:["Positive","Zero","Undefined"]},
@@ -553,43 +528,31 @@ const MOD_ITEMS=[
 {id:"m3at",t:"t3",src:"M3:45",q:"K = 5; 4 of the 5 nearest customers were not delinquent. KNN predicts",a:"not delinquent (majority vote)",need:[["not"]],d:["delinquent","80% delinquent","no prediction"]},
 {id:"m3au",t:"t3",src:"M3:47",q:"Most common distance KNN uses",a:"Euclidean (straight-line) distance",need:[["euclid","straight"]],d:["Manhattan distance","Lift","Inertia"]},
 {id:"m3av",t:"t3",src:"M3:48",q:"In KNN, K is ___.",a:"the number of neighbors the model looks at",need:[["neighbo"]],d:["the number of clusters","the cutoff value","the number of features"]},
-{id:"m3aw",t:"t3",src:"M3:49",q:"Same customer: K = 3 (2 of 3 enrolled) vs K = 7 (3 of 7 enrolled). Predictions?",a:"K = 3 predicts enroll; K = 7 predicts not enroll",need:[["3"],["7"]],d:["Both predict enroll","Both predict not enroll","K = 3 not enroll; K = 7 enroll"]},
+{id:"m3aw",t:"t3",src:"M3:49",q:"Same customer: K = 3 (2 of 3 enrolled) vs K = 7 (3 of 7 enrolled). Predictions?",a:"K = 3 predicts enroll; K = 7 predicts not enroll",need:[["3"],["7"]],d:["Both predict enroll","Both predict not enroll","K = 3 not enroll; K = 7 enroll"],hint:"KNN classification = majority vote among the K nearest neighbors"},
 {id:"m3ax",t:"t3",src:"M3:50",q:"A small K (1 or 3) is very sensitive to ___.",a:"outliers",acc:["one weird nearby example","outlier"],d:["scaling","the cutoff","large datasets"]},
 {id:"m3ay",t:"t3",src:"M3:50",q:"A large K (25 or 50) is smoother but may become ___.",a:"too general",acc:["general"],d:["too noisy","unsupervised","overfit to outliers"]},
 {id:"m3az",t:"t3",src:"M3:50",q:"How is K usually chosen in practice?",a:"Test several K values; pick the one that performs best on validation/test data",need:[["test","validation"]],d:["Always use K = 5","Use the number of features","Pick the K with the lowest inertia"]},
 {id:"m3ba",t:"t3",src:"M3:53",q:"StandardScaler transforms each column so that ___.",a:"mean = 0 and standard deviation = 1",need:[["0"],["1"]],d:["min = 0 and max = 1","values are rounded","outliers are removed"]},
 {id:"m3bb",t:"t3",src:"M3:54",q:"Standard deviation measures ___.",a:"how spread out values are from the mean",need:[["spread"]],d:["the middle value","the largest value","the number of values"]},
 {id:"m3bc",t:"t3",src:"M3:56",q:"Customer 0's scaled credit score is −0.83. Meaning?",a:"0.83 standard deviations below the average credit score",need:[["0.83"],["below"]],d:["0.83 points below average","83% of the average","0.83 standard deviations above average"]},
-{id:"m3bd",t:"t3",src:"M3:57",q:"KNN regression, K = 5: neighbors sold for $28k, $29.5k, $30k, $28.75k, $29.25k. Prediction?",a:"About $29,100",acc:["29100","29,100","$29,100","29.1k"],d:["About $30,000","About $28,000","About $29,500"],why:"KNN regression averages the neighbors' target values."},
+{id:"m3bd",t:"t3",src:"M3:57",q:"KNN regression, K = 5: neighbors sold for $28k, $29.5k, $30k, $28.75k, $29.25k. Prediction?",a:"About $29,100",acc:["29100","29,100","$29,100","29.1k"],d:["About $30,000","About $28,000","About $29,500"],why:"KNN regression averages the neighbors' target values.",hint:"KNN regression prediction = average of the K neighbors' values"},
 {id:"m3be",t:"t3",src:"M3:58",q:"KNN struggles when ___.",a:"the dataset is very large, has many irrelevant variables, unscaled features, or lots of noise",need:[["large","irrelevant","scal","noise"]],d:["the target is categorical","there are two classes","K is odd"]},
 {id:"m3bf",t:"t3",src:"M3:66",q:"Why is KNN called a “lazy learner”?",a:"It directly uses the entire training set to classify new observations",need:[["training","entire"]],d:["It trains very slowly","It skips scaling","It only uses one neighbor"]},
 {id:"m3bg",t:"t3",src:"M3:66",q:"If k = n (all training observations), a new observation is assigned to ___.",a:"the most common class in the training set",need:[["common","majority"]],d:["the single most similar observation","a random class","Class 1"]},
 {id:"m3bh",t:"t3",src:"M3:76",q:"Why fit the scaler on the training data only?",a:"The test data should behave like new unseen data; no leakage from test into training",need:[["unseen","leak","new"]],d:["It runs faster","Test data has no features","It makes the test set larger"]},
-{id:"m3bi",t:"t3",src:"M3:75",q:"500 customers with test_size=0.30: train and test rows?",a:"350 train / 150 test",need:[["350"],["150"]],d:["300 train / 200 test","400 train / 100 test","450 train / 50 test"]},
+{id:"m3bi",t:"t3",src:"M3:75",q:"500 customers with test_size=0.30: train and test rows?",a:"350 train / 150 test",need:[["350"],["150"]],d:["300 train / 200 test","400 train / 100 test","450 train / 50 test"],hint:"Test rows = total rows × test_size; train rows = the rest"},
 {id:"m3bj",t:"t3",src:"M3:79",q:"A classification confusion matrix displays ___.",a:"the model's correct and incorrect classifications",need:[["correct"]],d:["the regression residuals","feature importance","the class probabilities"]},
-{id:"m3bk",t:"t3",src:"M3:81",q:"Optiva confusion matrix: how many actual nondefaults were incorrectly classified as defaults?",a:"5,244",acc:["5244"],d:["7,479","89","146"]},
-{id:"m3bl",t:"t3",src:"M3:84",q:"KNN delinquency model accuracy",a:"62.7%",acc:["62.7","0.627"],g:"knnm",d:["67.9%","76.6%","72%"]},
-{id:"m3bm",t:"t3",src:"M3:84",q:"KNN delinquency model precision",a:"67.9%",acc:["67.9","0.679"],g:"knnm",d:["62.7%","76.6%","72%"]},
-{id:"m3bn",t:"t3",src:"M3:84",q:"KNN delinquency model recall",a:"76.6%",acc:["76.6","0.766"],g:"knnm",d:["62.7%","67.9%","72%"]},
+{id:"m3bl",t:"t3",src:"M3:84",q:"KNN confusion matrix (150 customers, delinquent = positive): TN 22, FP 34, FN 22, TP 72. Accuracy?",a:"62.7%",acc:["62.7","0.627"],g:"knnm",d:["67.9%","76.6%","72%"],hint:"Accuracy = (TP + TN) ÷ (TP + FP + FN + TN)"},
+{id:"m3bm",t:"t3",src:"M3:84",q:"KNN confusion matrix (delinquent = positive): TN 22, FP 34, FN 22, TP 72. Precision?",a:"67.9%",acc:["67.9","0.679"],g:"knnm",d:["62.7%","76.6%","72%"],hint:"Precision = TP ÷ (TP + FP)"},
+{id:"m3bn",t:"t3",src:"M3:84",q:"KNN confusion matrix (delinquent = positive): TN 22, FP 34, FN 22, TP 72. Recall?",a:"76.6%",acc:["76.6","0.766"],g:"knnm",d:["62.7%","67.9%","72%"],hint:"Recall = TP ÷ (TP + FN)"},
 {id:"m3bo",t:"t3",src:"M3:84",q:"Recall matters most when ___ is costly.",a:"missing risky customers",need:[["miss"]],d:["a false alarm","scaling","training"]},
 {id:"m3bp",t:"t3",src:"M3:84",q:"Macro average vs. weighted average",a:"Macro takes a simple average of the class scores; weighted gives more weight to the class with more observations",need:[["simple","weight"]],d:["Macro uses only Class 1; weighted uses only Class 0","They are always equal","Macro weights by class size"]},
-{id:"m3bq",t:"t3",src:"M3:85",q:"One minus the overall error rate is ___.",a:"accuracy",d:["precision","recall","specificity"]},
-{id:"m3br",t:"t3",src:"M3:85",q:"Overall error rate treats false positives and false negatives ___.",a:"the same",acc:["equally","same"],d:["differently","as zero","as Class 1"]},
 {id:"m3bs",t:"t3",src:"M3:86",q:"Typical default cutoff value for a classifier",a:"0.5",acc:["0.50","50%"],d:["0.25","0.75","1.0"]},
-{id:"m3bt",t:"t3",src:"M3:86",q:"As the cutoff decreases, Class 1 error ___ and Class 0 error ___.",a:"decreases; rises",need:[["decreas","lower","down"],["rise","increas","up"]],d:["rises; decreases","both rise","both decrease"],fq:"As the cutoff decreases, Class 1 error ___.",fa:"decreases",facc:["decrease","goes down","falls","drops"]},
-{id:"m3bu",t:"t3",src:"M3:88",q:"Cutoff 0.75 (50 observations): overall error rate",a:"40.00%",acc:["40","40%","0.4"],g:"cut",d:["56.00%","68.00%","45.45%"]},
-{id:"m3bv",t:"t3",src:"M3:90",q:"Cutoff 0.25: Class 1 error rate",a:"9.09%",acc:["9.09","9.1"],g:"cut",d:["45.45%","36.36%","84.62%"]},
-{id:"m3bw",t:"t3",src:"M3:90",q:"Cutoff 0.25: Class 0 error rate",a:"84.62%",acc:["84.62","84.6"],g:"cut",d:["38.46%","61.54%","9.09%"]},
 {id:"m3bx",t:"t3",src:"M3:101",q:"Baseline model in the resale notebook",a:"Always predict the average resale value from the training data",need:[["average","mean"]],d:["Always predict the most recent sale","Use KNN with K = 1","Predict 0 for every vehicle"]},
-{id:"m3by",t:"t3",src:"M3:111",q:"Resale comparison: which model performed best?",a:"Linear Regression (MAE $1,969, RMSE $2,399, R² 0.937)",need:[["linear"]],d:["KNN Regression (MAE $2,280, R² 0.909)","Baseline Average (MAE $7,761)","They tied"]},
+{id:"m3by",t:"t3",src:"M3:111",q:"Resale models on the test set. Baseline: MAE $7,761, R² 0.000. Linear regression: MAE $1,969, R² 0.937. KNN regression: MAE $2,280, R² 0.909. Which performed best?",a:"Linear regression",acc:["linear"],d:["KNN regression","Baseline average","They tied"]},
 {id:"m3bz",t:"t3",src:"M3:101",q:"Baseline (average-only) model R²",a:"0",acc:["0.0","0.000","zero","-0.000"],d:["0.937","0.909","1"]},
-{id:"m3ca",t:"t3",src:"M3:113",q:"New vehicle: Linear Regression predicted $30,114. What did KNN Regression predict?",a:"$25,443",acc:["25443","25,443"],d:["$30,114","$27,546","$29,100"]},
 {id:"m3cb",t:"t3",src:"M3:64",q:"KNN characteristics: makes predictions based on ___ information.",a:"local",d:["global","causal","random"]},
 // ---- Module 3 extras
-{id:"x3a",t:"x",src:"M3:37",q:"Multicollinearity happens when ___.",a:"two or more input features are strongly related to each other",need:[["related","correlat"]],d:["the target is categorical","the model overfits","residuals are negative"]},
-{id:"x3b",t:"x",src:"M3:37",q:"Main problem multicollinearity causes",a:"Coefficient interpretation becomes harder",need:[["coefficient","interpret"]],d:["Predictions become impossible","R² drops to zero","The model can't be trained"]},
-{id:"x3c",t:"x",src:"M3:37",q:"Example of multicollinearity from the slides",a:"Vehicle age and mileage",need:[["age"],["mileage"]],d:["Credit score and default","Ad spend and sales","Study hours and final grade"]},
-{id:"x3d",t:"x",src:"M3:39",q:"A leakage variable is one that ___.",a:"gives the model information it would not have at prediction time",need:[["not"],["time","predict"]],d:["has many missing values","is highly scaled","is an ID column"]},
 
 // ===================== MODULE 4 (Area 4) =====================
 {id:"m4a",t:"t4",src:"M4:7",q:"Question to ask before choosing a supervised model",a:"Is the outcome numeric, or a class/category?",need:[["numer","number"],["class","categ"]],d:["How many rows do we have?","Is the data scaled?","Which algorithm is newest?"]},
@@ -600,9 +563,9 @@ const MOD_ITEMS=[
 {id:"m4f",t:"t4",src:"M4:14",q:"Tree part: the final endpoint where a prediction is made",a:"Leaf node",acc:["leaf"],g:"tt"},
 {id:"m4g",t:"t4",src:"M4:14",q:"Tree term: the feature used to divide the data",a:"Split attribute",g:"tt"},
 {id:"m4h",t:"t4",src:"M4:14",q:"Tree term: how many levels the tree has",a:"Depth",g:"tt"},
-{id:"m4i",t:"t4",src:"M4:17",q:"Leaf: 45 stayed current, 5 became delinquent. Predicted probability of delinquency?",a:"10%",acc:["0.1","0.10","10"],d:["5%","90%","45%"]},
+{id:"m4i",t:"t4",src:"M4:17",q:"Leaf: 45 stayed current, 5 became delinquent. Predicted probability of delinquency?",a:"10%",acc:["0.1","0.10","10"],d:["5%","90%","45%"],hint:"P(Class 1 in leaf) = Class 1 count ÷ leaf total"},
 {id:"m4j",t:"t4",src:"M4:17",q:"Besides a class, a classification tree leaf can also give a ___.",a:"predicted probability",acc:["probability","class mix"],d:["coefficient","residual","centroid"]},
-{id:"m4k",t:"t4",src:"M4:18",q:"Regression-tree leaf with losses $2,500, $3,100, $2,900, $3,300 predicts",a:"$2,950",acc:["2950","2,950"],d:["$3,100","$2,900","$11,800"]},
+{id:"m4k",t:"t4",src:"M4:18",q:"Regression-tree leaf with losses $2,500, $3,100, $2,900, $3,300 predicts",a:"$2,950",acc:["2950","2,950"],d:["$3,100","$2,900","$11,800"],hint:"Regression leaf prediction = average of the target values in the leaf"},
 {id:"m4l",t:"t4",src:"M4:21",q:"Decision tree induction is ___.",a:"the process of building a decision tree from training data",need:[["build"]],d:["scoring new customers","pruning item combinations","choosing the cutoff"]},
 {id:"m4m",t:"t4",src:"M4:22",q:"A common stopping rule for growing a tree",a:"The tree has reached maximum depth",d:["Gini reaches 0.5","Lift exceeds 1","Inertia stops decreasing"]},
 {id:"m4n",t:"t4",src:"M4:22",q:"Must a decision tree ask the same next question in every branch?",a:"No",d:["Yes","Only for binary attributes","Only at the root"]},
@@ -612,32 +575,27 @@ const MOD_ITEMS=[
 {id:"m4r",t:"t4",src:"M4:37",q:"Numeric attribute that can take many values (credit score, income)",a:"Continuous",g:"attr"},
 {id:"m4s",t:"t4",src:"M4:35",q:"Which ordinal split is bad?",a:"{Poor, Excellent} vs {Fair, Good}",need:[["poor"],["excellent"]],d:["{Poor, Fair} vs {Good, Excellent}","Credit ≤ Fair?","{Poor} vs {Fair, Good, Excellent}"],why:"It groups the lowest and highest tiers together and violates the order."},
 {id:"m4t",t:"t4",src:"M4:33",q:"Why can a multi-way split on Dealer ID be a problem?",a:"With 500+ dealers it creates 500 branches",need:[["branch","many"]],d:["Dealer ID is ordinal","It removes the root node","It forces binary splits"]},
-{id:"m4u",t:"t4",src:"M4:39",q:"Bucketing where each bucket covers the same numeric range",a:"Equal interval bucketing",g:"disc"},
-{id:"m4v",t:"t4",src:"M4:39",q:"Bucketing where each bucket has roughly the same number of records",a:"Equal frequency bucketing",g:"disc"},
-{id:"m4w",t:"t4",src:"M4:40",q:"Buckets are created once, before building the tree",a:"Static discretization",g:"disc"},
-{id:"m4x",t:"t4",src:"M4:40",q:"The tree finds the best cutoff during building, possibly different at each node",a:"Dynamic discretization",g:"disc"},
-{id:"m4y",t:"t4",src:"M4:39",q:"After discretizing credit score into tiers, it becomes a(n) ___ attribute.",a:"ordinal",d:["nominal","binary","continuous"]},
 {id:"m4z",t:"t4",src:"M4:46",q:"Splits: credit ≤ 640 (gain 0.18), payment > 700 (0.12), prior delinquencies > 1 (0.23). Best split?",a:"Prior delinquencies > 1",d:["Credit score ≤ 640","Monthly payment > 700","None; all gains are below 0.5"]},
 {id:"m4aa",t:"t4",src:"M4:48",q:"Why use weighted impurity after a split?",a:"So each child node counts in proportion to its size",need:[["size","proportion"]],d:["So pure children count double","To keep Gini under 0.5","To ignore small children"]},
-{id:"m4ab",t:"t4",src:"M4:48",q:"Split A: child 1 = 90 records (impurity 0.40), child 2 = 10 records (0.00). Weighted impurity?",a:"0.36",d:["0.40","0.20","0.04"]},
+{id:"m4ab",t:"t4",src:"M4:48",q:"Split A: child 1 = 90 records (impurity 0.40), child 2 = 10 records (0.00). Weighted impurity?",a:"0.36",d:["0.40","0.20","0.04"],hint:"Weighted impurity = Σ (child size ÷ parent size) × child impurity"},
 {id:"m4ac",t:"t4",src:"M4:51",q:"Impurity measure: how mixed the classes are in a node",a:"Gini index",acc:["gini"],g:"imp",d:["Entropy","Classification error","Information gain"]},
 {id:"m4ad",t:"t4",src:"M4:51",q:"Impurity measure: uncertainty or disorder in a node",a:"Entropy",g:"imp",d:["Gini index","Classification error","Inertia"]},
 {id:"m4ae",t:"t4",src:"M4:51",q:"The improvement from entropy-based splits is called ___.",a:"information gain",d:["lift","inertia","weighted Gini"]},
-{id:"m4af",t:"t4",src:"M4:54",q:"Gini for a 9/1 node",a:"0.18",g:"gv",d:["0.42","0.50","0.10"]},
-{id:"m4ag",t:"t4",src:"M4:54",q:"Gini for a 7/3 node",a:"0.42",g:"gv",d:["0.18","0.50","0.30"]},
-{id:"m4ah",t:"t4",src:"M4:54",q:"Largest possible Gini in binary classification",a:"0.50",acc:["0.5"],d:["1.00","0.25","0.69"]},
-{id:"m4ai",t:"t4",src:"M4:55",q:"Gini for a node with 1 current, 5 delinquent",a:"0.278",acc:["0.28"],d:["0.444","0.650","0.167"]},
-{id:"m4aj",t:"t4",src:"M4:56",q:"Gini for a node with 2 current, 4 delinquent",a:"0.444",acc:["0.44"],d:["0.278","0.918","0.333"]},
-{id:"m4ak",t:"t4",src:"M4:96",q:"Entropy for a node with 1 current, 5 delinquent",a:"0.650",acc:["0.65"],d:["0.278","0.918","1.000"]},
-{id:"m4al",t:"t4",src:"M4:98",q:"Entropy for a node with 2 current, 4 delinquent",a:"0.918",acc:["0.92"],d:["0.444","0.650","1.000"]},
-{id:"m4am",t:"t4",src:"M4:96",q:"Entropy for an evenly split two-class node (3/3)",a:"1",acc:["1.0","1.000"],d:["0.5","0","0.693"]},
+{id:"m4af",t:"t4",src:"M4:54",q:"Gini for a 9/1 node",a:"0.18",g:"gv",d:["0.42","0.50","0.10"],hint:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total"},
+{id:"m4ag",t:"t4",src:"M4:54",q:"Gini for a 7/3 node",a:"0.42",g:"gv",d:["0.18","0.50","0.30"],hint:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total"},
+{id:"m4ah",t:"t4",src:"M4:54",q:"Largest possible Gini in binary classification",a:"0.50",acc:["0.5"],d:["1.00","0.25","0.69"],hint:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total"},
+{id:"m4ai",t:"t4",src:"M4:55",q:"Gini for a node with 1 current, 5 delinquent",a:"0.278",acc:["0.28"],d:["0.444","0.650","0.167"],hint:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total"},
+{id:"m4aj",t:"t4",src:"M4:56",q:"Gini for a node with 2 current, 4 delinquent",a:"0.444",acc:["0.44"],d:["0.278","0.918","0.333"],hint:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total"},
+{id:"m4ak",t:"t4",src:"M4:96",q:"Entropy for a node with 1 current, 5 delinquent",a:"0.650",acc:["0.65"],d:["0.278","0.918","1.000"],hint:"Entropy = −p₀·log₂(p₀) − p₁·log₂(p₁), where p = class count ÷ node total. Helpers: log₂(1/6) ≈ −2.585, log₂(5/6) ≈ −0.263"},
+{id:"m4al",t:"t4",src:"M4:98",q:"Entropy for a node with 2 current, 4 delinquent",a:"0.918",acc:["0.92"],d:["0.444","0.650","1.000"],hint:"Entropy = −p₀·log₂(p₀) − p₁·log₂(p₁), where p = class count ÷ node total. Helpers: log₂(2/6) ≈ −1.585, log₂(4/6) ≈ −0.585"},
+{id:"m4am",t:"t4",src:"M4:96",q:"Entropy for an evenly split two-class node (3/3)",a:"1",acc:["1.0","1.000"],d:["0.5","0","0.693"],hint:"Entropy = −p₀·log₂(p₀) − p₁·log₂(p₁), where p = class count ÷ node total. Helper: log₂(0.5) = −1"},
 {id:"m4an",t:"t4",src:"M4:67",q:"Why is a Customer ID split a bad idea even though it has the highest information gain?",a:"Many tiny pure partitions that won't help predict new records",need:[["small","tiny","pure","generaliz","future"]],d:["Customer ID is continuous","Entropy can't be computed for IDs","It always lowers gain"]},
 {id:"m4ao",t:"t4",src:"M4:72",q:"Decision trees classify using ___; logistic regression classifies using ___.",a:"rules; probability",need:[["rule"],["probab"]],d:["probability; rules","distance; rules","clusters; coefficients"],fq:"Decision trees classify using ___ (logistic regression uses probability).",fa:"rules",facc:["rule","if-then rules","rule paths"]},
 {id:"m4ap",t:"t4",src:"M4:72",q:"Which tends to be more stable when the data changes slightly?",a:"Logistic regression",d:["Decision tree","KNN with K = 1","They are equally unstable"]},
 {id:"m4aq",t:"t4",src:"M4:73",q:"What converts logistic regression's risk score into a probability between 0 and 1?",a:"The logistic (S-shaped) function",need:[["logistic","s-shaped","sigmoid"]],d:["StandardScaler","The cutoff","Gini index"]},
-{id:"m4ar",t:"t4",src:"M4:73",q:"Risk score 0.0 converts to a probability of ___.",a:"0.50",acc:["0.5","50%"],g:"rs",d:["0.12","0.88","0"]},
-{id:"m4as",t:"t4",src:"M4:73",q:"Risk score −2.0 converts to a probability of ___.",a:"0.12",acc:["12%"],g:"rs",d:["0.50","0.88","−0.2"]},
-{id:"m4at",t:"t4",src:"M4:73",q:"Risk score 2.0 converts to a probability of ___.",a:"0.88",acc:["88%"],g:"rs",d:["0.50","0.12","2.0"]},
+{id:"m4ar",t:"t4",src:"M4:73",q:"Risk score 0.0 converts to a probability of ___.",a:"0.50",acc:["0.5","50%"],g:"rs",d:["0.12","0.88","0"],hint:"p = 1 ÷ (1 + e^(−risk score)). Helper: e⁰ = 1"},
+{id:"m4as",t:"t4",src:"M4:73",q:"Risk score −2.0 converts to a probability of ___.",a:"0.12",acc:["12%"],g:"rs",d:["0.50","0.88","−0.2"],hint:"p = 1 ÷ (1 + e^(−risk score)). Helper: e² ≈ 7.39"},
+{id:"m4at",t:"t4",src:"M4:73",q:"Risk score 2.0 converts to a probability of ___.",a:"0.88",acc:["88%"],g:"rs",d:["0.50","0.12","2.0"],hint:"p = 1 ÷ (1 + e^(−risk score)). Helper: e^(−2) ≈ 0.135"},
 {id:"m4au",t:"t4",src:"M4:73",q:"To catch more risky customers, you should ___ the cutoff.",a:"lower",acc:["decrease","reduce"],d:["raise","remove","square"],why:"Lowering the cutoff increases recall but also increases false positives."},
 {id:"m4av",t:"t4",src:"M4:75",q:"Raising the cutoff from 0.50 to 0.70 gives fewer false positives but may increase ___.",a:"false negatives",d:["true negatives","recall","the number flagged"]},
 {id:"m4aw",t:"t4",src:"M4:76",q:"A positive logistic regression coefficient means ___.",a:"as the feature increases, the probability of Class 1 increases",need:[["increase"]],d:["the feature has no effect","the probability of Class 1 decreases","the cutoff rises"]},
@@ -648,12 +606,10 @@ const MOD_ITEMS=[
 {id:"m4bb",t:"t4",src:"M4:88",q:"Tree setting min_samples_leaf = 10 is used to ___.",a:"prevent tiny leaf nodes",need:[["tiny","small"]],d:["keep the tree readable","use entropy","set the cutoff"]},
 {id:"m4bc",t:"t4",src:"M4:86",q:"Why use stratify=y in train_test_split?",a:"So the target class proportions are similar in the train and test sets",need:[["proportion","balance","similar"]],d:["To scale the features","To shuffle the columns","To remove duplicates"]},
 {id:"m4bd",t:"t4",src:"M4:89",q:"In a scikit-learn confusion matrix, rows are actual classes and columns are ___.",a:"predicted classes",acc:["predicted","predictions"],d:["actual classes","features","probabilities"]},
-{id:"m4be",t:"t4",src:"M4:111",q:"Module 4 notebook: which model scored higher on accuracy, precision, recall, and F1?",a:"Logistic regression",d:["Decision tree","They tied","KNN"]},
-{id:"m4bf",t:"t4",src:"M4:111",q:"Logistic regression accuracy in the Module 4 notebook",a:"0.739",acc:["73.9%","73.9"],g:"m4m",d:["0.606","0.764","0.839"]},
-{id:"m4bg",t:"t4",src:"M4:111",q:"Decision tree accuracy in the Module 4 notebook",a:"0.606",acc:["60.6%","60.6"],g:"m4m",d:["0.739","0.685","0.682"]},
+{id:"m4be",t:"t4",src:"M4:111",q:"Decision tree: accuracy 0.606, precision 0.685, recall 0.679, F1 0.682. Logistic regression: 0.739, 0.764, 0.839, 0.800. Which model scored higher on all four?",a:"Logistic regression",d:["Decision tree","They tied","KNN"]},
+{id:"m4bf",t:"t4",src:"M4:105",q:"Logistic regression confusion matrix [[39, 29], [18, 94]] (rows = actual, columns = predicted; 180 customers). Accuracy?",a:"0.739",acc:["73.9%","73.9"],g:"m4m",d:["0.606","0.764","0.839"],hint:"Accuracy = correct ÷ total; correct predictions are on the diagonal (top-left + bottom-right)"},
+{id:"m4bg",t:"t4",src:"M4:89",q:"Decision tree confusion matrix [[33, 35], [36, 76]] (rows = actual, columns = predicted; 180 customers). Accuracy?",a:"0.606",acc:["60.6%","60.6"],g:"m4m",d:["0.739","0.685","0.682"],hint:"Accuracy = correct ÷ total; correct predictions are on the diagonal (top-left + bottom-right)"},
 {id:"m4bh",t:"t4",src:"M4:92",q:"Feature importance tells you ___.",a:"which variables the tree used most for splitting (not causation)",need:[["split"]],d:["which variables cause the outcome","the coefficient signs","the probability of Class 1"]},
-{id:"m4bi",t:"t4",src:"M4:92",q:"Most important feature in the Module 4 decision tree",a:"credit_score",acc:["credit score"],d:["down_payment_pct","monthly_payment","prior_delinquencies"]},
-{id:"m4bj",t:"t4",src:"M4:107",q:"Logistic regression coefficient with the strongest relationship (absolute value)",a:"credit_score (−1.035)",acc:["credit_score","credit score"],d:["down_payment_pct (−0.595)","monthly_payment (0.529)","prior_delinquencies (0.521)"]},
 {id:"m4bk",t:"t4",src:"M4:107",q:"down_payment_pct has a negative coefficient. A higher down payment ___ delinquency risk.",a:"lowers",acc:["decreases","reduces"],d:["raises","does not change","doubles"]},
 {id:"m4bl",t:"t4",src:"M4:103",q:"Why scale the data before logistic regression?",a:"Large-number variables like annual_income can dominate the math",need:[["large","dominat"]],d:["Logistic regression requires positive values","Scaling sets the cutoff","Scaling removes outliers"]},
 {id:"m4bm",t:"t4",src:"M4:110",q:"A common way to pick the “best” cutoff",a:"The cutoff with the highest F1 score",need:[["f1"]],d:["Always 0.50","The cutoff with the highest accuracy only","The lowest cutoff"]},
@@ -661,16 +617,6 @@ const MOD_ITEMS=[
 {id:"m4bo",t:"t4",src:"M4:100",q:"Why did results stop changing from tree depth 7 on?",a:"The min_samples_leaf = 10 stopping rule",need:[["min_samples_leaf","leaf"]],d:["max_depth was 7","Gini hit 0.5","The data ran out of features"]},
 {id:"m4bp",t:"t4",src:"M4:100",q:"Training accuracy rises with depth but test performance doesn't improve. This suggests ___.",a:"overfitting",acc:["overfit"],d:["underfitting","good generalization","data leakage"]},
 // ---- Module 4 extras
-{id:"x4a",t:"x",src:"M4:23",q:"Hunt's Algorithm is described as ___, meaning it repeats the same logic on smaller pieces of data.",a:"recursive",d:["iterative averaging","greedy clustering","probabilistic"]},
-{id:"x4b",t:"x",src:"M4:24",q:"In Hunt's notation, node (7,3) means",a:"7 Class 0 records and 3 Class 1 records",need:[["7"],["3"]],d:["7 splits and 3 leaves","depth 7, 3 branches","70% Class 1"]},
-{id:"x4c",t:"x",src:"M4:24",q:"When Hunt's Algorithm reaches a pure node, it ___.",a:"stops and makes it a leaf node",need:[["leaf","stop"]],d:["splits it again","merges it with the parent","removes it"]},
-{id:"x4d",t:"x",src:"M4:26",q:"Parent (7,3) split on Prior Delinquencies > 1 gives which children?",a:"Yes (1,3), No (6,0)",need:[["1,3","1 3"],["6,0","6 0"]],d:["Yes (3,0), No (4,3)","Yes (7,0), No (0,3)","Yes (5,1), No (2,2)"]},
-{id:"x4e",t:"x",src:"M4:51",q:"Impurity measure: proportion of records not in the majority class",a:"Classification error",acc:["misclassification error"],d:["Gini index","Entropy","Information gain"]},
-{id:"x4f",t:"x",src:"M4:68",q:"Classification error for a (7,3) node",a:"0.30",acc:["0.3","30%"],d:["0.42","0.70","0.88"]},
-{id:"x4g",t:"x",src:"M4:70",q:"Classification error for a (1,5) node",a:"1/6 (0.167)",acc:["0.167","1/6","0.17"],d:["0.278","0.650","5/6"]},
-{id:"x4h",t:"x",src:"M4:69",q:"Maximum classification error with C classes",a:"1 − 1/C",acc:["1-1/c"],d:["log₂ C","0.5","1"]},
-{id:"x4i",t:"x",src:"M4:64",q:"Maximum entropy with C equally distributed classes",a:"log₂ C",acc:["log2 c","log2(c)"],d:["1 − 1/C","0.5","C"]},
-{id:"x4j",t:"x",src:"M4:66",q:"Decision tree algorithms that use information gain",a:"ID3 and C4.5",need:[["id3"],["c4.5","c45"]],d:["CART and Apriori","K-Means and KNN","Hunt and Gini"]},
 
 // ===================== MODULE 5 (Area 5) =====================
 {id:"m5a",t:"t5",src:"M5:4",q:"In descriptive data mining, the business question often sounds like ___.",a:"What patterns exist?",need:[["pattern"]],d:["What will happen to this one record?","What is the expected loss?","Which class is this?"]},
@@ -689,29 +635,26 @@ const MOD_ITEMS=[
 {id:"m5n",t:"t5",src:"M5:21",q:"Support 40% with minimum support set at 30%: keep or drop the itemset?",a:"Keep it",acc:["keep"],d:["Drop it","Need lift first","Need confidence first"]},
 {id:"m5o",t:"t5",src:"M5:22",q:"A higher minimum support threshold returns ___ itemsets.",a:"fewer",acc:["less"],d:["more","the same","noisier"]},
 {id:"m5p",t:"t5",src:"M5:23",q:"Confidence is the conditional probability of the ___ given the antecedent.",a:"consequent",d:["antecedent","full itemset","baseline"]},
-{id:"m5q",t:"t5",src:"M5:23",q:"Laptop in 3 baskets; laptop + headset together in 2. Confidence of Laptop → Headset?",a:"66.7%",acc:["66.7","2/3","0.667","67%"],d:["40%","33.3%","150%"]},
+{id:"m5q",t:"t5",src:"M5:23",q:"Laptop in 3 baskets; laptop + headset together in 2. Confidence of Laptop → Headset?",a:"66.7%",acc:["66.7","2/3","0.667","67%"],d:["40%","33.3%","150%"],hint:"Confidence(A → C) = count(A and C) ÷ count(A)"},
 {id:"m5r",t:"t5",src:"M5:24",q:"90% of customers buy milk. Why can Bread → Milk mislead?",a:"Confidence is high just because milk is common overall",need:[["common","popular"]],d:["Support is too low","Lift must be below 1","Bread is the consequent"]},
 {id:"m5s",t:"t5",src:"M5:26",q:"Lift = 1 means",a:"No special relationship (no better than baseline)",need:[["no"]],g:"lift",d:["Items occur together more than expected","Items occur together less than expected","The rule is 100% reliable"]},
 {id:"m5t",t:"t5",src:"M5:26",q:"Lift < 1 means",a:"Items occur together less than expected (possible negative association)",need:[["less","negative"]],g:"lift",d:["No special relationship","Items occur together more than expected","The rule is too rare to act on"]},
 {id:"m5u",t:"t5",src:"M5:26",q:"Lift = 1.25 means",a:"The rule is 25% better than guessing from the consequent's baseline frequency",need:[["25"]],d:["25% of baskets contain both","Confidence is 1.25%","The rule is 125% reliable"]},
 {id:"m5v",t:"t5",src:"M5:29",q:"Apriori principle",a:"If an itemset is frequent, all its smaller subsets must be frequent too",need:[["subset"]],d:["If an itemset is rare, its subsets are rare","Frequent itemsets always have lift > 1","Larger itemsets are always more frequent"]},
 {id:"m5w",t:"t5",src:"M5:29",q:"{A, B} is not frequent. What about {A, B, C}?",a:"It cannot be frequent",need:[["not","cannot","can't"]],d:["It might be frequent","It must be frequent","Only if C is frequent"],why:"Every transaction containing {A, B, C} also contains {A, B}."},
-{id:"m5x",t:"t5",src:"M5:31",q:"5 transactions with minimum support 0.4: an itemset must appear in at least ___ transactions.",a:"2",acc:["two"],d:["4","1","3"]},
-{id:"m5y",t:"t5",src:"M5:35",q:"Apriori example: frequent 3-itemsets",a:"{A, C, E} and {B, C, E}",need:[["a,c,e","ace"],["b,c,e","bce"]],d:["{A, B, C} and {A, B, E}","{A, C, D} only","{B, C, E} only"]},
+{id:"m5x",t:"t5",src:"M5:31",q:"5 transactions with minimum support 0.4: an itemset must appear in at least ___ transactions.",a:"2",acc:["two"],d:["4","1","3"],hint:"Minimum count = minimum support × number of transactions"},
+{id:"m5y",t:"t5",src:"M5:35",q:"Transactions T1 {A, C, D}, T2 {B, C, E}, T3 {A, B, C, E}, T4 {B, E}, T5 {A, C, E}; minimum support 0.4. Which 3-itemsets are frequent?",a:"{A, C, E} and {B, C, E}",need:[["a,c,e","ace"],["b,c,e","bce"]],d:["{A, B, C} and {A, B, E}","{A, C, D} only","{B, C, E} only"],hint:"Support = transactions containing the itemset ÷ total transactions; keep itemsets with support ≥ 0.4"},
 {id:"m5z",t:"t5",src:"M5:36",q:"Confidence({A, C} → {E}) = 2/3. Minimum confidence is 70%. Keep or discard?",a:"Discard",d:["Keep","Keep only if lift > 1","Need more data"]},
 {id:"m5aa",t:"t5",src:"M5:38",q:"The support count of an itemset is ___.",a:"the number of transactions that include that itemset",need:[["number","count"],["transaction"]],d:["the share of transactions with the itemset","confidence × lift","the number of items in it"]},
-{id:"m5ab",t:"t5",src:"M5:41",q:"{bread, jelly, peanut butter} appears in 2 of 10 transactions. Support?",a:"20%",acc:["0.2","0.20","20"],d:["40%","50%","2%"]},
-{id:"m5ac",t:"t5",src:"M5:43",q:"{bread, jelly} appears in 4 baskets, 2 of which contain peanut butter. Confidence?",a:"50%",acc:["0.5","0.50","50"],d:["20%","40%","125%"]},
-{id:"m5ad",t:"t5",src:"M5:45",q:"Confidence 0.50; peanut butter support 0.40. Lift?",a:"1.25",d:["0.20","0.80","2.5"]},
+{id:"m5ab",t:"t5",src:"M5:41",q:"{bread, jelly, peanut butter} appears in 2 of 10 transactions. Support?",a:"20%",acc:["0.2","0.20","20"],d:["40%","50%","2%"],hint:"Support = transactions containing the itemset ÷ total transactions"},
+{id:"m5ac",t:"t5",src:"M5:43",q:"{bread, jelly} appears in 4 baskets, 2 of which contain peanut butter. Confidence?",a:"50%",acc:["0.5","0.50","50"],d:["20%","40%","125%"],hint:"Confidence(A → C) = count(A and C) ÷ count(A)"},
+{id:"m5ad",t:"t5",src:"M5:45",q:"Confidence 0.50; peanut butter support 0.40. Lift?",a:"1.25",d:["0.20","0.80","2.5"],hint:"Lift = confidence ÷ support(consequent)"},
 {id:"m5ae",t:"t5",src:"M5:48",q:"Actionable-rule test: business users can clearly interpret it",a:"Understandable",g:"act"},
 {id:"m5af",t:"t5",src:"M5:48",q:"Actionable-rule test: the pattern occurs often enough to matter",a:"Supported",g:"act"},
 {id:"m5ag",t:"t5",src:"M5:48",q:"Actionable-rule test: the consequent appears often when the antecedent appears",a:"Reliable",g:"act"},
 {id:"m5ah",t:"t5",src:"M5:48",q:"Actionable-rule test: lift suggests a relationship stronger than baseline",a:"Interesting",g:"act"},
 {id:"m5ai",t:"t5",src:"M5:49",q:"Ice cream and sunscreen are bought together. Better explanation than causation?",a:"Another factor, like warm weather",need:[["weather","factor","third"]],d:["Ice cream causes sunscreen purchases","Lift is below 1","Support is too high"]},
 {id:"m5aj",t:"t5",src:"M5:49",q:"“The algorithm finds patterns. The analyst ___. The business decides which ones matter.”",a:"explains them",acc:["explains"],d:["deploys them","ignores them","proves them"]},
-{id:"m5ak",t:"t5",src:"M5:69",q:"Notebook top rule by lift (15 transactions)",a:"{bread, soda} → {potato chips}, lift 3.0",need:[["bread"],["soda"],["chips"]],d:["{bread, jelly} → {peanut butter}, lift 1.25","{potato chips} → {soda}, lift 1.875","{bread, fruit} → {jelly}, lift 2.143"]},
-{id:"m5al",t:"t5",src:"M5:72",q:"Raising minimum support and confidence from 0.1/0.3 to 0.4/0.6 changed the rule count from 194 to ___.",a:"8",d:["38","158","61"]},
-{id:"m5am",t:"t5",src:"M5:79",q:"Top auto service rule by lift",a:"brake inspection → alignment (lift 2.812)",need:[["brake"],["alignment"]],d:["air filter → oil change (lift 1.667)","cabin filter → air filter (lift 2.5)","tire rotation → oil change (lift 1.042)"]},
 {id:"m5an",t:"t5",src:"M5:27",q:"Lift written as probabilities",a:"P(B|A) / P(B)",acc:["p(b|a)/p(b)"],d:["P(A∩B)","P(B|A)","P(A) / P(B)"]},
 {id:"m5ao",t:"t5",src:"M5:22",q:"Support(A → B) written as a probability",a:"P(A∩B)",acc:["p(a and b)","p(anb)"],d:["P(B|A)","P(B|A) / P(B)","P(A)"]},
 
@@ -720,10 +663,10 @@ const MOD_ITEMS=[
 {id:"m6b",t:"t6",src:"M6:5",q:"KNN uses nearby records to ___; K-Means uses nearby records to ___.",a:"predict; form groups",need:[["predict"],["group","cluster"]],d:["form groups; predict","prune; predict","vote; classify"],fq:"KNN uses nearby records to predict; K-Means uses nearby records to ___.",fa:"form groups",facc:["group","groups","cluster","form clusters"]},
 {id:"m6c",t:"t6",src:"M6:5",q:"What does K mean in association analysis?",a:"No K parameter in the same sense",need:[["no"]],d:["Number of clusters","Number of nearest neighbors","Number of items per basket"]},
 {id:"m6d",t:"t6",src:"M6:6",q:"Inertia measures ___.",a:"how tightly records fit around their cluster centers",need:[["tight","spread","center","centroid"]],d:["how far apart clusters are","how many clusters exist","the probability of Class 1"]},
-{id:"m6e",t:"t6",src:"M6:9",q:"Cluster 0 has credit scores 750, 760, 740. Centroid credit score?",a:"750",d:["760","740","2,250"]},
-{id:"m6f",t:"t6",src:"M6:31",q:"Monthly payments 500, 550, 600 in one cluster. Centroid payment component?",a:"550",d:["500","600","1,650"]},
+{id:"m6e",t:"t6",src:"M6:9",q:"Cluster 0 has credit scores 750, 760, 740. Centroid credit score?",a:"750",d:["760","740","2,250"],hint:"Centroid = average of each feature across the cluster's records"},
+{id:"m6f",t:"t6",src:"M6:31",q:"Monthly payments 500, 550, 600 in one cluster. Centroid payment component?",a:"550",d:["500","600","1,650"],hint:"Centroid = average of each feature across the cluster's records"},
 {id:"m6g",t:"t6",src:"M6:31",q:"Is a centroid always an actual customer?",a:"No; it is often an average profile",need:[["no","average"]],d:["Yes, the most typical customer","Yes, the first customer assigned","Only when K = 1"]},
-{id:"m6h",t:"t6",src:"M6:12",q:"Inertia: K1 10,000; K2 5,500; K3 3,200; K4 2,700; K5 2,400; K6 2,250. Elbow?",a:"K = 3",acc:["3"],d:["K = 6","K = 1","K = 5"]},
+{id:"m6h",t:"t6",src:"M6:12",q:"Inertia: K1 10,000; K2 5,500; K3 3,200; K4 2,700; K5 2,400; K6 2,250. Elbow?",a:"K = 3",acc:["3"],d:["K = 6","K = 1","K = 5"],hint:"Find where the drop in inertia from one K to the next gets much smaller"},
 {id:"m6i",t:"t6",src:"M6:14",q:"Good clusters have high within-cluster similarity and ___.",a:"between-cluster differences",need:[["between","differ"]],d:["equal sizes","high inertia","a known target"]},
 {id:"m6j",t:"t6",src:"M6:14",q:"Why is clustering often used before supervised modeling?",a:"It can reveal subgroups that behave differently",need:[["subgroup","group","behave"]],d:["It creates the target variable","It removes outliers","It replaces train/test split"]},
 {id:"m6k",t:"t6",src:"M6:18",q:"Inspecting each cluster's averages, distributions, and size before naming it",a:"Cluster profiling",acc:["profiling"],d:["Cluster pruning","Cluster scaling","Cluster induction"]},
@@ -731,18 +674,14 @@ const MOD_ITEMS=[
 {id:"m6m",t:"t6",src:"M6:19",q:"Step one of the clustering workflow",a:"Define the business question",need:[["business"],["question","purpose"]],d:["Scale the features","Choose K","Profile the clusters"]},
 {id:"m6n",t:"t6",src:"M6:22",q:"Distance K-Means uses by default in many implementations",a:"Euclidean distance",acc:["euclidean"],d:["Manhattan distance","Lift","Cosine similarity"]},
 {id:"m6o",t:"t6",src:"M6:24",q:"After StandardScaler, a value of 0 means ___.",a:"average",acc:["the average","mean"],d:["missing","minimum","one SD above average"]},
-{id:"m6p",t:"t6",src:"M6:25",q:"Mean credit score 700, SD 50. Scaled value for 750?",a:"+1.0",acc:["1","1.0"],d:["+50","+0.5","+7.5"]},
-{id:"m6q",t:"t6",src:"M6:25",q:"Mean payment $600, SD $150. Scaled value for $900?",a:"+2.0",acc:["2","2.0"],d:["+1.5","+300","+0.5"]},
+{id:"m6p",t:"t6",src:"M6:25",q:"Mean credit score 700, SD 50. Scaled value for 750?",a:"+1.0",acc:["1","1.0"],d:["+50","+0.5","+7.5"],hint:"Scaled value = (value − mean) ÷ standard deviation"},
+{id:"m6q",t:"t6",src:"M6:25",q:"Mean payment $600, SD $150. Scaled value for $900?",a:"+2.0",acc:["2","2.0"],d:["+1.5","+300","+0.5"],hint:"Scaled value = (value − mean) ÷ standard deviation"},
 {id:"m6r",t:"t6",src:"M6:27",q:"Why is K-Means sensitive to outliers?",a:"Centroids are means, so extreme values pull them",need:[["mean"]],d:["It uses medians","It ignores distance","It has no K"]},
 {id:"m6s",t:"t6",src:"M6:27",q:"A sensible way to handle a highly skewed variable like spend before clustering",a:"Log transformation",acc:["log","log transform"],d:["Delete every outlier","Multiply by 100","Convert it to text"]},
 {id:"m6t",t:"t6",src:"M6:28",q:"Clustering customers by spend and frequency gives ___ segments; by age and income, demographic segments.",a:"behavioral",acc:["behavioural","behavior"],d:["demographic","causal","predictive"]},
 {id:"m6u",t:"t6",src:"M6:29",q:"A centroid value of 0.70 for the binary flag “has mortgage” means",a:"70% of records in the cluster have a mortgage",need:[["70"]],d:["The average mortgage is $0.70","Mortgage explains 70% of variation","0.70 SD above average"]},
 {id:"m6v",t:"t6",src:"M6:29",q:"Nominal categories like region usually need ___ before K-Means.",a:"one-hot encoding",acc:["one hot encoding","one-hot"],d:["log transformation","label numbering 1–4","pruning"]},
-{id:"m6w",t:"t6",src:"M6:29",q:"Alternative to K-Means when a dataset has many categorical variables",a:"K-Modes",acc:["kmodes","k modes"],d:["KNN","Apriori","Logistic regression"]},
 {id:"m6x",t:"t6",src:"M6:30",q:"Does basic K-Means discover K automatically?",a:"No; the analyst must choose K before fitting",need:[["no","analyst"]],d:["Yes, from the elbow","Yes, from silhouette","Only with k-means++"]},
-{id:"m6y",t:"t6",src:"M6:32",q:"Smarter initialization method than purely random starting centers",a:"k-means++",acc:["kmeans++","k means++"],d:["StandardScaler","n_neighbors","Apriori"]},
-{id:"m6z",t:"t6",src:"M6:32",q:"scikit-learn parameter that controls how many initializations are tested",a:"n_init",d:["random_state","n_clusters","max_depth"]},
-{id:"m6aa",t:"t6",src:"M6:32",q:"scikit-learn parameter that makes results reproducible",a:"random_state",d:["n_init","n_clusters","test_size"]},
 {id:"m6ab",t:"t6",src:"M6:33",q:"Each record belongs to exactly one cluster in standard K-Means. This is called ___.",a:"hard clustering",d:["soft clustering","hierarchical clustering","agglomerative clustering"]},
 {id:"m6ac",t:"t6",src:"M6:34",q:"K-Means main loop",a:"Assign records to the nearest centroid, update centroids, repeat",need:[["assign"],["updat","recalc"]],d:["Split nodes until pure","Count itemsets, prune, repeat","Vote among K neighbors"]},
 {id:"m6ad",t:"t6",src:"M6:35",q:"Convergence in K-Means means ___.",a:"assignments and centroids no longer change meaningfully",need:[["change","stable"]],d:["inertia reaches 0","every cluster is equal size","K equals the number of records"]},
@@ -752,9 +691,6 @@ const MOD_ITEMS=[
 {id:"m6ah",t:"t6",src:"M6:38",q:"A negative silhouette score means",a:"The record may be in the wrong cluster",need:[["wrong"]],d:["It is near a boundary","It fits perfectly","Inertia is zero"]},
 {id:"m6ai",t:"t6",src:"M6:39",q:"Elbow method focuses on ___; silhouette focuses on separation and fit.",a:"inertia (compactness)",need:[["inertia","compact"]],d:["lift","accuracy","support"]},
 {id:"m6aj",t:"t6",src:"M6:47",q:"K-Means will create clusters even when ___.",a:"the data does not naturally contain meaningful segments",need:[["not","no"]],d:["the data is scaled","K is 3","features are numeric"]},
-{id:"m6ak",t:"t6",src:"M6:53",q:"NPS: customers scoring 0–6",a:"Detractors",g:"nps",d:["Passives","Promoters","Neutrals"]},
-{id:"m6al",t:"t6",src:"M6:53",q:"NPS: customers scoring 7–8",a:"Passives",g:"nps",d:["Detractors","Promoters","Neutrals"]},
-{id:"m6am",t:"t6",src:"M6:53",q:"NPS: customers scoring 9–10",a:"Promoters",g:"nps",d:["Passives","Detractors","Loyalists"]},
 {id:"m6an",t:"t6",src:"M6:54",q:"Lower recency days means the customer ___.",a:"bought more recently",need:[["recent"]],d:["bought less recently","spends less","returns more"]},
 {id:"m6ao",t:"t6",src:"M6:55",q:"Why not code regions as North = 1, South = 2, East = 3, West = 4?",a:"The model would treat West as “greater” than North and East as closer to South",need:[["greater","closer","order"]],d:["K-Means can't use integers","It creates too many columns","Regions are continuous"]},
 {id:"m6ap",t:"t6",src:"M6:56",q:"Segment: recent, frequent, high spend, positive NPS",a:"High-Value Loyal",g:"seg"},
@@ -765,17 +701,9 @@ const MOD_ITEMS=[
 {id:"m6au",t:"t6",src:"M6:56",q:"Main caution for the High-Value Loyal segment",a:"Don't over-discount them",need:[["discount"]],d:["Don't send them any emails","Merge them with dormant customers","Raise their prices"]},
 {id:"m6av",t:"t6",src:"M6:57",q:"For Deal-Seeking Frequent customers, measure ___, not just redemption rate.",a:"incremental lift",acc:["lift"],d:["inertia","support","recency"]},
 {id:"m6aw",t:"t6",src:"M6:61",q:"New customers must be transformed with ___ before assigning clusters.",a:"the same scaler used for the original clustering data",need:[["same"]],d:["a new scaler fit on them","no scaling","one-hot encoding only"]},
-{id:"m6ax",t:"t6",src:"M6:80",q:"ShopNow notebook: which K had the highest silhouette score?",a:"K = 4 (0.414)",acc:["4","k=4"],d:["K = 5 (0.400)","K = 2 (0.279)","K = 10 (0.151)"]},
 {id:"m6ay",t:"t6",src:"M6:82",q:"Why did the ShopNow walkthrough use K = 5?",a:"The synthetic data was designed around five behavior profiles",need:[["five","5"]],d:["K = 5 had the highest silhouette","K = 5 had the lowest inertia","The business requires five emails"]},
 {id:"m6az",t:"t6",src:"M6:62",q:"Cluster names should be ___.",a:"respectful and neutral",need:[["respect","neutral"]],d:["based on cluster numbers","as dramatic as possible","chosen by the algorithm"]},
 // ---- Module 6 extras
-{id:"x6a",t:"x",src:"M6:41",q:"Hierarchical clustering that starts with each observation as its own cluster and merges",a:"Agglomerative",acc:["agglomerative clustering","bottom-up"],d:["Divisive","K-Means","K-Modes"]},
-{id:"x6b",t:"x",src:"M6:41",q:"Hierarchical clustering that starts with everything in one cluster and splits",a:"Divisive",acc:["divisive clustering","top-down"],d:["Agglomerative","K-Means","K-Modes"]},
-{id:"x6c",t:"x",src:"M6:43",q:"Tree-like diagram of how clusters merge or split",a:"Dendrogram",d:["Decision tree","Elbow chart","Confusion matrix"]},
-{id:"x6d",t:"x",src:"M6:43",q:"In a dendrogram, the merge height represents ___.",a:"dissimilarity (distance) between the merged groups",need:[["dissimil","distance","differ"]],d:["cluster size","the number of features","the silhouette score"]},
-{id:"x6e",t:"x",src:"M6:43",q:"Cutting the dendrogram lower gives ___ clusters.",a:"more",d:["fewer","the same number of","zero"]},
-{id:"x6f",t:"x",src:"M6:42",q:"Does agglomerative clustering require choosing K before running?",a:"No; you cut the dendrogram later",need:[["no"]],d:["Yes, like K-Means","Only for large data","Yes, via silhouette"]},
-{id:"x6g",t:"x",src:"M6:41",q:"Main drawback of hierarchical clustering on large datasets",a:"Computationally expensive (many pairwise distances)",need:[["expensive","slow","pairwise"]],d:["It requires K upfront","It can't be visualized","It only handles categorical data"]}
 ];
 
 // ===== PRACTICE TAB: review practice questions, case scenarios, worked examples =====
@@ -795,11 +723,11 @@ const PRACTICE=[
  opts:["The model underpredicted the actual travel time.","The model overpredicted the actual travel time.","The model predicted exactly correctly.","The target variable was categorical."],
  key:"A. The model underpredicted the actual travel time.",why:"Actual is larger than predicted, so the model predicted too low for that trip."}]},
 {id:"pq4",group:"Review practice questions",title:"Logistic cutoffs",src:"R:23",
- qs:[{q:"A logistic regression model gives a customer a 0.72 probability of delinquency, and the cutoff is 0.50. What class is predicted?",
+ qs:[{f:"Predict Class 1 if probability ≥ cutoff",q:"A logistic regression model gives a customer a 0.72 probability of delinquency, and the cutoff is 0.50. What class is predicted?",
  opts:["Positive class, such as delinquent, because 0.72 is above the cutoff.","Negative class, because 0.72 is below 1.00.","No class, because probabilities cannot be classified.","A regression residual."],
  key:"A. Positive class, such as delinquent.",why:"The probability is compared with the cutoff. Since 0.72 ≥ 0.50, the model predicts Class 1."}]},
 {id:"pq5",group:"Review practice questions",title:"Rule metrics",src:"R:27",
- qs:[{q:"If {Laptop, Headset} appears in 2 out of 5 transactions, what is its support?",
+ qs:[{f:"Support = itemset count ÷ total transactions",q:"If {Laptop, Headset} appears in 2 out of 5 transactions, what is its support?",
  opts:["40%.","2%.","5%.","250%."],key:"A. 40%.",why:"Support is the pattern count divided by total transactions: 2 ÷ 5 = 0.40 = 40%."}]},
 {id:"pq6",group:"Review practice questions",title:"K-Means scaling",src:"R:31",
  qs:[{q:"Why is scaling especially important before running K-Means on income, credit score, and prior delinquencies?",
@@ -824,8 +752,7 @@ const PRACTICE=[
  {q:"Which values should you use to profile the clusters for marketing?",opts:["The original, unscaled values","The scaled z-scores","The cluster numbers only","The one-hot columns only"],why:"Slide 55: “Profile each cluster using the original unscaled values to make the results understandable to marketing stakeholders.”",src:"M6:55"},
  {q:"A cluster has long sessions and many pages per session but low total spend. Best name?",opts:["Browsers / Low Conversion","Dormant Low-Spend","High-Value Loyal","Deal-Seeking Frequent"],why:"Slide 59: “This cluster may show high average session time and many pages per session but low total spend.”",src:"M6:59"},
  {q:"A cluster buys often but relies heavily on discounts. What should analytics measure?",opts:["Incremental lift, not just redemption rate","Inertia","Support and confidence","Only the coupon redemption rate"],why:"Slide 57: “Analytics teams should measure incremental lift, not just redemption rate. A coupon used by someone who would have purchased anyway may waste margin.”",src:"M6:57"},
- {q:"What should the business be careful about with the High-Value Loyal cluster?",opts:["Over-discounting them","Sending them win-back emails","Asking for referrals","Offering premium support"],why:"Slide 56: “The business should be careful not to over-discount this group. They may already be willing to buy without large incentives.”",src:"M6:56"},
- {q:"A customer gives an NPS answer of 8. Which bucket?",opts:["Passive","Detractor","Promoter","Neutral-negative"],why:"Slide 53: Detractors 0–6, Passives 7–8, Promoters 9–10.",src:"M6:53"}]},
+ {q:"What should the business be careful about with the High-Value Loyal cluster?",opts:["Over-discounting them","Sending them win-back emails","Asking for referrals","Offering premium support"],why:"Slide 56: “The business should be careful not to over-discount this group. They may already be willing to buy without large incentives.”",src:"M6:56"}]},
 {id:"cs3",group:"Case scenarios",title:"Vending machine candy bars",src:"M6:15",
  intro:"A vending machine owner wants to organize candy bars by nutrition (calories, sugar, fat, sodium, protein, serving size) instead of brand or popularity. There is no “healthy” or “unhealthy” column.",
  qs:[
@@ -838,58 +765,58 @@ const PRACTICE=[
  intro:"A trucking company predicts travel time (hours) from miles traveled: Predicted travel time = 1.2739 + 0.0678 × miles.",
  qs:[
  {q:"Predicted travel time for a 100-mile trip?",opts:["8.0539 hours","9.3 hours","6.78 hours","1.2739 hours"],why:"1.2739 + 0.0678 × 100 = 8.0539.",src:"M3:24"},
- {q:"The actual time was 9.3 hours. Residual and meaning?",opts:["+1.2461; the model underpredicted","−1.2461; the model overpredicted","+1.2461; the model overpredicted","0; perfect prediction"],why:"Residual = actual − predicted = 9.3 − 8.0539 = 1.2461. Positive means the model underpredicted.",src:"M3:25"},
- {q:"Three trips have errors 1.2, −0.5, 0.6. MAE?",opts:["0.77 hours","0.43 hours","0.83 hours","2.3 hours"],why:"MAE averages absolute errors: (1.2 + 0.5 + 0.6) / 3 = 0.77.",src:"M3:31"},
- {q:"Same errors. RMSE?",opts:["0.83 hours","0.77 hours","0.683 hours","2.05 hours"],why:"Squared errors 1.44, 0.25, 0.36; average 0.683; √0.683 = 0.83.",src:"M3:31"},
+ {f:"Residual = actual − predicted",q:"The actual time was 9.3 hours. Residual and meaning?",opts:["+1.2461; the model underpredicted","−1.2461; the model overpredicted","+1.2461; the model overpredicted","0; perfect prediction"],why:"Residual = actual − predicted = 9.3 − 8.0539 = 1.2461. Positive means the model underpredicted.",src:"M3:25"},
+ {f:"MAE = (sum of absolute errors) ÷ n",q:"Three trips have errors 1.2, −0.5, 0.6. MAE?",opts:["0.77 hours","0.43 hours","0.83 hours","2.3 hours"],why:"MAE averages absolute errors: (1.2 + 0.5 + 0.6) / 3 = 0.77.",src:"M3:31"},
+ {f:"RMSE = √(sum of squared errors ÷ n)",q:"Same errors. RMSE?",opts:["0.83 hours","0.77 hours","0.683 hours","2.05 hours"],why:"Squared errors 1.44, 0.25, 0.36; average 0.683; √0.683 = 0.83.",src:"M3:31"},
  {q:"What does the intercept 1.2739 mean, and what's the caution?",opts:["Predicted time when miles = 0; not always meaningful if X = 0 is unrealistic","Hours added per mile; always meaningful","The model's average error; always meaningful","R² of the model; only meaningful above 1"],why:"Slide 25: the intercept is the prediction when X = 0, which isn't meaningful if X = 0 is unrealistic or outside the data range.",src:"M3:25"}]},
 {id:"we2",group:"Worked examples",title:"KNN confusion matrix",src:"M3:82",
  intro:"KNN (K = 5) on 150 test customers. Confusion matrix rows are actual, columns are predicted: [[22, 34], [22, 72]] where class 0 = stayed current and class 1 = delinquent.",
  qs:[
- {q:"Accuracy?",opts:["62.7% ((22 + 72) / 150)","67.9%","76.6%","48.0%"],why:"Accuracy = correct / total = (22 + 72) / 150 = 0.627.",src:"M3:84"},
- {q:"Precision for the delinquent class?",opts:["67.9% (72 / (72 + 34))","76.6%","62.7%","50.0%"],why:"Precision = TP / (TP + FP) = 72 / 106 = 0.679. When the model flagged delinquent, it was right 67.9% of the time.",src:"M3:84"},
- {q:"Recall for the delinquent class?",opts:["76.6% (72 / (72 + 22))","67.9%","62.7%","23.4%"],why:"Recall = TP / (TP + FN) = 72 / 94 = 0.766. The model caught 76.6% of delinquent customers and missed 23.4%.",src:"M3:84"},
- {q:"Precision and recall are 67.9% and 76.6%. F1?",opts:["About 72%","About 144%","About 62.7%","About 52%"],why:"Slide 84 reports F1 = 0.720. F1 = 2 × (P × R) / (P + R) = 2 × 0.679 × 0.766 / 1.445 ≈ 0.72.",src:"M3:84"}]},
+ {f:"Accuracy = (TP + TN) ÷ total",q:"Accuracy?",opts:["62.7% ((22 + 72) / 150)","67.9%","76.6%","48.0%"],why:"Accuracy = correct / total = (22 + 72) / 150 = 0.627.",src:"M3:84"},
+ {f:"Precision = TP ÷ (TP + FP)",q:"Precision for the delinquent class?",opts:["67.9% (72 / (72 + 34))","76.6%","62.7%","50.0%"],why:"Precision = TP / (TP + FP) = 72 / 106 = 0.679. When the model flagged delinquent, it was right 67.9% of the time.",src:"M3:84"},
+ {f:"Recall = TP ÷ (TP + FN)",q:"Recall for the delinquent class?",opts:["76.6% (72 / (72 + 22))","67.9%","62.7%","23.4%"],why:"Recall = TP / (TP + FN) = 72 / 94 = 0.766. The model caught 76.6% of delinquent customers and missed 23.4%.",src:"M3:84"},
+ {f:"F1 = 2 × (P × R) ÷ (P + R)",q:"Precision and recall are 67.9% and 76.6%. F1?",opts:["About 72%","About 144%","About 62.7%","About 52%"],why:"Slide 84 reports F1 = 0.720. F1 = 2 × (P × R) / (P + R) = 2 × 0.679 × 0.766 / 1.445 ≈ 0.72.",src:"M3:84"}]},
 {id:"we3",group:"Worked examples",title:"Cutoff tradeoff",src:"M3:88",
  intro:"50 observations, 11 of them actual Class 1. The deck reports error rates at three cutoffs: 0.75, 0.50, and 0.25.",
  qs:[
- {q:"At cutoff 0.75: n01 = 15 of 39 actual Class 0. Class 0 error rate?",opts:["38.46%","45.45%","40.00%","61.54%"],why:"Class 0 error = n01 / (n01 + n00) = 15 / 39 = 38.46%.",src:"M3:88"},
- {q:"At cutoff 0.75: n10 = 5 of 11 actual Class 1. Class 1 error rate?",opts:["45.45%","38.46%","9.09%","36.36%"],why:"Class 1 error = n10 / (n11 + n10) = 5 / 11 = 45.45%.",src:"M3:88"},
- {q:"Which cutoff has the lowest Class 1 error?",opts:["0.25 (9.09%)","0.50 (36.36%)","0.75 (45.45%)","They are equal"],why:"Lowering the cutoff classifies more observations as Class 1, so Class 1 error falls: 45.45% → 36.36% → 9.09%.",src:"M3:90"},
- {q:"What happens to Class 0 error as the cutoff drops from 0.75 to 0.25?",opts:["It rises (38.46% → 61.54% → 84.62%)","It falls","It stays at 38.46%","It becomes 0"],why:"More Class 0 observations are incorrectly classified as Class 1 when the cutoff is lowered.",src:"M3:90"}]},
+ {f:"Class 0 error rate = n01 ÷ (n01 + n00)",q:"At cutoff 0.75: n01 = 15 of 39 actual Class 0. Class 0 error rate?",opts:["38.46%","45.45%","40.00%","61.54%"],why:"Class 0 error = n01 / (n01 + n00) = 15 / 39 = 38.46%.",src:"M3:88"},
+ {f:"Class 1 error rate = n10 ÷ (n11 + n10)",q:"At cutoff 0.75: n10 = 5 of 11 actual Class 1. Class 1 error rate?",opts:["45.45%","38.46%","9.09%","36.36%"],why:"Class 1 error = n10 / (n11 + n10) = 5 / 11 = 45.45%.",src:"M3:88"},
+ {f:"Class 1 error rate = n10 ÷ (n11 + n10)",q:"Class 1 errors: n10 = 5 at cutoff 0.75, 4 at 0.50, 1 at 0.25 (11 actual Class 1). Which cutoff has the lowest Class 1 error?",opts:["0.25 (9.09%)","0.50 (36.36%)","0.75 (45.45%)","They are equal"],why:"Lowering the cutoff classifies more observations as Class 1, so Class 1 error falls: 45.45% → 36.36% → 9.09%.",src:"M3:90"},
+ {f:"Class 0 error rate = n01 ÷ (n01 + n00)",q:"Class 0 errors: n01 = 15 at cutoff 0.75, 24 at 0.50, 33 at 0.25 (39 actual Class 0). What happens to Class 0 error as the cutoff drops?",opts:["It rises (38.46% → 61.54% → 84.62%)","It falls","It stays at 38.46%","It becomes 0"],why:"More Class 0 observations are incorrectly classified as Class 1 when the cutoff is lowered.",src:"M3:90"}]},
 {id:"we4",group:"Worked examples",title:"Gini split",src:"M4:57",
  intro:"A parent node of 12 records is split on attribute B. Child N1 = (5 current, 1 delinquent); child N2 = (2 current, 4 delinquent). Parent Gini = 0.486.",
  qs:[
- {q:"Gini(N1)?",opts:["0.278","0.444","0.486","0.167"],why:"1 − (5/6)² − (1/6)² = 1 − 0.694 − 0.028 = 0.278.",src:"M4:57"},
- {q:"Gini(N2)?",opts:["0.444","0.278","0.500","0.333"],why:"1 − (2/6)² − (4/6)² = 1 − 0.111 − 0.444 = 0.444.",src:"M4:57"},
- {q:"Weighted Gini after the split?",opts:["0.361","0.722","0.444","0.486"],why:"(6/12 × 0.278) + (6/12 × 0.444) = 0.139 + 0.222 = 0.361.",src:"M4:58"},
- {q:"Gain from the split?",opts:["0.125","0.361","0.847","−0.125"],why:"Gain = P − M = 0.486 − 0.361 = 0.125.",src:"M4:58"}]},
+ {f:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total",q:"Gini(N1)?",opts:["0.278","0.444","0.486","0.167"],why:"1 − (5/6)² − (1/6)² = 1 − 0.694 − 0.028 = 0.278.",src:"M4:57"},
+ {f:"Gini = 1 − p₀² − p₁², where p = class count ÷ node total",q:"Gini(N2)?",opts:["0.444","0.278","0.500","0.333"],why:"1 − (2/6)² − (4/6)² = 1 − 0.111 − 0.444 = 0.444.",src:"M4:57"},
+ {f:"Weighted Gini = Σ (child size ÷ parent size) × child Gini",q:"Weighted Gini after the split?",opts:["0.361","0.722","0.444","0.486"],why:"(6/12 × 0.278) + (6/12 × 0.444) = 0.139 + 0.222 = 0.361.",src:"M4:58"},
+ {f:"Gain = parent impurity − weighted child impurity",q:"Gain from the split?",opts:["0.125","0.361","0.847","−0.125"],why:"Gain = P − M = 0.486 − 0.361 = 0.125.",src:"M4:58"}]},
 {id:"we5",group:"Worked examples",title:"Grocery rule",src:"M5:39",
  intro:"10 grocery transactions. Rule: {bread, jelly} → {peanut butter}. Bread + jelly appear together in transactions 1, 2, 4, and 6; all three items appear in 1 and 2; peanut butter appears in 4 of 10 transactions.",
  qs:[
- {q:"Support of {bread, jelly, peanut butter}?",opts:["20% (2 of 10)","40% (4 of 10)","50% (2 of 4)","2%"],why:"Support = support count / total transactions = 2 / 10 = 20%.",src:"M5:41"},
- {q:"Confidence of the rule?",opts:["50% (2 of 4)","20%","40%","125%"],why:"Confidence = count{bread, jelly, PB} / count{bread, jelly} = 2 / 4 = 0.50.",src:"M5:43"},
- {q:"Lift of the rule?",opts:["1.25","0.80","0.20","2.50"],why:"Lift = confidence / support(PB) = 0.50 / 0.40 = 1.25: the rule is 25% better than guessing from peanut butter's overall popularity.",src:"M5:45"},
+ {f:"Support = count(itemset) ÷ total transactions",q:"Support of {bread, jelly, peanut butter}?",opts:["20% (2 of 10)","40% (4 of 10)","50% (2 of 4)","2%"],why:"Support = support count / total transactions = 2 / 10 = 20%.",src:"M5:41"},
+ {f:"Confidence = count(A and C) ÷ count(A)",q:"Confidence of the rule?",opts:["50% (2 of 4)","20%","40%","125%"],why:"Confidence = count{bread, jelly, PB} / count{bread, jelly} = 2 / 4 = 0.50.",src:"M5:43"},
+ {f:"Lift = confidence ÷ support(consequent)",q:"Lift of the rule?",opts:["1.25","0.80","0.20","2.50"],why:"Lift = confidence / support(PB) = 0.50 / 0.40 = 1.25: the rule is 25% better than guessing from peanut butter's overall popularity.",src:"M5:45"},
  {q:"Does the rule mean bread and jelly cause peanut butter purchases?",opts:["No; association does not mean causation","Yes, because lift > 1","Yes, because confidence is 50%","Only if support > 30%"],why:"Slide 40: the rule does not mean bread and jelly cause peanut butter purchases.",src:"M5:40"}]},
 {id:"we6",group:"Worked examples",title:"Apriori",src:"M5:31",
  intro:"Transactions: T1 {A, C, D}, T2 {B, C, E}, T3 {A, B, C, E}, T4 {B, E}, T5 {A, C, E}. Minimum support = 0.4.",
  qs:[
- {q:"Minimum number of transactions an itemset must appear in?",opts:["2","4","1","3"],why:"0.4 × 5 transactions = 2.",src:"M5:31"},
+ {f:"Minimum count = minimum support × number of transactions",q:"Minimum number of transactions an itemset must appear in?",opts:["2","4","1","3"],why:"0.4 × 5 transactions = 2.",src:"M5:31"},
  {q:"Which single item is dropped in the first iteration?",opts:["D (support 0.2)","A","C","E"],why:"D appears in only 1 of 5 transactions, so it's removed, along with every larger itemset containing D.",src:"M5:32"},
  {q:"Which pair is pruned in the second iteration?",opts:["{A, B} (support 0.2)","{A, E}","{B, C}","{C, E}"],why:"{A, B} appears only in T3 (1/5 = 0.2), so any 3-itemset with both A and B is pruned.",src:"M5:33"},
- {q:"Confidence of {A, C} → {E}? Keep it at a 60% minimum confidence?",opts:["2/3 ≈ 66%; keep","2/3 ≈ 66%; discard","40%; discard","100%; keep"],why:"Support{A, C, E} = 2/5, support{A, C} = 3/5, so confidence = 2/3. It's kept at 60% and discarded at 70%.",src:"M5:36"}]},
+ {f:"Confidence({A,C} → {E}) = support({A,C,E}) ÷ support({A,C})",q:"Confidence of {A, C} → {E}? Keep it at a 60% minimum confidence?",opts:["2/3 ≈ 66%; keep","2/3 ≈ 66%; discard","40%; discard","100%; keep"],why:"Support{A, C, E} = 2/5, support{A, C} = 3/5, so confidence = 2/3. It's kept at 60% and discarded at 70%.",src:"M5:36"}]},
 {id:"we7",group:"Worked examples",title:"Choosing K in KNN",src:"M3:49",
  intro:"Predicting whether a customer enrolls in an AutoCare extended service plan with KNN.",
  qs:[
  {q:"K = 3: 2 neighbors enrolled, 1 didn't. Prediction?",opts:["Enroll","Not enroll","Tie, no prediction","67% enroll, no class"],why:"KNN classification uses a majority vote: 2 of 3 enrolled.",src:"M3:49"},
  {q:"K = 7: only 3 of 7 neighbors enrolled. Prediction?",opts:["Not enroll","Enroll","Tie, no prediction","43% enroll, no class"],why:"Majority (4 of 7) did not enroll, so the same customer gets a different prediction. Choosing K matters.",src:"M3:49"},
- {q:"KNN regression, K = 5: neighbors sold for $28k, $29.5k, $30k, $28.75k, $29.25k. Prediction?",opts:["About $29,100","About $30,000","About $28,000","About $145,500"],why:"KNN regression averages the neighbors: $145,500 / 5 = $29,100.",src:"M3:57"}]},
+ {f:"KNN regression prediction = average of the K neighbors' values",q:"KNN regression, K = 5: neighbors sold for $28k, $29.5k, $30k, $28.75k, $29.25k. Prediction?",opts:["About $29,100","About $30,000","About $28,000","About $145,500"],why:"KNN regression averages the neighbors: $145,500 / 5 = $29,100.",src:"M3:57"}]},
 {id:"we8",group:"Worked examples",title:"Elbow and scaling",src:"M6:12",
  intro:"Inertia by K: 1 → 10,000; 2 → 5,500; 3 → 3,200; 4 → 2,700; 5 → 2,400; 6 → 2,250. A dataset has mean credit score 700 (SD 50) and mean payment $600 (SD $150).",
  qs:[
  {q:"Where is the elbow?",opts:["K = 3","K = 6","K = 1","K = 2"],why:"Slide 12: there is less improvement from K = 3 to 4 and from 4 to 5, so K = 3 may be the elbow.",src:"M6:12"},
  {q:"Why not just pick K = 6, the lowest inertia?",opts:["Inertia almost always drops as K grows; lowest isn't automatically best","K = 6 has the highest silhouette","Inertia rises after K = 3","K-Means can't use K above 5"],why:"Slide 12: if every customer had their own cluster, inertia would be extremely low but not useful.",src:"M6:12"},
- {q:"Scaled value of a 750 credit score?",opts:["+1.0","+50","+0.5","−1.0"],why:"(750 − 700) / 50 = +1.0, one standard deviation above average.",src:"M6:25"},
- {q:"Scaled value of a $900 payment?",opts:["+2.0","+300","+1.5","+0.67"],why:"(900 − 600) / 150 = +2.0, two standard deviations above average.",src:"M6:25"}]}
+ {f:"Scaled value = (value − mean) ÷ standard deviation",q:"Scaled value of a 750 credit score?",opts:["+1.0","+50","+0.5","−1.0"],why:"(750 − 700) / 50 = +1.0, one standard deviation above average.",src:"M6:25"},
+ {f:"Scaled value = (value − mean) ÷ standard deviation",q:"Scaled value of a $900 payment?",opts:["+2.0","+300","+1.5","+0.67"],why:"(900 − 600) / 150 = +2.0, two standard deviations above average.",src:"M6:25"}]}
 ];
 
 // ===== FORMULA SHEET =====
@@ -965,27 +892,17 @@ const FORMULAS=[
  parts:[["TP + FN","all actual positives"]],
  use:"“Of all actual positives, how many did we catch?” Matters when <b>missing positives is costly</b>. Lowering the cutoff raises recall.",
  ex:"KNN: 72 / (72 + 22) = <b>76.6%</b> caught, 23.4% missed. (M3 slide 84)"},
-{g:"Classification",name:"Specificity",src:"M3:83",
- f:"Specificity = "+FR("TN","TN + FP"),
- parts:[["TN + FP","all actual negatives"]],
- use:"Share of actual negatives correctly identified.",
- ex:"The slides give the formula without a worked example."},
 {g:"Classification",name:"F1 score",src:"M4:90",
  f:"F1 = "+FR("2 × (Precision × Recall)","Precision + Recall"),
  parts:[["Precision, Recall","as defined above, as decimals"]],
  use:"One score balancing precision and recall. A common way to pick the “best” cutoff is the one with the highest F1 (M4 slide 110).",
  ex:"Decision tree: P = 0.685, R = 0.679 → 2(0.685 × 0.679) / 1.364 = <b>0.682</b>. Logistic regression: P = 0.764, R = 0.839 → <b>0.800</b>. (M4 slides 90, 106)",
  flag:"Module 4 slides 90, 106, and 110 print F1 as “2 × (Precision + Recall) / (Precision + Recall)”, which always equals 2. The deck's own results (68.2% and 80%) only come out with the multiplication shown here, so the slide has a typo."},
-{g:"Classification",name:"Overall error rate",src:"M3:81",
- f:"Overall error rate = "+FR("n<sub>01</sub> + n<sub>10</sub>","n<sub>11</sub> + n<sub>10</sub> + n<sub>01</sub> + n<sub>00</sub>")+"&emsp; Accuracy = 1 − overall error rate",
- parts:[["n<sub>ab</sub>","count with actual class a, predicted class b"],["n<sub>01</sub>","actual 0, predicted 1 (false positive)"],["n<sub>10</sub>","actual 1, predicted 0 (false negative)"]],
- use:"Share misclassified. It treats false positives and false negatives the same, which is why class-specific error rates exist.",
- ex:"Cutoff 0.75 (50 obs): (15 + 5) / 50 = <b>40.00%</b>. (M3 slide 88)"},
-{g:"Classification",name:"Class 1 and Class 0 error rates",src:"M3:86",
- f:"Class 1 error = "+FR("n<sub>10</sub>","n<sub>11</sub> + n<sub>10</sub>")+"&emsp; Class 0 error = "+FR("n<sub>01</sub>","n<sub>01</sub> + n<sub>00</sub>"),
- parts:[["Class 1 error","share of actual Class 1 that was missed"],["Class 0 error","share of actual Class 0 that was falsely flagged"]],
- use:"Accounts for asymmetric costs. <b>Lowering the cutoff</b> lowers Class 1 error but raises Class 0 error.",
- ex:"Cutoff 0.75: Class 1 = 5/11 = 45.45%, Class 0 = 15/39 = 38.46%. Cutoff 0.25: Class 1 = 1/11 = <b>9.09%</b>, Class 0 = 33/39 = <b>84.62%</b>. (M3 slides 88–90)"},
+{g:"Classification",name:"Class 1, Class 0, and overall error rates",src:"M3:86",
+ f:"Class 1 error = "+FR("n<sub>10</sub>","n<sub>11</sub> + n<sub>10</sub>")+"&emsp; Class 0 error = "+FR("n<sub>01</sub>","n<sub>01</sub> + n<sub>00</sub>")+"&emsp; Overall = "+FR("n<sub>01</sub> + n<sub>10</sub>","total"),
+ parts:[["n<sub>ab</sub>","count with actual class a, predicted class b"],["Class 1 error","share of actual Class 1 that was missed"],["Class 0 error","share of actual Class 0 that was falsely flagged"]],
+ use:"<i>Not named in the midterm review; included just in case.</i> Lowering the cutoff lowers Class 1 error but raises Class 0 error. Accuracy = 1 − overall error rate.",
+ ex:"Cutoff 0.75: Class 1 = 5/11 = 45.45%, Class 0 = 15/39 = 38.46%, overall = 20/50 = 40.00%. Cutoff 0.25: Class 1 = 1/11 = <b>9.09%</b>, Class 0 = 33/39 = <b>84.62%</b>. (M3 slides 88–90)"},
 {g:"Classification",name:"Logistic function and cutoff",src:"M4:73",
  f:"p = "+FR("1","1 + e<sup>−risk score</sup>")+"&emsp; predict Class 1 if p ≥ cutoff",
  parts:[["risk score","features × coefficients combined; any number"],["p","probability of Class 1, between 0 and 1"],["cutoff","usually 0.50 by default"]],
@@ -1004,11 +921,6 @@ const FORMULAS=[
  use:"Uncertainty in a node. 0 = pure; maximum log<sub>2</sub>C when classes are equal (1.0 for two classes).",
  ex:"(1,5): −(1/6)log₂(1/6) − (5/6)log₂(5/6) = 0.431 + 0.219 = <b>0.650</b>. (2,4) → <b>0.918</b>. (3,3) → <b>1.0</b>. (M4 slides 96, 98)",
  flag:"Module 4 slide 65 prints “– (5/6) log2 (1/6)” in the (1,5) example. It should be log2(5/6); the 0.65 answer uses the correct term."},
-{g:"Decision trees",name:"Classification error",src:"M4:68",
- f:"Error = 1 − max(p<sub>i</sub>)",
- parts:[["max(p<sub>i</sub>)","share of the majority class"]],
- use:"Share of records that would be wrong if the node became a leaf now. 0 = pure; maximum 1 − 1/C (0.5 for two classes). <i>Not named in the midterm review.</i>",
- ex:"(7,3) → 1 − 0.7 = <b>0.30</b>; (1,5) → <b>1/6</b>; (2,4) → <b>1/3</b>; (3,3) → <b>0.5</b>. (M4 slides 68–70, 97)"},
 {g:"Decision trees",name:"Weighted impurity after a split (M)",src:"M4:48",
  f:"M = Σ "+FR("child size","parent size")+" × child impurity",
  parts:[["child size / parent size","weight, so bigger children count more"]],
@@ -1074,15 +986,13 @@ const FORMULAS=[
 
 /* ============ TOPICS & ITEMS ============ */
 const TOPICS=[
- {id:"exam",name:"Exam format & strategy"},
  {id:"sel",name:"Model selection & common traps"},
  {id:"t1",name:"Area 1 · Business context, responsible use, tools"},
  {id:"t2",name:"Area 2 · Python, data prep, DataFrames"},
  {id:"t3",name:"Area 3 · Linear regression, KNN, metrics"},
  {id:"t4",name:"Area 4 · Decision trees & logistic regression"},
  {id:"t5",name:"Area 5 · Association rules"},
- {id:"t6",name:"Area 6 · K-Means clustering"},
- {id:"x",name:"Extra · in modules, not on the review"}
+ {id:"t6",name:"Area 6 · K-Means clustering"}
 ];
 const ITEMS=[...REVIEW_ITEMS,...MOD_ITEMS];
 const byId=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
@@ -1093,6 +1003,7 @@ function srcLabel(src){const [d,s]=String(src).split(":");return (d==="R"?"Revie
 const KEY="buan4382-midterm-study-v2";
 const DEF={items:{},step:0,fmt:"mc",topic:"core",weak:false,prac:{},tab:"drill",ptab:0,fgroup:"All",theme:"auto"};
 let S=load();
+if(!["core","all",...TOPICS.map(t=>t.id)].includes(S.topic))S.topic="core";
 function load(){try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&typeof r==="object")return Object.assign(JSON.parse(JSON.stringify(DEF)),r)}catch(e){}return JSON.parse(JSON.stringify(DEF))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function st(id){if(!S.items[id])S.items[id]={lv:-1,due:0,miss:0,right:0};return S.items[id]}
@@ -1116,7 +1027,7 @@ function pickNext(p,ex){
 }
 function record(id,ok){
   S.step++;const s=st(id);
-  if(ok){s.lv=Math.max(s.lv,0)+1;s.right++;s.due=S.step+(s.lv===1?3:8)}
+  if(ok){s.lv=byId[id]&&byId[id].easy?3:Math.max(s.lv,0)+1;s.right++;s.due=S.step+(s.lv===1?3:8)}
   else{s.lv=0;s.miss++;s.due=S.step+2}
   lastId=id;save();renderTop();renderWeak();
 }
@@ -1196,7 +1107,7 @@ function renderWeak(){
 
 /* ============ RENDER: DRILL ============ */
 let cur=null,answered=false,undoSnap=null;
-function metaLine(it,status){return `<div class="meta"><span>${esc(topicName(it.t).replace(/^Extra · .*/,"Extra"))}${it.t==="x"?'<span class="tag">not on review</span>':""}</span><span>${status} · ${esc(srcLabel(it.src))}</span></div>`}
+function metaLine(it,status){return `<div class="meta"><span>${esc(topicName(it.t).replace(/^Extra · .*/,"Extra"))}${it.easy?'<span class="tag">just in case · retires after 1</span>':""}</span><span>${status} · ${esc(srcLabel(it.src))}</span></div>`}
 function renderDrill(){
   document.querySelectorAll("#fmtSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.fmt===S.fmt));
   $("#topicSel").value=S.topic;renderWeak();
@@ -1214,7 +1125,7 @@ function renderDrill(){
     body=`<form class="fill" id="fillForm" autocomplete="off"><input id="fillIn" placeholder="Type your answer" aria-label="Your answer" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Check</button><button class="btn ghost" type="button" id="idk">Show me</button></form>
     <div class="hint">Spelling, capitalization, and abbreviations are forgiven; key words count. <kbd>Enter</kbd> to check, <kbd>Enter</kbd> again for next.</div>`;
   }
-  $("#drillCard").innerHTML=metaLine(cur,status)+`<p class="prompt">${esc(qText)}</p>${body}<div class="fb" id="fb"></div>`;
+  $("#drillCard").innerHTML=metaLine(cur,status)+`<p class="prompt">${esc(qText)}</p>${hintBox(cur.hint)}${body}<div class="fb" id="fb"></div>`;
   if(S.fmt==="mc"){document.querySelectorAll("#opts .opt").forEach(b=>b.onclick=()=>answerMC(b))}
   else{const inp=$("#fillIn");$("#fillForm").onsubmit=e=>{e.preventDefault();if(answered)return nextQ();answerFill(inp.value)};$("#idk").onclick=()=>{if(!answered)answerFill("")};setTimeout(()=>inp.focus({preventScroll:true}),0)}
 }
@@ -1224,6 +1135,7 @@ function feedback(ok,html){
   const u=fb.querySelector("[data-undo]");if(u)u.onclick=overrideRight;
   fb.scrollIntoView({block:"nearest",behavior:"smooth"});
 }
+const hintBox=h=>h?`<div class="hintf"><b>Formula</b><span>${esc(h)}</span></div>`:"";
 const whyLine=it=>it.why?`<div class="why">${esc(it.why)}</div>`:"";
 const srcLine=it=>`<div class="why">Source: ${esc(srcLabel(it.src))}${st(it.id).lv>=3?" · <b>Retired!</b>":""}</div>`;
 function answerMC(btn){
@@ -1264,7 +1176,7 @@ function renderMatch(){
   const label=S.topic==="all"?"Everything":S.topic==="core"?"All midterm topics":topicName(S.topic);
   $("#drillCard").innerHTML=`<div class="meta"><span>${esc(label)}</span><span>Matching · ${items.length} pairs</span></div>
    <p class="prompt" style="font-size:1.1rem">Click a prompt, then its answer.</p>
-   <div class="match"><div class="col" id="mL">${items.map(i=>`<button class="opt" data-id="${i.id}"><span>${esc(i.q)}<span class="pairtag"></span></span></button>`).join("")}</div>
+   <div class="match"><div class="col" id="mL">${items.map(i=>`<button class="opt" data-id="${i.id}"><span>${esc(i.q)}${i.hint?`<span class="pairhint">${esc(i.hint)}</span>`:""}<span class="pairtag"></span></span></button>`).join("")}</div>
    <div class="col" id="mR">${answers.map(a=>`<button class="opt" data-a="${esc(a)}"><span>${esc(a)}</span></button>`).join("")}</div></div>
    <div class="fb" id="fb"></div>`;
   document.querySelectorAll("#mL .opt").forEach(b=>b.onclick=()=>{if(b.disabled)return;document.querySelectorAll("#mL .opt").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");mround.sel=b.dataset.id});
@@ -1325,7 +1237,7 @@ function renderPQ(){
   $("#pcard").innerHTML=`<div class="meta"><span>${esc(p.group)}</span><span>${esc(srcLabel(q.src||p.src))}</span></div>
    ${p.intro?`<div class="scenario">${esc(p.intro)}</div>`:""}
    ${p.qs.length>1?`<div class="qcount">Question ${pq.i+1} of ${p.qs.length}</div>`:""}
-   <p class="prompt">${esc(q.q)}</p>
+   <p class="prompt">${esc(q.q)}</p>${hintBox(q.f)}
    <div class="opts" id="popts">${pq.order.map((oi,k)=>`<button class="opt" data-oi="${oi}"><span class="k">${k+1}</span><span>${esc(q.opts[oi])}</span></button>`).join("")}</div>
    <div class="fb" id="pfb"></div>
    <div class="stats">${r.best==null?"Not completed yet":`Best score: ${r.best}/${p.qs.length} · attempts: ${r.runs}`}</div>`;
@@ -1353,7 +1265,7 @@ function setTab(t){S.tab=t;save();document.querySelectorAll("nav.tabs button").f
   if(t==="practice")startPractice();else if(t==="formulas")renderFormulas();else renderDrill()}
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 const cnt=f=>ITEMS.filter(f).length;
-$("#topicSel").innerHTML=`<option value="core">All midterm topics (${cnt(i=>i.t!=="x")})</option>`+TOPICS.map(t=>`<option value="${t.id}">${esc(t.name)} (${cnt(i=>i.t===t.id)})</option>`).join("")+`<option value="all">Everything, including extras (${ITEMS.length})</option>`;
+$("#topicSel").innerHTML=`<option value="core">All topics (${ITEMS.length})</option>`+TOPICS.map(t=>`<option value="${t.id}">${esc(t.name)} (${cnt(i=>i.t===t.id)})</option>`).join("");
 $("#topicSel").onchange=e=>{S.topic=e.target.value;save();renderDrill()};
 document.querySelectorAll("#fmtSeg button").forEach(b=>b.onclick=()=>{S.fmt=b.dataset.fmt;save();renderDrill()});
 $("#drillWeak").onclick=()=>{S.weak=true;save();setTab("drill")};
