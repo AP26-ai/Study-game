@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ITSS 4360 Exam 2 Study Game</title>
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#ffffff; --surface2:#efece5; --ink:#1c1d21; --muted:#5d6066; --line:#dcd8cf;
+  --accent:#1f5f8b; --accent-ink:#ffffff;
+  --ok:#1f7a4f; --ok-bg:#e3f3ea; --bad:#b3263b; --bad-bg:#fbe6e9;
+  --l-unseen:#c9c5bc; --l0:#d1495b; --l1:#e2a400; --l2:#3a7bd5; --l3:#2e9e6a;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+  --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121417; --surface:#1b1e23; --surface2:#23272e; --ink:#e9e7e2; --muted:#a2a6ad; --line:#30353d;
+    --accent:#6fb0e0; --accent-ink:#0d1a24;
+    --ok:#5fd19a; --ok-bg:#16382a; --bad:#ff8a98; --bad-bg:#3d1c22;
+    --l-unseen:#3a3f47; --l0:#e0596b; --l1:#e8b324; --l2:#5b95e6; --l3:#3fb87f;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1b1e23; --surface2:#23272e; --ink:#e9e7e2; --muted:#a2a6ad; --line:#30353d;
+  --accent:#6fb0e0; --accent-ink:#0d1a24;
+  --ok:#5fd19a; --ok-bg:#16382a; --bad:#ff8a98; --bad-bg:#3d1c22;
+  --l-unseen:#3a3f47; --l0:#e0596b; --l1:#e8b324; --l2:#5b95e6; --l3:#3fb87f;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 64px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+h1{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.hbtns{display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:14px;line-height:1.2}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.ghost{background:transparent}
+.btn:focus-visible,.chip:focus-visible,.opt:focus-visible,.mcard:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pill[hidden]{display:none}
+.pill{display:inline-block;background:var(--l0);color:#fff;border-radius:99px;font-size:12px;padding:1px 8px;margin-left:6px;font-weight:600}
+
+.progress{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:18px}
+.ptop{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px}
+.ptop strong{font-family:var(--serif);font-size:20px}
+.bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--l-unseen);margin:10px 0 8px}
+.bar span{display:block;height:100%;transition:width .35s ease}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tab{background:none;border:none;padding:10px 14px;cursor:pointer;color:var(--muted);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab small{font-weight:400;color:var(--muted);margin-left:4px}
+
+.controls{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.seg{display:inline-flex;background:var(--surface2);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:none;background:none;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:transparent;border-radius:99px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.dots{display:inline-flex;gap:4px;align-items:center}
+.dots b{width:8px;height:8px;border-radius:50%;background:var(--l-unseen);display:inline-block}
+.dots b.on{background:var(--l3)}
+.q{font-family:var(--serif);font-size:22px;line-height:1.35;margin:0 0 18px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt kbd{flex:none;font:600 12px var(--sans);width:22px;height:22px;border-radius:6px;background:var(--surface2);display:grid;place-items:center;color:var(--muted);margin-top:1px}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt:disabled{cursor:default}
+.opt.dim{opacity:.55}
+
+.fb{margin-top:18px;border-radius:12px;padding:16px 18px;animation:pop .22s ease}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}
+.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.fb h3{margin:0 0 4px;font-size:22px;font-family:var(--serif)}
+.fb p{margin:4px 0 0;color:var(--ink)}
+.fb .why{margin-top:10px;padding-top:10px;border-top:1px solid currentColor;border-top-color:color-mix(in srgb,currentColor 25%,transparent)}
+.fb .why b{color:inherit}
+.fb .src{font-size:12px;color:var(--muted);margin-top:6px}
+.next{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:14px;text-decoration:underline}
+@keyframes pop{from{transform:scale(.98);opacity:0}to{transform:none;opacity:1}}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.fill{display:flex;gap:8px;flex-wrap:wrap}
+.fill input{flex:1 1 220px;font:inherit;font-size:18px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.fill input:focus{outline:none;border-color:var(--accent)}
+
+.match{display:grid;grid-template-columns:1.25fr 1fr;gap:12px}
+.mcol{display:grid;gap:8px;align-content:start}
+.mhead{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.mcard{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:15px;line-height:1.35;width:100%}
+.mcard:hover:not(:disabled){border-color:var(--accent)}
+.mcard.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.mcard.right{border-color:var(--ok);background:var(--ok-bg)}
+.mcard.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.mcard:disabled{cursor:default}
+.mcard .fix{display:block;margin-top:6px;font-size:13px;color:var(--bad);font-weight:600}
+.mcard .fix::before{content:"Correct: ";font-weight:400}
+
+.empty{text-align:center;padding:30px 10px}
+.empty h3{font-family:var(--serif);font-size:22px;margin:0 0 6px}
+
+.panel{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:20}
+.panel.open{display:block}
+.sheet{position:absolute;right:0;top:0;bottom:0;width:min(440px,100%);background:var(--bg);border-left:1px solid var(--line);padding:20px 16px;overflow-y:auto}
+.sheet h2{font-family:var(--serif);margin:0;font-size:24px}
+.wlist{list-style:none;padding:0;margin:14px 0;display:grid;gap:8px}
+.wlist li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.wlist .wq{color:var(--muted)}
+.wlist .wa{font-weight:600;margin-top:2px}
+.wlist .wm{float:right;font-size:12px;color:var(--bad);font-weight:700;margin-left:8px}
+.wlist .done{color:var(--l3)}
+.foot{margin-top:24px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+
+@media (max-width:640px){
+  h1{font-size:23px}
+  .q{font-size:19px}
+  .card{padding:16px}
+  .match{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>ITSS 4360 · Exam 2</h1>
+      <div class="sub" id="examline"></div>
+    </div>
+    <div class="hbtns">
+      <button class="btn" id="weakBtn" aria-haspopup="dialog">Weak spots<span class="pill" id="weakCount" hidden></span></button>
+      <button class="btn" id="themeBtn" title="Switch light/dark">Theme</button>
+    </div>
+  </header>
+
+  <section class="progress" aria-label="Mastery progress">
+    <div class="ptop"><span><strong id="retNum">0</strong> of <span id="totNum"></span> retired</span><span id="pctTxt" class="hint"></span></div>
+    <div class="bar" id="bar" role="img"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <div class="controls" id="controls"></div>
+  <main id="stage"></main>
+</div>
+
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="Weak spots">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2>Weak spots</h2>
+      <button class="btn ghost" id="closePanel">Close</button>
+    </div>
+    <p class="hint" style="margin:6px 0 0">Everything you've missed, most-missed first. Retired items show a check.</p>
+    <div style="margin-top:12px"><button class="btn primary" id="drillWeak">Drill only these</button></div>
+    <ul class="wlist" id="wlist"></ul>
+    <div class="foot">
+      Progress is saved in this browser only.
+      <div style="margin-top:8px"><button class="btn" id="resetAll">Reset all progress</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// All content below is taken from "ITSS 4360 Exam 2 Student Review Sheet" (modules 6-10).
+// Drill item: [id, topic, group, prompt, answer, altAnswers, extraDistractors, groupOnly]
+var TOPICS = {
+  m6: "M6 · Mobile & embedded",
+  m7: "M7 · Identity & access",
+  m8: "M8 · Infrastructure threats & monitoring",
+  m9: "M9 · Secure network design",
+  m10: "M10 · Wireless"
+};
+
+var DRILL = [
+// ---------- MODULE 6 ----------
+["m6-dc1","m6","devcat","Device category whose exposure is shared accounts, physical tampering and kiosk escape","Tablets / kiosks",["tablet","kiosk","tablets","kiosks"]],
+["m6-dc2","m6","devcat","Device category where session tokens and credentials create identity risk (email, chat, MFA prompts, SaaS)","Smartphones (iOS/Android)",["smartphone","phones","phone"]],
+["m6-dc3","m6","devcat","Device category with vendor firmware, low memory, limited logging and long lifetimes (cameras, printers, POS, HVAC)","Embedded / specialized devices",["embedded","specialized","embedded devices"]],
+["m6-dc4","m6","devcat","Device category with limited interfaces and management, used for badges and warehouse/industrial processes","Wearables / rugged scanners",["wearables","wearable","rugged scanners","rugged scanner"]],
+["m6-dc5","m6","devcat","Device category that typically supports mature patching and endpoint monitoring (hybrid work)","Laptops / 2-in-1s",["laptop","laptops","2-in-1"]],
+["m6-dc6","m6","kiosk","Mode that restricts a shared tablet/kiosk to one application","Single-app mode",["single app"],["Supervised enrollment","Session timeouts","Geofencing"]],
+["m6-dc7","m6","embctl","For embedded/specialized devices, which two things does the sheet call central?","Segmentation and secure updates",["segmentation","secure updates"],["Encryption and screen locks","Single-app mode and session timeouts","Remote lock and authorized wipe"]],
+
+["m6-as1","m6","surface","Mobile attack-surface category: lost or stolen devices, shoulder surfing, unauthorized resale, malicious accessories","Physical exposure",["physical"]],
+["m6-as2","m6","surface","Mobile attack-surface category: rogue and evil-twin Wi-Fi, MITM, compromised hotspots, manipulated DNS","Network exposure",["network"]],
+["m6-as3","m6","surface","Mobile attack-surface category: sideloaded apps, look-alike apps, malicious SDKs, excessive permissions","Application exposure",["application","app exposure"]],
+["m6-as4","m6","surface","Mobile attack-surface category: MFA push fatigue, stolen session tokens, cloud sync, screenshots and clipboard leakage","Identity and data exposure",["identity","identity/data","data exposure","identity exposure"]],
+["m6-as5","m6","surface","Mobile attack-surface category: links that carry data as well as power; unknown chargers, cables and peripherals","USB/charging exposure",["usb","charging","usb exposure"]],
+["m6-as6","m6","surfacectl","Controls listed for PHYSICAL mobile exposure","Encryption, screen locks, rapid loss reporting, remote lock and authorized wipe",["remote lock","screen lock","encryption"],null],
+["m6-as7","m6","surfacectl","Controls listed for APPLICATION mobile exposure","Trusted app sources, reputation checks, app allowlists and patching",["trusted app sources","app allowlists","allowlist"]],
+["m6-as8","m6","surfacectl","Controls listed for IDENTITY AND DATA mobile exposure","Phishing-resistant MFA, conditional access and managed-app data controls",["phishing-resistant mfa","conditional access"]],
+["m6-as9","m6","surfacectl","Controls listed for USB/charging exposure","Restrict data mode and unknown accessories; use approved charging methods",["restrict data mode","approved charging"]],
+
+["m6-ch1","m6","channel","Connectivity channel with exploitable flaws such as BlueBorne and unwanted discovery","Bluetooth",[]],
+["m6-ch2","m6","channel","Connectivity channel whose risks are a relay attack, malicious tag or unintended tap","NFC",["near field communication"]],
+["m6-ch3","m6","channel","Connectivity channel that provides connectivity outside the organization's perimeter","Cellular (4G/5G)",["cellular","4g","5g"]],
+["m6-ch4","m6","channel","Connectivity channel whose example risk is an impersonated SSID / evil twin","Wi-Fi",["wifi","wireless"]],
+["m6-ch5","m6","channel","Connectivity channel whose risk is a malicious charger, cable or accessory, or data extraction","USB",[]],
+["m6-ch6","m6","chanctl","Control emphasized for NFC","Require device unlock and limit use when unnecessary",["require device unlock","device unlock"]],
+["m6-ch7","m6","chanctl","Control emphasized for Bluetooth","Apply updates, disable when unnecessary and restrict discoverability",["restrict discoverability","disable when unnecessary"]],
+["m6-ch8","m6","chanctl","Control emphasized for cellular (4G/5G)","Apply identity and device-policy controls regardless of network used",["identity and device policy","device-policy controls"]],
+["m6-ch9","m6","chanctl","Control emphasized for USB","Enforce accessory restrictions and charging-only configurations",["charging-only","accessory restrictions"]],
+
+["m6-own1","m6","own","Ownership model: employee owns the personal device","BYOD",["bring your own device"]],
+["m6-own2","m6","own","Ownership model: employee selects from an approved menu","CYOD",["choose your own device"]],
+["m6-own3","m6","own","Ownership model: organization owns it; personal use is permitted","COPE",["corporate owned personally enabled"]],
+["m6-own4","m6","own","Ownership model: organization owns it; restricted to business use","COBO",["corporate owned business only"]],
+["m6-own5","m6","own","Ownership model with the least organizational control and greatest privacy complexity","BYOD",["bring your own device"]],
+["m6-own6","m6","own","Ownership model with the strongest organizational restrictions and least employee flexibility","COBO",["corporate owned business only"]],
+["m6-own7","m6","own","Ownership model that balances central management with employee flexibility","COPE",["corporate owned personally enabled"]],
+["m6-own8","m6","ownx","COPE stands for…","Corporate Owned, Personally Enabled",[],["Corporate Owned, Business Only","Choose Your Own Device","Bring Your Own Device"],true],
+["m6-own9","m6","ownx","COBO stands for…","Corporate Owned, Business Only",[],["Corporate Owned, Personally Enabled","Choose Your Own Device","Bring Your Own Device"],true],
+["m6-own10","m6","ownx","CYOD stands for…","Choose Your Own Device",[],["Corporate Owned, Personally Enabled","Corporate Owned, Business Only","Bring Your Own Device"],true],
+
+["m6-mg1","m6","mgmt","Sets device policies: minimum OS version, encryption, screen lock, enrollment, certificates, remote lock/wipe","MDM (Mobile Device Management)",["mdm","mobile device management"]],
+["m6-mg2","m6","mgmt","Controls corporate apps and their data, even where the entire personal device is not managed","MAM (Mobile Application Management)",["mam","mobile application management"]],
+["m6-mg3","m6","mgmt","Broader enterprise mobile management umbrella","EMM (Enterprise Mobility Management)",["emm","enterprise mobility management"]],
+["m6-mg4","m6","mgmt","Single-console management across mobile devices and other endpoint types","UEM (Unified Endpoint Management)",["uem","unified endpoint management"]],
+["m6-mg5","m6","mgmt","Grants or denies resource access based on compliance and risk signals","Conditional / posture-based access",["conditional access","posture-based access","posture based"]],
+["m6-mg6","m6","mgmt","Isolates managed work apps/data from personal applications; enables selective corporate-data removal","Containerization",["container","containers"]],
+["m6-mg7","m6","mgmt","Uses a physical/geographic boundary to trigger management rules","Geofencing",["geofence"]],
+["m6-mg8","m6","mgmt","Removes platform security restrictions; managed devices may be quarantined","Rooting / jailbreaking",["rooting","jailbreaking","jailbreak","root"]],
+["m6-mg9","m6","mgmt","States permitted behavior, monitoring/privacy expectations, hotspot restrictions and consent for management actions","Acceptable Use Policy (AUP)",["aup","acceptable use policy"]],
+["m6-mg10","m6","lockwipe","Disables interaction with a device (does not remove data)","Remote lock",["lock"]],
+["m6-mg11","m6","lockwipe","Removes data according to policy (corporate data or whole device, depending on tool/consent)","Remote wipe",["wipe"]],
+
+["m6-ph1","m6","phase","Mobile safeguard phase: enforce screen lock, full-device encryption, patch requirements, trusted apps","Prevent",["prevention"]],
+["m6-ph2","m6","phase","Mobile safeguard phase: push Wi-Fi/VPN/certificates, monitor compliance, block noncompliant endpoints","Manage",["management"]],
+["m6-ph3","m6","phase","Mobile safeguard phase: review sign-in logs, unusual data access, failed sign-ins, suspicious sessions","Detect",["detection"]],
+["m6-ph4","m6","phase","Mobile safeguard phase: verify report, revoke sessions/tokens, lock or selectively wipe, rotate credentials","Respond to loss",["respond","response"]],
+["m6-ph5","m6","lostorder","First step when responding to a lost device","Verify the report",["verify report","verify"],["Disable device access and revoke active sessions/tokens","Remotely lock or selectively wipe","Review logs and document the incident"],true],
+["m6-ph6","m6","lostorder","Lost-device response step right after verifying the report","Disable device access and revoke active sessions/tokens",["revoke sessions","revoke tokens","disable device access"],["Verify the report","Rotate exposed credentials","Review logs and document the incident"],true],
+["m6-ph7","m6","lostorder","Final lost-device response step","Review logs and document the incident",["document the incident","review logs"],["Verify the report","Remotely lock or selectively wipe","Rotate exposed credentials"],true],
+
+["m6-io1","m6","iot","First step in IoT discovery and lifecycle","Locate every device",["locate devices","locate every device","find every device"],["Replace default passwords","Disable unused services","Apply signed firmware"]],
+["m6-io2","m6","iot","Help verify that approved code runs and that updates are authentic","Signed firmware / secure boot",["signed firmware","secure boot"]],
+["m6-io3","m6","iot","What often drives decision-making in ICS/SCADA","Safety and availability",["safety","availability"],["Confidentiality","Lower equipment cost","Employee flexibility"]],
+["m6-io4","m6","iot","Systems where you separate IT and OT, limit engineering access and use strict change control","ICS/SCADA",["ics","scada","industrial control systems","industrial control system"]],
+["m6-io5","m6","iot","Systems where vendor validation, critical uptime and continuity of care can limit immediate patching","Medical equipment",["medical","medical devices","medical device"]],
+["m6-io6","m6","iot","Automotive: telematics/infotainment must be separated from safety-critical…","ECUs (electronic control units)",["ecu","ecus","electronic control units"]],
+["m6-io8","m6","iotweak","Common IoT weakness: credentials built into the device that can't be changed","Hardcoded credentials",["hardcoded","hard-coded credentials"],["Factory/default passwords","Unsigned firmware","Exposed management services"]],
+
+["m6-sd1","m6","sdlc","Identify valuable data, trust boundaries, attack paths and mitigations during design","Security-by-design / threat modeling",["threat modeling","threat modelling","security by design"]],
+["m6-sd2","m6","sdlc","Include security requirements, secrets protection and protected build/release steps throughout development","Secure SDLC",["sdlc","secure software development lifecycle"]],
+["m6-sd3","m6","sdlc","Probe a running application or API for weaknesses","DAST (Dynamic application security testing)",["dast","dynamic application security testing"]],
+
+// ---------- MODULE 7 ----------
+["m7-a1","m7","aaa","AAA question: \"Who are you?\"","Authentication",["authn"]],
+["m7-a2","m7","aaa","AAA question: \"What actions may you take?\"","Authorization",["authz"]],
+["m7-a3","m7","aaa","AAA question: \"What happened and who did it?\"","Accounting",[]],
+["m7-a4","m7","aaa","A support worker can read tickets but cannot change payroll records. Which AAA component?","Authorization",["authz"]],
+["m7-a5","m7","aaa","Sign-in and access logs record user activity for auditing. Which AAA component?","Accounting",[]],
+["m7-a6","m7","aaa","A user proves identity using a passphrase and a security key. Which AAA component?","Authentication",["authn"]],
+
+["m7-f1","m7","factor","Factor: password, passphrase, PIN, security question","Something you know",["know"]],
+["m7-f2","m7","factor","Factor: security key, smart card, hardware token, authenticator device","Something you have",["have"]],
+["m7-f3","m7","factor","Factor: fingerprint, face, iris","Something you are",["are","biometric"]],
+["m7-f4","m7","factor","Typing patterns, mouse movement, geolocation, device, network or time (risk signals)","Behavior / contextual signals",["behavior","contextual signals","behavioral","contextual"]],
+["m7-f5","m7","mfa","MFA requires factors from different…","Categories",["category","factor categories"],["Devices","Vendors","Passwords"]],
+["m7-f6","m7","mfa","Lecture's emphasized phishing-resistant verification for high-risk accounts","FIDO2 / security keys",["fido2","fido","security key","security keys"]],
+["m7-f7","m7","mfa","Technique emphasized to reduce push-approval abuse","Number matching",[]],
+["m7-f8","m7","mfa","Adds a challenge or blocks access when behavior, country, device, network or login time differ from expected","Adaptive / risk-based authentication",["adaptive authentication","risk-based authentication","adaptive","risk based"]],
+["m7-f9","m7","mfa","Biometric error types named in the sheet","False accepts and false rejects",["false accept","false reject","false accepts","false rejects","false positives","false negatives"],["Spoofing and privacy","Push fatigue and token theft","Relay and eavesdropping"]],
+
+["m7-p1","m7","pwatk","Password attack: systematically tries many possible passwords","Brute force",["bruteforce"]],
+["m7-p2","m7","pwatk","Password attack: tests common words or popular password combinations","Dictionary attack",["dictionary"]],
+["m7-p3","m7","pwatk","Password attack: tries credentials stolen from another site against this service","Credential stuffing",[]],
+["m7-p4","m7","pwatk","Password attack: tries one/few common passwords against many accounts","Password spraying",["spraying"]],
+["m7-p5","m7","pwatk","Bombards a user with push requests to induce an accidental approval","MFA push fatigue",["mfa fatigue","push fatigue"]],
+["m7-p6","m7","pwdef","Defensive idea for brute force","Throttling/lockout policy, strong unique passphrases, MFA",["lockout","throttling"]],
+["m7-p7","m7","pwdef","Defensive idea for credential stuffing","Unique passwords per service, MFA, compromised-password detection",["compromised-password detection","unique passwords"]],
+["m7-p8","m7","pwdef","Defensive idea for password spraying","Monitoring across accounts, strong passwords, throttling, MFA",["monitoring across accounts"]],
+["m7-p9","m7","pwdef","Defensive idea for MFA push fatigue","Number matching, user education, phishing-resistant MFA",["number matching"]],
+
+["m7-i1","m7","idp","Central service that authenticates users for connected applications (e.g., Azure AD, Okta, Google)","Identity provider (IdP)",["idp","identity provider"]],
+["m7-i2","m7","idp","Services that maintain identity records, user groups and related access information","Active Directory / LDAP / cloud directory",["active directory","ldap","directory","cloud directory","ad"]],
+["m7-i3","m7","idp","One successful organizational login provides access to multiple connected services","Single Sign-On (SSO)",["sso","single sign on"]],
+["m7-i4","m7","idp","Supports trusted authentication across organizational or service boundaries","Federated identity",["federation","federated"]],
+["m7-i5","m7","idp","Technologies the lectures name as related to federated identity","SAML, OAuth and OpenID Connect",["saml","oauth","openid connect"],["RADIUS, 802.1X and NAC","SNMP, Syslog and SIEM","TPM and Secure Boot"]],
+["m7-i6","m7","idp","SSO weakness, and the fix the sheet gives","A compromised central identity exposes downstream services; add MFA and monitor the IdP",["compromised central identity"],["SSO increases login friction","SSO stores passwords in cleartext","SSO cannot use MFA"]],
+
+["m7-z1","m7","authz","Access model: the resource owner can grant permissions","DAC (Discretionary Access Control)",["dac","discretionary access control","discretionary"]],
+["m7-z2","m7","authz","Access model: system-wide policy and security classifications govern access","MAC (Mandatory Access Control)",["mandatory access control","mandatory"]],
+["m7-z3","m7","authz","Access model: privileges assigned to job roles; users inherit role permissions","RBAC (Role-Based Access Control)",["rbac","role-based access control","role based"]],
+["m7-z4","m7","authz","Access model: evaluates attributes such as department, device, location and time","ABAC (Attribute-Based Access Control)",["abac","attribute-based access control","attribute based"]],
+["m7-z5","m7","authz","Which access model fits a highly regulated or military classification system?","MAC (Mandatory Access Control)",["mandatory access control","mandatory"]],
+["m7-z6","m7","authz","Payroll staff gain payroll access; interns do not. Which access model?","RBAC (Role-Based Access Control)",["rbac","role-based access control","role based"]],
+
+["m7-v1","m7","priv","Only the minimum rights needed for assigned tasks, for only the necessary time","Least privilege",[]],
+["m7-v2","m7","priv","Protect and monitor administrator/elevated accounts","PAM (Privileged Access Management)",["pam","privileged access management"]],
+["m7-v3","m7","priv","Temporary elevation for a defined task instead of permanent admin access","JIT (Just-in-Time privileges)",["jit","just in time"]],
+["m7-v4","m7","priv","Don't assume trust from being inside a network; repeatedly verify identity, context and action","Zero Trust",[]],
+["m7-v5","m7","priv","Periodically check that roles, entitlements and policies still reflect job requirements","Access reviews / identity governance",["access reviews","access review","identity governance"]],
+
+["m7-l1","m7","life","Identity lifecycle stage: create identity, enroll device, assign only relevant role/group permissions","Onboard",["onboarding"]],
+["m7-l2","m7","life","Identity lifecycle stage: adjust permissions when an employee changes roles","Modify",["modification"]],
+["m7-l3","m7","life","Identity lifecycle stage: review auth events, access logs, impossible travel, privilege escalations","Monitor",["monitoring"]],
+["m7-l4","m7","life","Identity lifecycle stage: disable accounts, revoke sessions and elevated permissions, remove access","Offboard",["offboarding"]],
+
+["m7-c1","m7","cloudiam","A single account appears in geographically distant locations with impossible travel times","Impossible travel",[]],
+["m7-c2","m7","cloudiam","Tools compare typical device, timing, mouse movement and resource access, then escalate authentication or alert","Behavior analytics",["behavioral analytics","behavior analysis"]],
+["m7-c3","m7","cloudiam","Cloud IAM examples discussed in class","AWS IAM, Azure role-based authorization, Google Cloud IAM",["aws iam"],["Okta, Azure AD, Google identity services","SAML, OAuth, OpenID Connect","SNMP, Syslog, SIEM"]],
+
+// ---------- MODULE 8 ----------
+["m8-o1","m8","osinum","OSI Layer 7","Application",[]],
+["m8-o2","m8","osinum","OSI Layer 6","Presentation",[]],
+["m8-o3","m8","osinum","OSI Layer 5","Session",[]],
+["m8-o4","m8","osinum","OSI Layer 4","Transport",[]],
+["m8-o5","m8","osinum","OSI Layer 3","Network",[]],
+["m8-o6","m8","osinum","OSI Layer 2","Data Link",["datalink"]],
+["m8-o7","m8","osinum","OSI Layer 1","Physical",[]],
+["m8-r1","m8","osi","OSI layer: IP addressing, routing and path selection between networks","Layer 3 – Network",["network","layer 3","l3"]],
+["m8-r2","m8","osi","OSI layer: media access, MAC addressing, framing and switching","Layer 2 – Data Link",["data link","layer 2","l2"]],
+["m8-r3","m8","osi","OSI layer: end-to-end delivery, reliability, flow control and ports","Layer 4 – Transport",["transport","layer 4","l4"]],
+["m8-r4","m8","osi","OSI layer: establishes, maintains and terminates communication sessions","Layer 5 – Session",["session","layer 5","l5"]],
+["m8-r5","m8","osi","OSI layer: data representation, translation, encryption and compression","Layer 6 – Presentation",["presentation","layer 6","l6"]],
+["m8-r6","m8","osi","OSI layer: electrical, optical and radio signals; physical connectivity","Layer 1 – Physical",["physical","layer 1","l1"]],
+["m8-r7","m8","osi","OSI layer: network services used by applications","Layer 7 – Application",["application","layer 7","l7"]],
+["m8-q1","m8","osi","OSI layer of ARP, STP and 802.1Q VLANs","Layer 2 – Data Link",["data link","layer 2","l2"]],
+["m8-q2","m8","osi","OSI layer of IPv4, IPv6, ICMP, IPsec and OSPF","Layer 3 – Network",["network","layer 3","l3"]],
+["m8-q3","m8","osi","OSI layer of TCP and UDP","Layer 4 – Transport",["transport","layer 4","l4"]],
+["m8-q4","m8","osi","OSI layer of HTTP/HTTPS, DNS, DHCP, FTP, SMTP, SSH and SNMP","Layer 7 – Application",["application","layer 7","l7"]],
+["m8-q5","m8","osi","OSI layer of TLS/SSL (conceptual), ASCII, Unicode, JPEG","Layer 6 – Presentation",["presentation","layer 6","l6"]],
+["m8-q6","m8","osi","OSI layer of NetBIOS Session Service and RPC session management","Layer 5 – Session",["session","layer 5","l5"]],
+["m8-q7","m8","osi","OSI layer of 100BASE-TX, 1000BASE-T, fiber-optic signaling","Layer 1 – Physical",["physical","layer 1","l1"]],
+["m8-q8","m8","osi","OSI layer where MAC flooding, ARP poisoning and STP root-bridge attacks happen","Layer 2 – Data Link",["data link","layer 2","l2"]],
+["m8-q9","m8","osi","OSI layer where WAF, SQL injection and cross-site scripting reasoning applies","Layer 7 – Application",["application","layer 7","l7"]],
+["m8-q10","m8","osi","OSI layer of TCP connection behavior in SYN-flood attacks and port filtering","Layer 4 – Transport",["transport","layer 4","l4"]],
+["m8-q11","m8","osi","OSI layer of routers, IP spoofing and IP-level access controls","Layer 3 – Network",["network","layer 3","l3"]],
+["m8-q12","m8","osi","OSI layer associated with possible session hijacking","Layer 5 – Session",["session","layer 5","l5"]],
+["m8-q13","m8","osi","OSI layer of cables, fiber, hubs and wireless interference","Layer 1 – Physical",["physical","layer 1","l1"]],
+["m8-u1","m8","pdu","PDU at the Network layer","Packet",["packets"]],
+["m8-u2","m8","pdu","PDU at the Data Link layer","Frame",["frames"]],
+["m8-u3","m8","pdu","PDU at the Physical layer","Bits",["bit"]],
+["m8-u4","m8","pdu","PDU at the Transport layer","TCP segment / UDP datagram",["segment","datagram","segments"]],
+["m8-u5","m8","pdu","PDU at the Application, Presentation and Session layers","Data",[]],
+["m8-n1","m8","nettype","Network type: local","LAN",["local area network"]],
+["m8-n2","m8","nettype","Network type: metropolitan","MAN",["metropolitan area network"]],
+["m8-n3","m8","nettype","Network type: wide","WAN",["wide area network"]],
+
+["m8-h1","m8","infra","Why switches, routers, firewalls and physical links are high-value targets","They are network choke points",["choke points","choke point","chokepoint"],["They have low memory and long lifetimes","They cannot install EDR","Their signals reach beyond walls"]],
+["m8-h2","m8","infra","The plane that controls the network device itself and deserves special care","Management plane",["management"],["Guest VLAN","DMZ","Quarantine VLAN"]],
+
+["m8-t1","m8","l2atk","Attacker injects many fake MAC addresses so the switch CAM table is overwhelmed","MAC flooding",["mac flood"]],
+["m8-t2","m8","l2atk","Attacker sends false ARP replies so a legitimate IP maps to the attacker's MAC","ARP poisoning / spoofing",["arp poisoning","arp spoofing"]],
+["m8-t3","m8","l2atk","Attacker manipulates Spanning Tree Protocol election or topology","STP root-bridge attack",["stp attack","root bridge","root-bridge attack","stp"]],
+["m8-t4","m8","l2atk","Attacker changes resolver data or a host lookup so a domain points somewhere else","DNS hijacking / cache poisoning",["dns hijacking","cache poisoning","dns poisoning","dns cache poisoning"]],
+["m8-t5","m8","l2atk","Large or manipulated network traffic overwhelms target resources","DDoS",["distributed denial of service"]],
+["m8-t6","m8","l2con","Security consequence of ARP poisoning","Traffic may be redirected through an attacker for MITM",["mitm","man in the middle"],["Users reach a malicious website despite typing a legitimate name","Network or application availability decreases","Traffic path or network availability can be altered"]],
+["m8-t7","m8","l2con","Security consequence of DNS hijacking","Users may reach a malicious website despite typing a legitimate name",["malicious website"],["Traffic may be redirected through an attacker for MITM","Can undermine normal selective switching","Traffic path or network availability can be altered"]],
+["m8-t8","m8","l2con","Switch table overwhelmed by MAC flooding","CAM table",["cam"],["ARP cache","Resolver data","Beacon frames"]],
+
+["m8-m1","m8","mon","Collect/manage device operational information using a manager and agents","SNMP",[]],
+["m8-m2","m8","mon","SNMP version that adds authentication and encryption over community strings","SNMPv3",["snmp v3","v3","snmp 3"]],
+["m8-m3","m8","mon","Sends centralized event messages with severity levels 0–7","Syslog",[]],
+["m8-m4","m8","mon","Aggregates logs, normalizes formats, correlates activities, generates alerts","SIEM",[]],
+["m8-m5","m8","mon","Detects and alerts about suspicious activity (does not drop traffic)","IDS (Intrusion Detection System)",["ids","intrusion detection system","intrusion detection"]],
+["m8-m6","m8","mon","Detects and actively blocks matching traffic inline","IPS (Intrusion Prevention System)",["ips","intrusion prevention system","intrusion prevention"]],
+["m8-m7","m8","mon","Compares current file hashes against trusted baselines","File Integrity Monitoring (FIM)",["fim","file integrity monitoring"]],
+["m8-m8","m8","mon","Decoy system to attract attackers and expose suspicious behavior","Honeypot",[]],
+
+["m8-s1","m8","siem","SIEM step 1: ingest identity, firewall, server, device and application logs","Collection",[]],
+["m8-s2","m8","siem","SIEM step 2: convert log fields into a consistent structure","Normalization",["normalize","normalisation"]],
+["m8-s3","m8","siem","SIEM step 3: join apparently separate events into an attack pattern","Correlation",["correlate"]],
+["m8-s4","m8","siem","SIEM step 4: analysts investigate, prioritize and contain","Alert and response",["alert","response"]],
+["m8-d1","m8","detect","Detection model that looks for known attack indicators or patterns","Signature detection",["signature","signature-based"]],
+["m8-d2","m8","detect","Detection model that looks for behavior outside a normal baseline","Anomaly detection",["anomaly","anomaly-based"]],
+["m8-d3","m8","detect","An alert that identifies benign behavior as suspicious","False positive",[]],
+["m8-d4","m8","detlim","Limitation of signature detection","Unfamiliar attacks may be missed",["unfamiliar attacks"],["Benign changes may raise false alarms","It needs a normal baseline","It cannot match specific patterns"],true],
+["m8-d5","m8","detlim","Limitation of anomaly detection","Benign changes may raise false alarms",["false alarms","false positives"],["Unfamiliar attacks may be missed","It only matches known indicators","It cannot catch unusual actions"],true],
+
+// ---------- MODULE 9 ----------
+["m9-g1","m9","design","Divide an enterprise into smaller trust zones to limit spread","Segmentation",[]],
+["m9-g2","m9","design","Restrict communication to the precise systems that need it","Isolation",[]],
+["m9-g3","m9","design","Avoid a single critical dependency so failures don't interrupt the entire service","Redundancy",[]],
+["m9-g4","m9","design","Segment for externally facing services that limits direct access to internal networks","DMZ",["demilitarized zone"]],
+["m9-g5","m9","design","Logically separates traffic on shared physical infrastructure","VLAN",["virtual lan"]],
+["m9-g6","m9","design","Divides address space into smaller networks","Subnetting",["subnet","subnets"]],
+["m9-g7","m9","design","Translates network addresses","NAT",["network address translation"]],
+["m9-g8","m9","design","Lets many internal devices share one public address using different ports","PAT",["port address translation"]],
+["m9-g9","m9","design","Physical/logical network separation used in special environments","Air gap",["airgap","air gapped"]],
+["m9-g10","m9","design","Enforces more granular east-west boundaries than a broad subnet or VLAN alone","Microsegmentation",["micro segmentation"]],
+
+["m9-f1","m9","fw","Examines addresses, ports and protocol fields using stateless rules","Packet-filtering firewall",["packet filtering","packet filter"]],
+["m9-f2","m9","fw","Tracks connection state plus filtering rules to permit legitimate response packets","Stateful inspection firewall",["stateful","stateful inspection","stateful firewall"]],
+["m9-f3","m9","fw","Adds deeper application awareness; differentiates applications rather than only IP/port","NGFW (Next-Generation Firewall)",["ngfw","next generation firewall"]],
+["m9-f4","m9","fw","Inspects web application requests and blocks SQL injection or cross-site scripting","WAF (Web Application Firewall)",["waf","web application firewall"]],
+["m9-f5","m9","fw","Distributes requests across multiple service instances","Load balancer",[]],
+["m9-f6","m9","fw","Encrypted tunnel for traffic crossing an untrusted network","VPN",["virtual private network"]],
+["m9-f7","m9","fw","Gates network-port access based on identity/policy","802.1X / NAC",["802.1x","nac","network access control"]],
+
+["m9-p1","m9","subst","Secure replacement for Telnet remote administration","SSH",[]],
+["m9-p2","m9","subst","Secure replacement for HTTP web transport","HTTPS",[]],
+["m9-p3","m9","subst","Secure replacement for FTP file transfer","SFTP (over SSH)",["sftp"]],
+["m9-n1","m9","port","Port for SSH","TCP 22",["22"]],
+["m9-n2","m9","port","Port for Telnet","TCP 23",["23"]],
+["m9-n3","m9","port","Port(s) for FTP","TCP 20 and 21",["20/21","20 21","20, 21"]],
+["m9-n4","m9","port","Port for HTTP","TCP 80",["80"]],
+["m9-n5","m9","port","Port for HTTPS","TCP 443",["443"]],
+["m9-n6","m9","port","Port for SFTP","TCP 22",["22"]],
+["m9-n7","m9","svc","Service on TCP 23","Telnet",[]],
+["m9-n8","m9","svc","Service on TCP 443","HTTPS",[]],
+["m9-n9","m9","svc","Legacy file-transfer service on TCP 20 and 21","FTP",[]],
+["m9-n10","m9","svc","Encrypted remote administration / file transfer on TCP 22","SSH / SFTP",["ssh","sftp"]],
+
+["m9-c1","m9","cloud","Shared responsibility: physical facilities and datacenter controls","Provider",["cloud provider"],null,true],
+["m9-c2","m9","cloud","Shared responsibility: stored data and identity/access rules","Customer",[],null,true],
+["m9-c3","m9","cloud","Shared responsibility: underlying infrastructure hardware","Provider",["cloud provider"],null,true],
+["m9-c4","m9","cloud","Shared responsibility: application and network security configuration","Customer",[],null,true],
+["m9-c5","m9","cloud","Shared responsibility: guest OS patching where the customer manages the guest OS","Customer",[],null,true],
+["m9-c6","m9","cloud","Shared responsibility: underlying virtualization platform, where the provider manages it","Provider",["cloud provider"],null,true],
+
+["m9-w1","m9","hw","Separates control and forwarding functions for centralized policy","SDN (Software-Defined Networking)",["sdn","software defined networking"]],
+["m9-w2","m9","hw","Physical control that deters vehicle ramming","Bollards",["bollard"]],
+["m9-w3","m9","hw","Physical control that reduces tailgating","Mantraps",["mantrap"]],
+["m9-w4","m9","hw","Hardware-backed cryptographic functions and key storage","TPM (Trusted Platform Module)",["tpm","trusted platform module"]],
+["m9-w5","m9","hw","Validates trusted, signed boot components within a chain of trust","Secure Boot",[]],
+["m9-w6","m9","hw","Tracking tool for documenting IPs named in hardening practices","IPAM",["ip address management"],["SIEM","SNMP","NAC"]],
+
+["m9-r1","m9","ir","Have procedures, diagrams, logs, access roles and an escalation plan ready","Incident response preparation",["preparation","ir preparation"]],
+["m9-r2","m9","ir","Block malicious IPs or isolate a host in a quarantine VLAN","Containment",[]],
+["m9-r3","m9","ir","Record packets for analysis","Packet capture (PCAP)",["pcap","packet capture"]],
+["m9-r4","m9","ir","Tool named for inspecting captured traffic","Wireshark",[],["SNMP","Syslog","IPAM"]],
+["m9-r5","m9","ir","Find likely known weaknesses without necessarily demonstrating exploitation","Vulnerability scan",["vuln scan","vulnerability scanning"]],
+["m9-r6","m9","ir","Authorized attempt to exploit weaknesses to show practical impact","Penetration test",["pen test","pentest","penetration testing"]],
+
+// ---------- MODULE 10 ----------
+["m10-b1","m10","wlan","Connects wireless stations such as laptops and phones into the local network","Access point (AP)",["ap","access point"]],
+["m10-b2","m10","wlan","Wireless network name advertised by an AP (not proof of legitimacy)","SSID",[]],
+["m10-b3","m10","wlan","AP management announcements advertising network presence and capabilities","Beacon frames",["beacon","beacons"]],
+["m10-b4","m10","wlan","Antenna type that focuses energy and may extend usable range","Directional",["directional antenna"]],
+["m10-b5","m10","wlan","Antenna type that spreads coverage broadly","Omnidirectional",["omnidirectional antenna","omni"]],
+
+["m10-s1","m10","band","Band(s) for 802.11g (as shown in lecture)","2.4 GHz",["2.4"]],
+["m10-s2","m10","band","Band(s) for 802.11n (as shown in lecture)","2.4 / 5 GHz",["2.4 and 5","2.4/5"]],
+["m10-s3","m10","band","Band(s) for 802.11ac (as shown in lecture)","5 GHz",["5"]],
+["m10-s4","m10","rate","Approximate peak rate for 802.11g (as shown in lecture)","54 Mbps",["54"]],
+["m10-s5","m10","rate","Approximate peak rate for 802.11n (as shown in lecture)","Up to 600 Mbps",["600"]],
+["m10-s6","m10","rate","Approximate peak rate for 802.11ac (as shown in lecture)","1.3+ Gbps",["1.3","1.3 gbps"]],
+
+["m10-a1","m10","wlatk","Scan and map wireless networks while traveling through an area","Wardriving",["war driving"]],
+["m10-a2","m10","wlatk","Unauthorized AP connected to the network, potentially bypassing access controls","Rogue access point",["rogue ap","rogue"]],
+["m10-a3","m10","wlatk","Deceptive AP made to resemble a real SSID to entice connections","Evil twin",[]],
+["m10-a4","m10","wlatk","Management frames used to disconnect clients and encourage reconnection","Deauthentication abuse",["deauth","deauthentication"]],
+["m10-a5","m10","wlatk","Interference prevents reliable radio communication (denial of service)","Jamming",[]],
+["m10-a6","m10","wlatk","Fake sign-in/acceptance page solicits credentials","Captive portal impersonation",["captive portal"]],
+
+["m10-e1","m10","wenc","Older Wi-Fi protection using an RC4-era scheme and a short 24-bit IV","WEP",[]],
+["m10-e2","m10","wenc","Interim Wi-Fi improvement including TKIP","WPA (original)",["wpa"]],
+["m10-e3","m10","wenc","Widely deployed AES-based Wi-Fi protection; know the KRACK handshake issue","WPA2",[]],
+["m10-e4","m10","wenc","Newer Wi-Fi generation; lecture highlights Enterprise 192-bit security mode","WPA3",[]],
+["m10-e5","m10","wenc","Encrypts eligible open public Wi-Fi links without a shared password","Enhanced Open / OWE",["owe","enhanced open"]],
+["m10-e6","m10","wenc","PIN-based convenience enrollment method with brute-force risk","WPS",[]],
+["m10-e7","m10","wnum","WEP weakness that makes it obsolete","Short 24-bit IV / repeated IVs",["24","24-bit","repeated ivs","repeated iv"],["KRACK handshake issue","Brute-forceable WPS PIN","Does not authenticate the operator/SSID"],true],
+["m10-e8","m10","wnum","WPA3 Enterprise security mode highlighted in lecture","Enterprise 192-bit security mode",["192","192-bit","192 bit"],["TKIP","Repeated 24-bit IVs","PIN-based enrollment"],true],
+["m10-e9","m10","wenc2","Handshake issue discussed for WPA2","KRACK",[],["BlueBorne","TKIP","WPS PIN"]],
+["m10-e10","m10","wenc2","What Enhanced Open / OWE does NOT do by itself","Authenticate the operator/SSID",["authenticate the operator","authenticate the ssid"],["Encrypt the link","Remove the need for a shared password","Work on open public Wi-Fi"]],
+
+["m10-x1","m10","prox","Sending unsolicited Bluetooth messages or spam","Bluejacking",[]],
+["m10-x2","m10","prox","Unauthorized access or extraction of data over Bluetooth","Bluesnarfing",[]],
+["m10-x3","m10","prox","Attempting to intercept a short-range NFC exchange","NFC eavesdropping",[]],
+["m10-x4","m10","prox","Relays communications between a victim credential and a distant reader","NFC relay",[]],
+
+["m10-r1","m10","dot1x","802.1X role: client device that requests authentication","Supplicant",[]],
+["m10-r2","m10","dot1x","802.1X role: AP or switch that serves as the network-access gate","Authenticator",[]],
+["m10-r3","m10","dot1x","802.1X role: server that checks identity, commonly via RADIUS","Authentication server",["auth server"]],
+["m10-r4","m10","dot1x","Common back-end AAA service for centralized authentication, authorization and accounting","RADIUS",[]],
+["m10-r5","m10","rport","RADIUS authentication port","UDP 1812",["1812"]],
+["m10-r6","m10","rport","RADIUS accounting port","UDP 1813",["1813"]],
+["m10-r7","m10","dot1xkind","802.1X is best described as…","An access-control/authentication framework",["access control framework","authentication framework"],["The WLAN security configuration","The back-end AAA service","A PIN-based enrollment method"],true],
+["m10-r8","m10","dot1xkind","WPA2-Enterprise / WPA3-Enterprise is best described as…","The WLAN security configuration that can use 802.1X",["wlan security configuration"],["An access-control/authentication framework","The back-end AAA service","A PIN-based enrollment method"],true],
+
+["m10-d1","m10","wdesign","Map where coverage extends and examine radio \"bleed\" beyond office boundaries","Site survey",[]],
+["m10-d2","m10","wdesign","Adjust this so indoor coverage is met while needless outside reach is minimized","Transmit power",["power","ap power"]],
+["m10-d3","m10","wdesign","Separate visitors from internal systems (a guest password alone is not a boundary)","Guest VLANs",["guest vlan"]],
+["m10-d4","m10","wdesign","Rotate shared keys when personnel access changes","Key management",[]]
+];
+
+// Scenarios: from "Cross-Module Synthesis" (Think / Because) and the "exam clue" columns in 6.5, 8.4, 10.2, plus 9.8 / 10.7 scenarios.
+// [id, topic, source, scenario, answer, rationale, extraDistractors]
+var SCEN = [
+["sx1","m6","Cross-module synthesis","Remove work data from a personal phone but keep the photos.","MAM / container / selective wipe","Scope is enterprise applications and data, not personal device ownership."],
+["sx2","m7","Cross-module synthesis","A user approved repeated surprise MFA prompts.","MFA fatigue / adaptive auth / security key","The attacker exploited login approval behavior."],
+["sx3","m7","Cross-module synthesis","Many accounts are tried with one common password.","Password spraying","The same guess is distributed across identities."],
+["sx4","m7","Cross-module synthesis","Stolen passwords from another breach are used here.","Credential stuffing","Reused credential pairs from a separate compromise."],
+["sx5","m7","Cross-module synthesis","Admin access is granted only during one task.","JIT / PAM","Reduces permanent privileged access."],
+["sx6","m7","Cross-module synthesis","An employee's job determines their permissions.","RBAC","Access is inherited from the organizational role."],
+["sx7","m7","Cross-module synthesis","Time, location and device affect whether access is allowed.","ABAC / conditional access","The access decision depends on attributes or posture."],
+["sx8","m8","Cross-module synthesis","False MAC addresses overload a switch.","MAC flooding / Layer 2","The CAM-table resource is targeted."],
+["sx9","m8","Cross-module synthesis","A forged MAC-to-IP mapping redirects traffic.","ARP poisoning / Layer 2","The local address association was manipulated."],
+["sx10","m8","Cross-module synthesis","A familiar website resolves to a fake IP destination.","DNS hijacking","Name resolution sends traffic to the wrong system."],
+["sx11","m8","Cross-module synthesis","Different event records are combined to flag an attack.","SIEM correlation","Patterns span multiple log sources."],
+["sx12","m8","Cross-module synthesis","One system warns about traffic; another actively drops it.","IDS versus IPS","Detection and prevention have different actions."],
+["sx13","m9","Cross-module synthesis","A public web server is separated from the internal network.","DMZ and segmentation","Internet-facing exposure is constrained."],
+["sx14","m9","Cross-module synthesis","Block SQL injection in web requests.","WAF","Application-facing malicious HTTP request content."],
+["sx15","m9","Cross-module synthesis","Router management still uses Telnet.","SSH","Replace cleartext management transport."],
+["sx16","m10","Cross-module synthesis","An unknown, personally connected router shows up in the office.","Rogue AP","An unauthorized device provides wireless access into the LAN."],
+["sx17","m10","Cross-module synthesis","A fake company Wi-Fi network uses the same SSID.","Evil twin","Impersonation tricks clients into connecting."],
+["sx18","m10","Cross-module synthesis","Bluetooth text spam versus Bluetooth file theft.","Bluejacking versus bluesnarfing","Different behavior and impact."],
+["sx19","m10","Cross-module synthesis","Legacy Wi-Fi with repeating IV weaknesses.","WEP","Its cryptographic design is obsolete."],
+["sx20","m10","Cross-module synthesis","Wi-Fi identity is checked via the AP and a central server.","802.1X / RADIUS","The authenticator gates access based on centralized AAA."],
+["sx21","m6","Cross-module synthesis","An industrial device cannot install EDR.","Segmentation / compensating controls","Resource and availability constraints demand architectural defenses."],
+["sx22","m8","Cross-module synthesis","An anomaly is found but nothing changes.","Monitoring-response gap","Alerts require triage and action."],
+
+["sc1","m6","6.5 exam clue","An administrator must enforce a rule on the device itself.","MDM","MDM sets device policies: minimum OS version, encryption, screen lock, enrollment, certificates, restrictions, remote lock/wipe."],
+["sc2","m6","6.5 exam clue","Erase company email/documents but keep personal photos.","MAM","MAM controls corporate apps and their data, even where the entire personal device is not managed."],
+["sc3","m6","6.5 exam clue","A program combining mobile device, apps and security controls.","EMM","EMM is the broader enterprise mobile management umbrella."],
+["sc4","m6","6.5 exam clue","Manage mobile devices and laptops together.","UEM","UEM is single-console management across mobile devices and other endpoint types."],
+["sc5","m6","6.5 exam clue","A device is denied SaaS access because it is unpatched or jailbroken.","Conditional / posture-based access","It grants or denies resource access based on compliance and risk signals."],
+["sc6","m8","8.4 exam clue","Monitor switch/router status, interface health and network management state.","SNMP","SNMP (manager, agent) collects and manages device operational information."],
+["sc7","m8","8.4 exam clue","A network engineer asks which SNMP version improves management-channel security.","SNMPv3","Prefer its authentication and encryption features over older community-string configurations."],
+["sc8","m8","8.4 exam clue","Collect security/system event records for investigation.","Syslog","Syslog sends centralized event messages with severity levels 0–7."],
+["sc9","m8","8.4 exam clue","Relate firewall, server, identity and endpoint events to detect a pattern.","SIEM","A SIEM aggregates logs, normalizes formats, correlates activities and generates alerts."],
+["sc10","m8","8.4 exam clue","The security team gets notified, but the device is not automatically dropping the traffic.","IDS","An IDS detects and alerts about suspicious activity."],
+["sc11","m8","8.4 exam clue","An inline control stops a malicious request.","IPS","An IPS detects and actively blocks/prevents matching traffic."],
+["sc12","m8","8.4 exam clue","An important system file unexpectedly changes.","File Integrity Monitoring (FIM)","FIM compares current file hashes against trusted baselines to detect unauthorized changes."],
+["sc13","m8","8.4 exam clue","An alert fires because someone connected to a system with no legitimate production use.","Honeypot","A honeypot is a decoy system to attract attackers and expose suspicious behavior."],
+["sc14","m10","10.2 distinguishing clue","Someone maps SSIDs and weak APs from a car.","Wardriving","Wardriving is scanning/mapping wireless networks while traveling through an area."],
+["sc15","m10","10.2 distinguishing clue","A worker plugs a personal Wi-Fi router into office Ethernet.","Rogue access point","An unauthorized AP is connected to the network, potentially bypassing access controls."],
+["sc16","m10","10.2 distinguishing clue","Two identical network names appear; one is controlled by an attacker.","Evil twin","The attacker makes a deceptive AP resemble a real SSID to entice a connection."],
+["sc17","m10","10.2 distinguishing clue","Users repeatedly drop from a legitimate AP and join another.","Deauthentication abuse","Management frames may be used to disconnect clients and encourage a reconnection."],
+["sc18","m10","10.2 distinguishing clue","Heavy deliberate RF noise disrupts the wireless network.","Jamming","Interference prevents reliable radio communication (denial of service). Also distinguish accidental interference."],
+["sc19","m10","10.2 distinguishing clue","A hotel/airport login page unexpectedly asks for account details.","Captive portal impersonation","A fake sign-in/acceptance page solicits credentials."],
+["sc20","m9","9.8 scenario","SQL injection is aimed at a public web app. What is the primary application-layer control?","WAF in front of the application","Think WAF in front of the application, secure app design and logging. Do not select NAT as the primary application-layer control.",["NAT","Packet-filtering firewall","VPN"]],
+["sc21","m10","10.7 scenario (Coca-Cola)","Laptops containing employee information are stolen. The workforce normally uses Wi-Fi. What kind of problem is this primarily?","An endpoint/data-protection problem","A stolen-device scenario is primarily an endpoint/data-protection problem, even if the workforce normally uses Wi-Fi. It shows the importance of managing assets, encrypting stored data and having remote-response capabilities.",["A wireless encryption problem","A Layer 2 switching problem","A monitoring-response gap"]]
+];
+
+// Cases discussed in lecture: [id, topic, source, case, lesson]
+var CASES = [
+["cs1","m6","6.8","Mirai botnet","Default/weak IoT credentials can allow devices to be recruited into DDoS attacks."],
+["cs2","m6","6.8","Target vendor-to-POS access","Third-party identities and poor segmentation can enable movement into sensitive specialized systems."],
+["cs3","m6","6.8","Stuxnet","Malware can affect industrial controllers and cause physical consequences; isolate and validate engineering changes."],
+["cs4","m6","6.8","WannaCry / healthcare","Unpatched systems and ransomware can disrupt critical services; plan recovery and limit lateral spread."],
+["cs5","m6","6.8","Jeep Cherokee remote-hack demonstration","Connectivity and infotainment weaknesses can threaten safety; segment systems and secure updates."],
+["cs6","m6","6.8","BlueBorne","Bluetooth implementation flaws can create exposure even beyond deliberate pairing."],
+["cs7","m7","7.7","Real incident: stolen contractor credentials","Stolen contractor credentials can provide a foothold; identity control must be paired with network segmentation and monitoring."],
+["cs8","m8","8.6","DarkHotel campaign","ARP-based redirection and hotel network exposure underline Layer 2 defense."],
+["cs9","m8","8.6","Target breach (monitoring lecture)","Third-party access and unacted-upon security alerts show that monitoring must be operationally followed through."],
+["cs10","m8","8.6","MAC-table overload / root-bridge scenarios","Layer 2 device-control weaknesses are different from IP routing attacks; identify the layer first."],
+["cs11","m9","9.8","Capital One (2019) / WAF and SSRF","A web/cloud configuration weakness can permit server-side requests and expose resources; defense requires secure configuration, permissions and layered monitoring."],
+["cs12","m9","9.8","USB or removable media in air-gapped environments","Physical separation lowers remote network exposure but is not complete immunity to malware."],
+["cs13","m10","10.2","Google Street View data capture","Unencrypted radio traffic may be collected by anyone within reach; wireless encryption is a baseline defense, not optional obscurity."],
+["cs14","m10","10.7","Coca-Cola device loss","Stolen laptops containing employee information show the importance of managing assets, encrypting stored data and having remote-response capabilities."]
+];
+
+// ---------- Additions from the four lecture decks ----------
+// Deck drill items: [id, topic, group, prompt, answer, alts, distractors, groupOnly, source]
+var MOB="Lecture: Mobile & Embedded deck, slide ", IAMD="Lecture: IAM deck, slide ", INF="Lecture: Infrastructure deck, slide ", WIR="Lecture: Wireless deck, slide ";
+var DECK_DRILL = [
+// Module 6 (Mobile & Embedded deck)
+["d6-1","m6","dk6","Mobile/IoT design principle: assume compromise and shrink the blast radius","Design for containment",["containment"],["Policy first","Endpoints with radios","Security-by-design"],true,MOB+5],
+["d6-2","m6","dk6","Lecture principle: treat mobile and IoT devices as…","Endpoints with radios",["endpoints with radios"],["Design for containment","Policy first","Security-by-design"],true,MOB+5],
+["d6-3","m6","dk6b","One compromised phone can pivot into SaaS and internal systems via…","Identity tokens",["tokens","identity token"],["Bluetooth pairing","USB accessories","Kiosk bypass"],true,MOB+7],
+["d6-4","m6","dk6b","Laptop advantage over mobile named in lecture","Mature patching + EDR visibility",["edr","mature patching"],["OS sandboxing","App allowlists","Single-app mode"],true,MOB+9],
+["d6-5","m6","dk6b","Mobile setting that limits what a USB connection can do (lecture name)","USB restricted mode",["usb restricted"],["Single-app mode","Developer mode","Geofencing"],true,MOB+14],
+["d6-6","m6","policy","Mobile policy section: lost/stolen reporting SLA, response steps, escalation paths","Incident rules",["incident"],null,true,MOB+16],
+["d6-7","m6","policy","Mobile policy section: allowed stores, blocked categories, permission guidance","App rules",["app"],null,true,MOB+16],
+["d6-8","m6","policy","Mobile policy section: encryption, screen lock, minimum OS versions, patch deadlines","Required controls",["required"],null,true,MOB+16],
+["d6-9","m6","policy","Mobile policy section: ownership, reimbursement, privacy expectations, consent for remote/container wipe","Ownership and privacy terms",["ownership","privacy"],null,true,MOB+16],
+["d6-10","m6","par","MAM + conditional access step: require the app/device to meet policy before accessing resources","Require",[],null,true,MOB+24],
+["d6-11","m6","par","MAM + conditional access step: protect corporate data inside managed apps, even on employee-owned devices","Protect",[],null,true,MOB+24],
+["d6-12","m6","par","MAM + conditional access step: restrict copy/paste to unmanaged apps, app-level PIN, selective wipe","Restrict",[],null,true,MOB+24],
+["d6-13","m6","dk6c","MFA method the lecture says to avoid for sensitive access","SMS-only MFA",["sms","sms only"],["FIDO2 / security keys","Number matching","Phishing-resistant MFA"],true,MOB+25],
+["d6-14","m6","dk6c","Where mobile keys should be protected","Hardware-backed storage (secure enclave/keystore)",["secure enclave","keystore","hardware-backed","hardware backed storage"],["Consumer cloud storage","Managed email","Per-app VPN"],true,MOB+26],
+["d6-15","m6","dk6c","Mobile platform that generally updates faster","iOS",[],["Android"],true,MOB+28],
+["d6-16","m6","dk6c","What complicates Android patch distribution","Fragmentation",["android fragmentation"],["Sandboxing","Jailbreaking","Containerization"],true,MOB+28],
+["d6-17","m6","dk6c","Network protection for sensitive mobile roles/workflows","Per-app VPN or always-on VPN",["per-app vpn","always-on vpn","always on vpn","vpn"],["Guest VLAN","Captive portal","Bluetooth discoverability"],true,MOB+27],
+["d6-18","m6","dk6c","Logs the lecture suggests for spotting unusual mobile access and data exfil without invasive monitoring","CASB/SSO logs",["casb","sso logs"],["Syslog","PCAP files","Beacon frames"],true,MOB+29],
+["d6-19","m6","dk6d","Embedded systems often run firmware plus a lightweight OS or…","RTOS",[],["UEM","SDN","TPM"],true,MOB+31],
+["d6-20","m6","dk6d","The two hard problems of IoT in the enterprise","Inventory and lifecycle control",["inventory","lifecycle control"],["Encryption and screen lock","Jamming and deauthentication","Brute force and spraying"],true,MOB+33],
+["d6-21","m6","dk6d","Why \"just install EDR\" fails on embedded devices","Limited CPU/RAM/storage, power constraints and real-time requirements",["limited cpu","limited resources","limited ram"],["Android fragmentation complicates patching","BYOD privacy constraints","Captive portals allow DNS first"],true,MOB+34],
+["d6-22","m6","dk6d","ICS/SCADA primary goals per the lecture","Safety + availability + integrity (confidentiality often secondary)",["safety availability integrity"],["Confidentiality + privacy","Low equipment cost + flexibility","Fast authentication + convenience"],true,MOB+38],
+["d6-23","m6","dk6d","Internal vehicle network named in the lecture","CAN",[],["VLAN","SCADA","DMZ"],true,MOB+42],
+["d6-24","m6","dk6d","Recognized baseline the lecture cites for IoT acquisition requirements","NIST IoT guidance",["nist"],["PCI-DSS","IEEE 802.11","DNSSEC"],true,MOB+44],
+["d6-25","m6","dk6d","Segmentation telemetry the lecture calls high-signal","Logged blocked attempts",["blocked attempts","blocked"],["Successful logins","Beacon frames","Routine OS updates"],true,MOB+46],
+["d6-26","m6","dk6d","Firmware plan for end-of-support devices","Replacement timelines and compensating controls",["replacement timelines","compensating controls"],["Disable Bluetooth","Rotate shared keys","Sideload updates"],true,MOB+47],
+["d6-27","m6","sdlc","Static analysis of source/binaries to find insecure patterns","SAST",[],null,false,MOB+50],
+["d6-28","m6","sdlc","Random/unexpected inputs to trigger crashes or security failures","Fuzzing",["fuzz testing","fuzz"],null,false,MOB+50],
+
+// Module 7 (IAM deck)
+["d7-1","m7","dk7","Which is a possession factor on the lecture's list?","RFID badge",["rfid","rfid badges"],["Security questions","Voice recognition","Typing patterns"],true,IAMD+13],
+["d7-2","m7","dk7","Hardware authentication tokens generate…","Time-based codes",["time-based","time based"],["Push notifications","Session keys","8-digit WPS PINs"],true,IAMD+14],
+["d7-3","m7","bio","Biometric CHALLENGES per lecture","False positives/negatives, sensor spoofing, privacy concerns",["false positives","spoofing","privacy"],null,true,IAMD+18],
+["d7-4","m7","bio","Biometric ADVANTAGES per lecture","Fast authentication, unique identifiers, convenient for users",["fast","unique identifiers","convenient"],null,true,IAMD+17],
+["d7-5","m7","dk7","Location-based authentication is common in which industry (lecture)?","Banking",["banks","bank"],["Healthcare","Retail POS","Manufacturing"],true,IAMD+20],
+["d7-6","m7","trig","Adaptive trigger: \"Is this your registered MacBook, or a random Android phone from 2018?\"","Device",[],null,true,IAMD+25],
+["d7-7","m7","trig","Adaptive trigger: \"Secure corporate VPN or sketchy public Wi-Fi at the mall?\"","Network",[],null,true,IAMD+25],
+["d7-8","m7","trig","Adaptive trigger: \"Do you usually check email at 3:00 AM on a Tuesday?\"","Time",[],null,true,IAMD+25],
+["d7-9","m7","trig","Adaptive trigger: \"Usual mouse patterns, or a script scraping data at lightning speed?\"","Behavior",[],null,true,IAMD+25],
+["d7-10","m7","trig","Adaptive trigger: \"Are you logging in from your home in Dallas?\"","Geography",["location"],null,true,IAMD+25],
+["d7-11","m7","dk7","Okta runs on which backend (lecture)?","AWS",["amazon web services"],["Azure","Google Cloud","Active Directory"],true,IAMD+26],
+["d7-12","m7","dk7","Access control permissions listed in lecture","Read, write, execute",["read write execute"],["Creation, modification, suspension, deletion","Collection, normalization, correlation","Authentication, authorization, accounting"],true,IAMD+32],
+["d7-13","m7","acwhere","Where DAC is common (lecture)","Windows/Linux",["windows","linux"],null,true,IAMD+38],
+["d7-14","m7","acwhere","Where MAC (Mandatory Access Control) is used (lecture)","Military systems",["military"],null,true,IAMD+37],
+["d7-15","m7","dk7","JIT privileges reduce…","Standing privileges",["standing"],["Temporary privileges","Federated identities","Discretionary permissions"],true,IAMD+41],
+["d7-17","m7","iamlists","Identity governance components (lecture)","Access reviews, compliance audits, policy enforcement",["access reviews"],null,true,IAMD+45],
+["d7-18","m7","iamlists","IAM monitoring components (lecture)","Login monitoring, access logs, privilege escalation alerts",["login monitoring"],null,true,IAMD+48],
+["d7-19","m7","iamlists","Employee onboarding steps (lecture)","Account provisioning, permission assignment, device enrollment",["account provisioning"],null,true,IAMD+43],
+["d7-20","m7","iamlists","Zero Trust in two phrases (lecture)","Never trust by default, continuous verification",["never trust","continuous verification"],null,true,IAMD+47],
+
+// Module 8 (Infrastructure deck)
+["d8-1","m8","dk8","What a switch does once MAC flooding fills its CAM table","Acts like a hub, broadcasting traffic to all ports",["hub","acts like a hub"],["Becomes the root bridge","Redirects DNS lookups","Poisons its ARP cache"],true,INF+13],
+["d8-2","m8","dk8","Mitigation the lecture names for DNS hijacking","DNSSEC",[],["SNMPv3","802.1X","WPS"],true,INF+17],
+["d8-3","m8","ddos","Infrastructure DDoS category that includes SYN floods","Protocol attacks",["protocol"],null,true,INF+18],
+["d8-4","m8","ddos2","Three infrastructure-level DDoS types (lecture)","Volumetric, protocol (SYN flood), amplification",["volumetric protocol amplification"],["MAC flooding, ARP poisoning, root bridge","Brute force, dictionary, spraying","Bluejacking, bluesnarfing, relay"],true,INF+18],
+["d8-5","m8","dk8","SIEM products named as examples","Splunk, QRadar",["splunk","qradar"],["Wireshark","Okta, Azure AD","Duo, Microsoft Authenticator"],true,INF+23],
+["d8-6","m8","dk8","Compliance standard the lecture says requires FIM","PCI-DSS",["pci","pci dss"],["NIST IoT guidance","IEEE 802.11","DNSSEC"],true,INF+27],
+["d8-7","m8","osi","OSI layer that prioritizes data with Quality of Service (QoS)","Layer 3 – Network",["network","layer 3","l3"],null,false,INF+8],
+["d8-8","m8","osi","OSI layer that establishes, maintains and terminates virtual circuits and ensures reliability (TCP vs UDP)","Layer 4 – Transport",["transport","layer 4","l4"],null,false,INF+7],
+["d8-9","m8","dk8","Benefit of a layered network model (lecture)","Standardizes interfaces",["standardize interfaces"],["Encrypts all traffic","Blocks SQL injection","Prevents rogue APs"],true,INF+3],
+
+// Module 9 (Infrastructure deck, secure design half)
+["d9-1","m9","dk9","Where the DMZ sits (lecture)","Between firewalls",["between two firewalls"],["Behind the guest VLAN","Inside the air gap","On the management plane"],true,INF+31],
+["d9-2","m9","dk9","What NAT does per lecture","Hides internal IPs",["hides internal ip addresses"],["Encrypts traffic","Blocks SQL injection","Authenticates ports"],true,INF+32],
+["d9-3","m9","dk9","Services the lecture says to disable when hardening devices","Telnet, HTTP, RDP",["telnet http rdp"],["SSH, HTTPS, SFTP","DNSSEC, SNMPv3, IPsec","RADIUS, LDAP, SAML"],true,INF+35],
+["d9-4","m9","dk9","Patching firmware reduces…","CVEs",["cve"],["IVs","PDUs","SSIDs"],true,INF+35],
+["d9-5","m9","dk9","802.1X port security authenticates devices at the…","Port level",["port"],["Application layer","DNS resolver","Beacon frame"],true,INF+36],
+["d9-6","m9","dk9","OSI layer where NGFWs operate","Layer 7 (Application)",["layer 7","application","7"],["Layer 2 (Data Link)","Layer 3 (Network)","Layer 4 (Transport)"],true,INF+37],
+["d9-7","m9","fw","\"If you didn't ask for the data, the firewall won't let it in.\"","Stateful inspection firewall",["stateful","stateful inspection"],null,false,INF+37],
+["d9-8","m9","dk9","VPN protocols named in lecture","IPsec, SSL",["ipsec","ssl"],["SAML, OAuth","SNMP, Syslog","TKIP, AES"],true,INF+40],
+["d9-9","m9","cloud","Shared responsibility: hypervisors","Provider",["cloud provider"],null,true,INF+41],
+["d9-10","m9","cloud","Shared responsibility: firewall configurations (security groups, rules)","Customer",[],null,true,INF+41],
+["d9-11","m9","sdn","SDN plane the lecture calls \"the brains\"","Control plane",["control"],["Data plane","Management plane"],true,INF+44],
+["d9-12","m9","sdn","SDN plane that does the forwarding","Data plane",["data"],["Control plane","Management plane"],true,INF+44],
+["d9-13","m9","hw","A small room with two interlocking doors that prevents tailgating","Mantrap",["mantraps"],null,false,INF+45],
+["d9-14","m9","dk9","Replacing clear-text protocols with encrypted ones prevents…","Sniffing and MitM attacks",["sniffing","mitm"],["Jamming and deauthentication","Brute force and spraying","Bluejacking and bluesnarfing"],true,INF+47],
+["d9-15","m9","tls","TLS step: the client sends its supported cipher suites","Client Hello",[],["Server Hello","Key exchange"],true,INF+48],
+["d9-16","m9","tls","TLS step: the server chooses the strongest suite and sends its digital certificate","Server Hello",[],["Client Hello","Key exchange"],true,INF+48],
+["d9-17","m9","tls","TLS step: client verifies the certificate via a Certificate Authority and both generate a symmetric session key","Key exchange",[],["Client Hello","Server Hello"],true,INF+48],
+["d9-18","m9","dk9","Security benefit of the TLS handshake","Confidentiality and integrity for the session",["confidentiality and integrity"],["Availability and redundancy","Load distribution","Port-level authentication"],true,INF+48],
+["d9-19","m9","dk9","Secure Boot components are digitally signed by…","The manufacturer",["manufacturer"],["The end user","The IdP","The SIEM"],true,INF+50],
+["d9-20","m9","dk9","Device lifecycle step at retirement","Sanitization",["sanitize"],["Onboarding","Provisioning","Normalization"],true,INF+51],
+["d9-21","m9","dk9","What analyzing a PCAP file lets a defender see","Exactly what data was exfiltrated and what commands the attacker ran",["what data was exfiltrated","commands the attacker ran"],["Which CVEs are unpatched","Who owns each IoT device","Which SSIDs are nearby"],true,INF+55],
+["d9-22","m9","dk9","Under Zero Trust (lecture note), every request must be…","Authenticated, authorized and encrypted",["authenticated authorized encrypted"],["Logged, normalized and correlated","Collected, normalized and alerted","Signed, scanned and quarantined"],true,INF+57],
+
+// Module 10 (Wireless deck)
+["d10-1","m10","band","Band(s) for 802.11b (as shown in lecture)","2.4 GHz",["2.4"],null,false,WIR+4],
+["d10-2","m10","rate","Approximate peak rate for 802.11b (as shown in lecture)","11 Mbps",["11"],null,false,WIR+4],
+["d10-3","m10","band","Band(s) for 802.11ax (as shown in lecture)","2.4 / 5 / 6 GHz",["2.4 5 6","2.4/5/6"],null,false,WIR+4],
+["d10-4","m10","rate","Approximate peak rate for 802.11ax (as shown in lecture)","10+ Gbps",["10","10 gbps"],null,false,WIR+4],
+["d10-5","m10","wlan","WLAN term for the client device (laptops, phones)","Station",["client"],["Access point","Authenticator","Beacon"],true,WIR+3],
+["d10-6","m10","dk10","A rogue AP creates a backdoor that bypasses…","All corporate firewalls and NAC",["firewalls and nac","nac"],["WPA3 encryption","DNS resolution","Beacon frames"],true,WIR+8],
+["d10-7","m10","dk10","How an evil twin pulls users off the real AP","Higher power output or deauthentication frames",["deauthentication","higher power"],["WPS PIN brute force","ARP poisoning","Bluesnarfing"],true,WIR+9],
+["d10-8","m10","years","Year WEP was introduced (original security protocol)","1997",[],["2004","2018","2007"],true,WIR+10],
+["d10-9","m10","years","Year WPA2 was released","2004",[],["1997","2018","2007"],true,WIR+13],
+["d10-10","m10","years","Year WPA3 was released","2018",[],["2004","1997","2019"],true,WIR+20],
+["d10-11","m10","wenc","Mixes a unique key for every packet, preventing WEP's IV-reuse attacks","TKIP",[],["AES","OWE","WPS"],true,WIR+12],
+["d10-12","m10","wenc","WPA2's engine: a block cipher far stronger than TKIP or WEP","AES (Advanced Encryption Standard)",["aes","advanced encryption standard"],["TKIP","RC4","OWE"],true,WIR+13],
+["d10-13","m10","dk10","Why WPS PINs can be brute-forced in a few hours","The 8-digit PIN is checked in two 4-digit halves",["two halves","4-digit halves","checked in halves"],["The IV is only 24 bits","The SSID is broadcast in beacons","The PSK is shared by everyone"],true,WIR+14],
+["d10-14","m10","dk10","Unintentional jamming sources named in lecture","Microwave ovens, cordless phones, fluorescent lights",["microwave","microwaves"],["Rogue APs, evil twins, captive portals","Smart cards, RFID badges, tokens","Bollards, mantraps, fences"],true,WIR+18],
+["d10-15","m10","dk10","Band an intentional jammer floods with noise (lecture example)","2.4 GHz",["2.4"],["5 GHz","6 GHz"],true,WIR+18],
+["d10-16","m10","exp","KRACK stands for…","Key Reinstallation Attack",["key reinstallation"],["Server-Side Request Forgery","Pre-Shared Key exchange","Advanced Encryption Standard"],true,WIR+20],
+["d10-17","m10","dk10","Where the KRACK vulnerability lives","WPA2's 4-way handshake",["4-way handshake","four way handshake","handshake"],["WEP's 24-bit IV","The WPS PIN check","OWE link encryption"],true,WIR+20],
+["d10-18","m10","dk10","What WPA3 replaces","The vulnerable Pre-Shared Key (PSK) exchange",["psk","pre-shared key"],["802.1X","AES","RADIUS"],true,WIR+20],
+["d10-19","m10","dk10","Who WPA3-Enterprise 192-bit mode is meant for","Government, military and financial institutions",["government","military","financial"],["Coffee shops and airports","Home routers","Hotel guest networks"],true,WIR+21],
+["d10-20","m10","dk10","Responses a RADIUS server sends back to the AP","Access-Accept or Access-Reject",["access-accept","access accept"],["Client Hello or Server Hello","Beacon or deauthentication","Detect or block"],true,WIR+24],
+["d10-21","m10","dk10","What the RADIUS server checks credentials against","Active Directory/LDAP",["active directory","ldap"],["The DNS resolver cache","The CAM table","The syslog server"],true,WIR+24],
+["d10-22","m10","dk10","In 802.1X/RADIUS, what the AP does with your credentials","Forwards them to the RADIUS server",["forwards them","forward to radius"],["Checks them against its own password list","Stores them in a beacon frame","Encrypts them with WEP"],true,WIR+24],
+["d10-23","m10","dk10","Captive portal trick: tunneling data through DNS queries allowed before you \"pay\"","DNS tunneling",[],["DNS hijacking","DNSSEC","ARP poisoning"],true,WIR+25],
+["d10-24","m10","bp","Wireless best practice: treat all wireless (even internal Wi-Fi) as untrusted","Mandatory VPN",["vpn"],null,true,WIR+28],
+["d10-25","m10","bp","Wireless best practice: guest Wi-Fi on its own VLAN with no internal access","Isolate guests",["guest isolation","isolate"],null,true,WIR+28],
+["d10-26","m10","bp","Wireless best practice: change the WPA2-PSK key when employees leave","Rotate keys",["rotate"],null,true,WIR+28],
+["d10-27","m10","bp","Wireless best practice: mount APs high and don't expose wiring","Physical security",["physical"],null,true,WIR+28],
+["d10-28","m10","cell","Attack against 2G/3G that spoofs cell towers","Stingray (IMSI catcher)",["stingray","imsi catcher","imsi catchers"],["Evil twin","Bluesnarfing","NFC relay"],true,WIR+29],
+["d10-29","m10","cell","Security that 4G/5G add between device and tower","Mutual authentication and much stronger encryption",["mutual authentication"],["WPS PIN enrollment","Open beacon frames","Shared captive portals"],true,WIR+29],
+["d10-30","m10","cell","5G feature giving a dedicated, secure virtual network segment for critical infrastructure or emergency services","Network slicing",["slicing"],["Microsegmentation","Guest VLAN","DMZ"],true,WIR+29],
+["d10-31","m10","procon","BYOD pro (lecture)","Low cost for the company",["low cost"],null,true,WIR+30],
+["d10-32","m10","procon","BYOD con (lecture)","Extremely difficult to secure; legal privacy hurdles",["difficult to secure","privacy hurdles"],null,true,WIR+30],
+["d10-33","m10","procon","CYOD pro (lecture)","Easier to manage; standardized hardware",["easier to manage","standardized hardware"],null,true,WIR+30],
+["d10-34","m10","procon","COBO use case (lecture)","High-security environments or specialized roles (delivery drivers, warehouse scanners)",["high-security","specialized roles"],null,true,WIR+31],
+["d10-35","m10","dk10b","Where phones store facial/fingerprint data (never sent to the cloud)","Secure Enclave on the chip",["secure enclave"],["The cloud IdP","The RADIUS server","The SIEM"],true,WIR+33],
+["d10-36","m10","dk10b","Mobile authenticator apps named for MFA push","Duo, Microsoft Authenticator",["duo","microsoft authenticator"],["Splunk, QRadar","Okta, Azure AD","Wireshark"],true,WIR+33],
+["d10-37","m10","remote","Remote control that factory-resets the device over the air (OTA)","Remote wipe",["wipe"],null,true,WIR+34],
+["d10-38","m10","remote","Remote control that disables the device interface if reported missing","Remote lock",["lock"],null,true,WIR+34],
+["d10-39","m10","remote","Remote control using GPS to locate a lost device","Asset tracking",["tracking"],null,true,WIR+34],
+["d10-40","m10","remote","Tracking serial numbers, OS versions and patch levels from a central dashboard","Inventory management",["inventory"],null,true,WIR+34],
+["d10-41","m10","dk10b","Technologies geofencing uses to define the boundary","GPS or RFID",["gps","rfid"],["NFC or Bluetooth","Beacon frames","DNS records"],true,WIR+35],
+["d10-42","m10","dk10b","What MDM can do when a device leaves the geofence","Disable the camera, force a VPN, wipe corporate data",["disable camera","force vpn"],["Rotate the PSK, disable WPS, rename the SSID","Block DNS tunneling","Reset the RADIUS server"],true,WIR+35],
+["d10-43","m10","dk10b","MDM function that supports 802.1X Wi-Fi access","Managing digital certificates",["certificates","digital certificates"],["Restricting sideloading","Enforcing password complexity","Pushing security updates"],true,WIR+36],
+["d10-44","m10","rootjb","Platform where bypassing OS restrictions is called ROOTING","Android",[],["iOS","Windows","Linux"],true,WIR+38],
+["d10-45","m10","rootjb","Platform where bypassing OS restrictions is called JAILBREAKING","iOS",[],["Android","Windows","Linux"],true,WIR+38]
+];
+
+// Knowledge checks from the decks: [id, topic, source, question, answer, rationale, distractors]
+var KC = [
+["k1","m7",IAMD+"19 (Knowledge Check #1)","What does AAA stand for?","Authentication, Authorization, Accounting","Slide 6: the AAA security model is the core security framework (review sheet 7.1 gives the three questions).",["Authentication, Authorization, Access control","Confidentiality, Integrity, Availability","Account creation, Modification, Suspension"]],
+["k2","m7",IAMD+"19 (Knowledge Check #1)","What is authentication?","Verifying identity","Slide 7: authentication verifies identity; authorization controls permissions; both are required for secure systems.",["Controlling permissions","Recording what happened and who did it","Separating work apps from personal apps"]],
+["k3","m7",IAMD+"19 (Knowledge Check #1)","What is authorization?","Controlling (determining) permissions","Slide 7: authorization controls permissions, after authentication verifies identity.",["Verifying identity","Recording what happened and who did it","Encrypting data in transit"]],
+["k4","m7",IAMD+"19 (Knowledge Check #1)","Give one example of biometric authentication.","Iris scanning","Slide 15 lists fingerprint scanners, face recognition, iris scanning and voice recognition.",["Smart card","Security question","Authenticator app"]],
+["k5","m7",IAMD+"36 (Knowledge Check #2)","What is MFA?","Combining multiple authentication factors (e.g., password + phone code)","Slide 22: MFA combines multiple factors, such as password + phone code or biometric + PIN. The review sheet adds that the factors must come from different categories.",["One login for many services","Permissions assigned by role","Temporary admin access"]],
+["k6","m7",IAMD+"36 (Knowledge Check #2)","What is Single Sign-On?","One login for many services","Slide 27: one login for many services; improves usability and centralizes identity management. Slide 28: a single compromise is the risk, so it requires MFA.",["Combining multiple authentication factors","Cross-organization authentication","Temporary admin access"]],
+["k7","m7",IAMD+"36 (Knowledge Check #2)","What does RBAC mean?","Role-Based Access Control: permissions assigned by role","Slide 34: permissions are assigned by role (manager, engineer, administrator).",["Attribute-Based Access Control: decisions on time/location","Discretionary Access Control: owner controls permissions","Mandatory Access Control: high-security model"]],
+["k8","m7",IAMD+"36 (Knowledge Check #2)","What is least privilege?","Users receive minimal permissions, limiting damage from compromised accounts","Slide 33: users receive minimal permissions, which limits damage from compromised accounts.",["Never trust by default; continuous verification","Temporary admin access","Permissions assigned by role"]],
+["k9","m7",IAMD+"36 (Knowledge Check #2)","Why are identity providers important?","They are the central authentication platform for connected apps","Slide 26: an IdP is the central authentication platform (Azure AD, Okta, Google Identity). Review sheet 7.4: it authenticates users for connected applications.",["They encrypt Wi-Fi traffic","They block SQL injection","They store biometric data on the chip"]],
+["k10","m7",IAMD+"53 (Final Knowledge Check)","What does IAM stand for?","Identity and Access Management","Slide 4 spells it out: Identity and Access Management.",["Privileged Access Management","Mobile Application Management","IP Address Management"]],
+["k11","m7",IAMD+"53 (Final Knowledge Check)","What security principle limits user permissions?","Least privilege","Slide 33: least privilege gives users minimal permissions.",["Zero Trust","Defense in depth","Single Sign-On"]],
+["k12","m7",IAMD+"53 (Final Knowledge Check)","What is Zero Trust?","Never trust by default; continuously verify","Slide 47: never trust by default, continuous verification. Review sheet 7.5: don't assume trust just because something is inside the network.",["Trust anything inside the network","One login for many services","Users receive minimal permissions"]],
+["k13","m7",IAMD+"53 (Final Knowledge Check)","Why are privileged accounts high risk?","Their compromise causes disproportionately large damage","Review sheet 7.5 (PAM): compromise of administrator/elevated accounts causes disproportionately large damage. Slide 4's NexusPrime story shows a terminated employee's retained admin credentials compromising the network.",["Shared logins make kiosk bypass easy","Android fragmentation delays their patches","Their signals extend beyond walls"]],
+["k14","m8",INF+"25 (Knowledge Check #1)","Which Layer 2 attack results in a switch acting like a hub?","MAC flooding","Slide 13: fake MACs fill the CAM table, so the switch acts like a hub and broadcasts traffic to all ports.",["ARP poisoning","Root bridge attack","DNS hijacking"]],
+["k15","m8",INF+"25 (Knowledge Check #1)","Why is SNMPv3 preferred over SNMPv2?","v1/v2 are plaintext; v3 adds authentication and encryption","Slide 20: v1/v2 risk is plaintext, so use SNMPv3. Review sheet 8.4: v3 adds authentication and encryption over community strings.",["v3 sends severity levels 0–7","v3 blocks SQL injection","v3 filters by IP address and port"]],
+["k16","m8",INF+"25 (Knowledge Check #1)","What is the process of combining diverse log formats into one standard called?","Normalization","Slide 22: the SIEM collects logs and normalizes data. Review sheet 8.5: normalization converts log fields into a consistent structure.",["Correlation","Aggregation","Collection"]],
+["k17","m9",INF+"46 (Knowledge Check #2)","Which device is best suited for protecting a web server from SQL injection?","Web Application Firewall (WAF)","Slide 38: a WAF protects web apps and stops SQLi and XSS. Review sheet 9.8: do not pick NAT as the application-layer control.",["NAT","Load balancer","VPN"]],
+["k18","m9",INF+"46 (Knowledge Check #2)","In the cloud shared responsibility model, who is responsible for patching the guest operating system?","The customer","Slide 41: the customer is responsible for data, OS patching and firewall configurations; the provider handles physical data centers, hardware and hypervisors.",["The cloud provider"]],
+["k19","m9",INF+"46 (Knowledge Check #2)","What is the term for a physical room that prevents an unauthorized person from following a legitimate employee into a secure area?","Mantrap","Slide 45: a mantrap is a small room with two interlocking doors that prevents tailgating.",["Bollard","DMZ","Air gap"]],
+["k20","m9",INF+"58 (Knowledge Check #3)","Which networking protocol provides a secure alternative to Telnet?","SSH","Slide 47: Telnet (23) → SSH (22), replacing clear-text protocols to prevent sniffing and MitM.",["HTTPS","SFTP","SNMPv3"]],
+["k21","m9",INF+"58 (Knowledge Check #3)","In an air-gapped environment, what is the most likely vector for a malware infection?","Removable media such as USB","Review sheet 9.1 and 9.8: an air gap reduces remote exposure, but threats via removable media or authorized maintenance still exist. The Stuxnet lessons include limiting removable media.",["An evil-twin Wi-Fi network","Internet-facing Telnet","A phishing link in email"]],
+["k22","m9",INF+"58 (Knowledge Check #3)","What chip provides a \"Hardware Root of Trust\" for secure booting?","TPM (Trusted Platform Module)","Slide 50: TPM is the hardware root of trust and stores cipher keys; Secure Boot uses components digitally signed by the manufacturer.",["Secure Boot","Smart card","RADIUS server"]],
+["k23","m10",WIR+"19 (Knowledge Check #1)","Why was the WEP protocol so easily cracked by attackers?","Its 24-bit IV repeats","Slide 10: WEP (1997) used a 24-bit initialization vector that repeats, so it was cracked quickly. Slide 12: TKIP was introduced to stop IV reuse.",["Its WPS PIN is checked in two halves","The KRACK flaw in its 4-way handshake","It requires no password (OWE)"]],
+["k24","m10",WIR+"19 (Knowledge Check #1)","What is the difference between bluejacking and bluesnarfing?","Bluejacking sends unsolicited messages (nuisance); bluesnarfing steals data (high impact)","Slides 15–16: bluejacking is Bluetooth spam, generally a nuisance but usable for phishing; bluesnarfing is Bluetooth data theft (contacts, emails, texts, photos).",["Bluejacking steals data; bluesnarfing sends spam","Both are NFC relay attacks","Bluejacking jams 2.4 GHz; bluesnarfing eavesdrops on NFC"]],
+["k25","m10",WIR+"19 (Knowledge Check #1)","An employee brings a home router and plugs it into the office wall jack. What is this called?","Rogue access point","Slide 8: an unauthorized AP creates a backdoor into the wired network, bypassing corporate firewalls and NAC.",["Evil twin","Wardriving","Captive portal impersonation"]],
+["k26","m10",WIR+"40 (Knowledge Check #2)","Which deployment model offers the most control for the organization but the least flexibility for the user?","COBO (Corporate Owned, Business Only)","Slide 31: COBO is locked down entirely for work tasks. Review sheet 6.4: strongest restrictions, least flexibility.",["BYOD","CYOD","COPE"]],
+["k27","m10",WIR+"40 (Knowledge Check #2)","What is the term for creating a secure, isolated area on a mobile device to separate work apps from personal ones?","Containerization","Slide 37: MAM containerization creates a secure bubble for work apps (Outlook, Teams), so admins can wipe the work container without touching personal data.",["Geofencing","Sandboxing","Jailbreaking"]],
+["k28","m10",WIR+"40 (Knowledge Check #2)","Why is a jailbroken phone considered a major security risk to a corporate network?","It bypasses OS security, disables automatic updates and allows unverified apps","Slide 38: jailbreaking bypasses the OS's security restrictions, disables automatic OS updates and allows unverified, malicious apps from 3rd-party stores. Most MDMs quarantine such devices.",["It forces a VPN connection","It turns on full-disk encryption","It hides the device from Bluetooth discovery"]]
+];
+
+// New cases from the decks: [id, topic, source, case, lesson, extra detail]
+var CASES2 = [
+["cs15","m7",IAMD+"4","NexusPrime \"dumpster fire\" story","Without centralized IAM, a terminated employee kept admin credentials and an intern with excessive permissions deleted a core database; MFA and RBAC prevent this.",""],
+["cs16","m7",IAMD+"16","Reliable Manufacturing biometrics story","A competitor got Frank's password from the trash; biometrics can't be lost like a key or guessed like a password.",""],
+["cs17","m7",IAMD+"23","Google hardware-key MFA example","Requiring a Titan Security Key (something you have) on top of the password means stolen credentials don't lead to a breach.","The lecture calls this a challenge-response layer that stops remote hackers and prevents phishing."],
+["cs18","m7",IAMD+"50","Sarah and the Berlin login","AI-driven IAM flagged impossible travel, mismatched typing/mouse behavior and unusual folder access, then escalated to a FIDO2 biometric scan and alerted the SOC.","She logged in from New York at 10:00 AM; a login attempt came from Berlin at 10:05 AM."],
+["cs19","m10",WIR+"11","TJX breach","Attackers in a store parking lot cracked the weak WEP on handheld scanners; 45M credit cards were stolen.","In 2007 it was considered the largest data breach in history."],
+["cs20","m6",MOB+"19","Corporate example: MFA fatigue + mobile prompts","Attackers pressure users to approve repeated MFA prompts; prefer phishing-resistant methods (FIDO2/security keys) and number matching, layered with conditional access, anomalous sign-in detection and user training.",""]
+];
+
+// Extra lecture detail shown after answering an existing case
+var CASE_WHY = {
+cs1: "Mobile & Embedded deck, slide 36: Mirai spread by scanning for IoT devices with weak/default credentials. Lesson: credential hygiene, patching and reducing internet exposure.",
+cs2: "Mobile & Embedded deck, slide 37: lesson is vendor access control, network segmentation, least privilege and strong monitoring.",
+cs3: "Mobile & Embedded deck, slide 39: isolate engineering workstations, validate PLC logic changes, limit removable media, monitor for anomalies; defense-in-depth across IT and OT.",
+cs4: "Mobile & Embedded deck, slide 41: WannaCry (2017). Lessons: vulnerability management, segmentation, offline recovery plans and resilience exercises.",
+cs5: "Mobile & Embedded deck, slide 43: segment safety-critical systems, enforce signed updates, audit exposed services/interfaces.",
+cs6: "Mobile & Embedded deck, slide 12: dense environments (offices, airports, hospitals) increase exposure. Controls: patch quickly, disable when not needed, restrict discoverability.",
+cs7: "IAM deck, slide 40 identifies this as the Target breach: it began with stolen credentials and attackers moved inside the network.",
+cs8: "Infrastructure deck, slide 15: an APT that targeted executives in hotels, used ARP poisoning and redirected updates to malicious servers.",
+cs9: "Infrastructure deck, slide 24: access came via a contractor; the SIEM alerted but the alert was ignored.",
+cs10: "Infrastructure deck, slides 13 and 16: MAC flooding makes a switch act like a hub; a root-bridge attacker reroutes traffic through itself.",
+cs11: "Infrastructure deck, slide 42: a misconfigured WAF let an attacker execute Server-Side Request Forgery (SSRF).",
+cs12: "Infrastructure deck, slide 58 asks this as a Knowledge Check: removable media is the likely vector.",
+cs13: "Wireless deck, slide 7: the cars inadvertently collected payload data (emails, passwords, URLs) from unencrypted Wi-Fi. Lesson: always encrypt.",
+cs14: "Wireless deck, slide 32: a former employee stole 55 laptops with personal data of 74,000 employees. The breakdown was the lack of remote wipe and full-disk encryption."
+};
+
+// Where the review sheet and the lecture slides differ
+var NOTES = {
+"m6-own7": "Go with the review sheet: COPE is the balance. For context only, the Mobile deck (slide 15) labels CYOD \"balanced.\"",
+"m7-l1": "Go with the review sheet's four stages. The IAM deck (slide 42) uses different labels: creation, modification, suspension, deletion.",
+"m7-l2": "Go with the review sheet's four stages. The IAM deck (slide 42) uses different labels: creation, modification, suspension, deletion.",
+"m7-l3": "Go with the review sheet's four stages. The IAM deck (slide 42) uses different labels: creation, modification, suspension, deletion.",
+"m7-l4": "Go with the review sheet's four stages. The IAM deck (slide 42) uses different labels: creation, modification, suspension, deletion.",
+"m6-io3": "The Mobile deck (slide 38) also lists integrity, with confidentiality often secondary.",
+"m7-f9": "The IAM deck (slide 18) calls these false positives and false negatives; either wording is accepted here.",
+"m6-mg11": "The Wireless deck (slide 34) adds that remote wipe is a factory reset over the air (OTA).",
+"d6-22": "The review sheet (6.7) says safety and availability drive ICS decisions; this slide adds integrity."
+};
+
+</script>
+<script>
+(function(){
+"use strict";
+var KEY="itss4360-exam2-progress-v1";
+var EXAM=new Date(2026,9,26); // Monday, October 26, 2026
+
+// ---------- items ----------
+var ITEMS={}, ORDER=[];
+function add(o){ITEMS[o.id]=o;ORDER.push(o.id);}
+DRILL.forEach(function(r){add({id:r[0],topic:r[1],group:r[2],q:r[3],a:r[4],alts:r[5]||[],d:r[6]||null,only:!!r[7],kind:"drill"});});
+SCEN.forEach(function(r){add({id:r[0],topic:r[1],group:"scen",src:r[2],q:r[3],a:r[4],why:r[5],d:r[6]||null,alts:[],kind:"scen"});});
+DECK_DRILL.forEach(function(r){add({id:r[0],topic:r[1],group:r[2],q:r[3],a:r[4],alts:r[5]||[],d:r[6]||null,only:!!r[7],kind:"drill",src:r[8]});});
+KC.forEach(function(r){add({id:r[0],topic:r[1],group:"kc",src:r[2],q:r[3],a:r[4],why:r[5],d:r[6]||null,alts:[],kind:"kc"});});
+function addCase(r,extra){add({id:r[0],topic:r[1],group:"case",src:r[2],name:r[3],q:"Case: "+r[3]+". What is the core lesson?",a:r[4],why:extra||"",alts:[],kind:"case"});}
+CASES.forEach(function(r){addCase(r,CASE_WHY[r[0]]);});
+CASES2.forEach(function(r){addCase(r,r[5]);});
+Object.keys(NOTES).forEach(function(id){if(ITEMS[id])ITEMS[id].note=NOTES[id];});
+function srcLabel(it){
+  if(it.src&&it.src.indexOf("Lecture")===0)return it.src;
+  if(it.kind==="drill")return "Review sheet · "+TOPICS[it.topic];
+  if(it.kind==="case")return "Review sheet, section "+it.src;
+  return "Review sheet, "+it.src;
+}
+
+// ---------- state ----------
+var st=null;
+try{st=JSON.parse(localStorage.getItem(KEY));}catch(e){}
+if(!st||typeof st!=="object")st={};
+st.p=st.p||{}; st.step=st.step||0; st.fmt=st.fmt||"mc"; st.topic=st.topic||{}; ["drill","scen","kc","case"].forEach(function(k){if(!st.topic[k])st.topic[k]="all";});
+st.tab=st.tab||"drill"; st.weak=!!st.weak;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function P(id){return st.p[id]||(st.p[id]={s:0,m:0,seen:0,due:0});}
+function retired(id){return (st.p[id]&&st.p[id].s>=3);}
+
+function record(id,ok){
+  var p=P(id); var snap=JSON.stringify(p);
+  p.seen=1; st.step++;
+  if(ok){p.s=Math.min(3,p.s+1); p.due=st.step+3+4*p.s;}
+  else{p.s=0; p.m++; p.due=st.step+2;}
+  save(); renderProgress(); renderWeakCount();
+  return snap;
+}
+function undoTo(id,snap){st.p[id]=JSON.parse(snap); save();}
+
+// ---------- helpers ----------
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function norm(s){return String(s).toLowerCase().replace(/&/g," and ").replace(/[‐-―]/g,"-").replace(/[^a-z0-9.]+/g," ").replace(/\.(?!\d)/g," ").replace(/\s+/g," ").trim();}
+function lev(a,b){if(a===b)return 0;var m=a.length,n=b.length;if(!m)return n;if(!n)return m;var prev=[],cur=[],i,j;for(j=0;j<=n;j++)prev[j]=j;for(i=1;i<=m;i++){cur=[i];for(j=1;j<=n;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));}prev=cur;}return prev[n];}
+function tol(n){return n<=4?0:n<=7?1:n<=12?2:3;}
+var FILLER={the:1,a:1,an:1,and:1,or:1,of:1,to:1,"for":1,attack:1,attacks:1,firewall:1,exposure:1,abuse:1,s:1};
+var UNITS={tcp:1,udp:1,ghz:1,mbps:1,gbps:1,bit:1,port:1,ports:1,up:1};
+function words(s){return s.split(" ").filter(function(w){return w&&!FILLER[w];});}
+function fuzzyIn(w,list){return list.some(function(x){return lev(x,w)<=tol(w.length);});}
+
+function candidates(it){
+  var c=[it.a].concat(it.alts||[]);
+  if(!/[0-9]/.test(it.a))it.a.split(/\s\/\s|\s–\s|\(|\)|;|,\s(?=[A-Z])/).forEach(function(part){part=part.trim();if(part.length>=2)c.push(part);});
+  return c;
+}
+function matchOne(a,b){
+  if(!a||!b)return false; if(a===b)return true;
+  var da=a.replace(/[^0-9]/g,""), db=b.replace(/[^0-9]/g,"");
+  if(db||da){
+    if(da!==db)return false;
+    var la=words(a.replace(/[0-9.]+/g," ").replace(/\s+/g," ").trim()).filter(function(w){return !UNITS[w]&&w.length>1;});
+    var lb=words(b.replace(/[0-9.]+/g," ").replace(/\s+/g," ").trim());
+    return la.every(function(w){return fuzzyIn(w,lb);});
+  }
+  if(lev(a,b)<=tol(b.length))return true;
+  var ca=words(a).join(" "), cb=words(b).join(" ");
+  if(cb&&lev(ca,cb)<=tol(cb.length))return true;
+  var wb=words(b), wa=words(a);
+  if(wb.length>=2&&wb.every(function(w){return fuzzyIn(w,wa);}))return true;
+  return false;
+}
+function checkFill(input,it){
+  var ni=norm(input); if(!ni)return false;
+  return candidates(it).some(function(c){return matchOne(ni,norm(c));});
+}
+
+// ---------- scheduling ----------
+function pick(pool,exclude){
+  exclude=exclude||{};
+  var el=pool.filter(function(id){return !retired(id)&&!exclude[id];});
+  if(!el.length)return null;
+  if(el.length>1&&cur&&cur.item&&!exclude[cur.item.id]){var f=el.filter(function(id){return id!==cur.item.id;});if(f.length)el=f;}
+  var due=el.filter(function(id){var p=st.p[id];return p&&p.seen&&p.due<=st.step;});
+  if(due.length){due.sort(function(x,y){return st.p[x].due-st.p[y].due;});return due[0];}
+  var fresh=el.filter(function(id){return !(st.p[id]&&st.p[id].seen);});
+  if(fresh.length)return fresh[Math.floor(Math.random()*fresh.length)];
+  el.sort(function(x,y){return st.p[x].due-st.p[y].due;});
+  return el[0];
+}
+function weakIds(){
+  return ORDER.filter(function(id){return st.p[id]&&st.p[id].m>0;}).sort(function(x,y){return st.p[y].m-st.p[x].m;});
+}
+function poolFor(tab){
+  if(tab==="drill"&&st.weak){return weakIds().filter(function(id){return !retired(id);});}
+  var kind=tab==="drill"?"drill":tab;
+  var t=st.topic[tab]||"all";
+  return ORDER.filter(function(id){var it=ITEMS[id];return it.kind===kind&&(t==="all"||it.topic===t);});
+}
+
+// ---------- distractors ----------
+function distractors(it){
+  var out=[], seen={}; seen[norm(it.a)]=1;
+  function addOne(x){if(out.length>=3)return;var n=norm(x);if(!seen[n]){seen[n]=1;out.push(x);}}
+  shuffle(it.d||[]).forEach(addOne);
+  var same=ORDER.filter(function(id){var o=ITEMS[id];return o.kind===it.kind&&o.group===it.group&&o.id!==it.id;});
+  shuffle(same).forEach(function(id){addOne(ITEMS[id].a);});
+  if(!it.only){
+    var top=ORDER.filter(function(id){var o=ITEMS[id];return o.kind===it.kind&&o.topic===it.topic;});
+    shuffle(top).forEach(function(id){addOne(ITEMS[id].a);});
+    shuffle(ORDER.filter(function(id){return ITEMS[id].kind===it.kind;})).forEach(function(id){addOne(ITEMS[id].a);});
+  }
+  return out;
+}
+
+// ---------- header bits ----------
+function renderExam(){
+  var now=new Date(); var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var days=Math.round((EXAM-today)/86400000);
+  var when=days>1?"in "+days+" days":days===1?"tomorrow":days===0?"today":"";
+  $("examline").textContent="Mon, Oct 26, 2026"+(when?" ("+when+")":"")+" · 150 points · paper exam · Modules 6–10";
+}
+var LV=[["Unseen","--l-unseen"],["Missed / level 0","--l0"],["Level 1","--l1"],["Level 2","--l2"],["Retired","--l3"]];
+function levelOf(id){var p=st.p[id];if(!p||!p.seen)return 0;if(p.s>=3)return 4;return p.s+1;}
+function renderProgress(){
+  var c=[0,0,0,0,0]; ORDER.forEach(function(id){c[levelOf(id)]++;});
+  var tot=ORDER.length;
+  $("totNum").textContent=tot; $("retNum").textContent=c[4];
+  $("pctTxt").textContent=Math.round(100*(tot-c[0])/tot)+"% seen";
+  var segs=[4,3,2,1].map(function(l){return '<span style="width:'+(100*c[l]/tot)+'%;background:var('+LV[l][1]+')"></span>';}).join("");
+  $("bar").innerHTML=segs;
+  $("bar").setAttribute("aria-label",LV.map(function(l,i){return l[0]+": "+c[i];}).join(", "));
+  $("legend").innerHTML=[4,3,2,1,0].map(function(l){return '<span><i style="background:var('+LV[l][1]+')"></i>'+LV[l][0]+" · "+c[l]+"</span>";}).join("");
+}
+function renderWeakCount(){
+  var n=weakIds().filter(function(id){return !retired(id);}).length;
+  var el=$("weakCount"); el.hidden=!n; el.textContent=n;
+}
+
+// ---------- tabs & controls ----------
+var TABS=[["drill","Drill"],["scen","Scenarios"],["kc","Knowledge checks"],["case","Cases"]];
+function renderTabs(){
+  $("tabs").innerHTML=TABS.map(function(t){
+    var n=ORDER.filter(function(id){return ITEMS[id].kind===t[0];}).length;
+    return '<button class="tab" role="tab" data-tab="'+t[0]+'" aria-selected="'+(st.tab===t[0])+'">'+t[1]+'<small>'+n+'</small></button>';
+  }).join("");
+}
+var FMTS=[["match","Matching"],["mc","Multiple choice"],["fill","Fill in the blank"]];
+function renderControls(){
+  var h="";
+  if(st.tab==="drill"){
+    h+='<div class="seg" role="group" aria-label="Question format">'+FMTS.map(function(f){return '<button data-fmt="'+f[0]+'" aria-pressed="'+(st.fmt===f[0])+'">'+f[1]+'</button>';}).join("")+'</div>';
+    if(st.weak){
+      var n=poolFor("drill").length;
+      h+='<div class="banner"><span>Weak-spots mode · '+n+' item'+(n===1?"":"s")+' left</span><button class="btn" data-act="exitweak">Exit</button></div>';
+      $("controls").innerHTML=h; return;
+    }
+  }
+  var kind=st.tab==="drill"?"drill":st.tab;
+  var present={}; ORDER.forEach(function(id){if(ITEMS[id].kind===kind)present[ITEMS[id].topic]=1;});
+  var t=st.topic[st.tab]||"all";
+  h+='<div class="chips" role="group" aria-label="Topic filter"><button class="chip" data-topic="all" aria-pressed="'+(t==="all")+'">All topics</button>';
+  Object.keys(TOPICS).forEach(function(k){if(present[k])h+='<button class="chip" data-topic="'+k+'" aria-pressed="'+(t===k)+'">'+esc(TOPICS[k])+'</button>';});
+  h+='</div>';
+  if(st.tab==="scen")h+='<div class="hint">Real scenario clues from your review sheet, answered from its own key, with the "because" shown after you answer.</div>';
+  if(st.tab==="kc")h+='<div class="hint">The Knowledge Check slides from your lecture decks. The slides have no printed answer key, so each answer comes from the lecture and review-sheet content cited after you answer.</div>';
+  if(st.tab==="case")h+='<div class="hint">Every case from the review sheet and the lectures, with extra lecture detail after you answer.</div>';
+  $("controls").innerHTML=h;
+}
+
+// ---------- question rendering ----------
+var cur=null; // {item, mode, answered, opts, snap}
+function metaHTML(it){
+  var p=st.p[it.id]||{s:0}; var dots="";
+  for(var i=0;i<3;i++)dots+='<b class="'+(i<p.s?"on":"")+'"></b>';
+  var short=it.src&&it.src.indexOf("Lecture")===0?it.src.replace(/^Lecture: /,"").replace(/ \(.*$/,""):(it.src||"");
+  var label=TOPICS[it.topic]+(short?" · "+short:"");
+  return '<div class="meta"><span>'+esc(label)+'</span><span class="dots" title="Streak toward retiring (3 in a row)">'+dots+'</span></div>';
+}
+function next(){
+  var pool=poolFor(st.tab);
+  var fmt=st.tab==="drill"?st.fmt:"mc";
+  if(fmt==="match"&&st.tab==="drill"){startMatch(pool);return;}
+  var id=pick(pool);
+  if(!id){renderEmpty(pool);return;}
+  var it=ITEMS[id];
+  var mode=fmt;
+  if(it.kind==="case"&&mode!=="mc")mode="mc";
+  cur={item:it,mode:mode,answered:false};
+  if(mode==="mc")renderMC(it);else renderFill(it);
+}
+function renderEmpty(pool){
+  cur=null;
+  var msg, btn="";
+  if(st.tab==="drill"&&st.weak){msg="<h3>No weak spots left</h3><p class='hint'>Everything you missed is now retired.</p>";btn='<button class="btn primary" data-act="exitweak">Back to all items</button>';}
+  else if(!pool.length){msg="<h3>Nothing here</h3>";}
+  else{msg="<h3>All "+pool.length+" retired</h3><p class='hint'>You answered every item in this set right three times in a row.</p>";btn='<button class="btn primary" data-act="resetset">Bring this set back</button>';}
+  $("stage").innerHTML='<div class="card empty">'+msg+btn+'</div>';
+}
+function renderMC(it){
+  var opts=shuffle([it.a].concat(distractors(it)));
+  cur.opts=opts;
+  var h='<div class="card" id="qcard">'+metaHTML(it)+'<p class="q">'+esc(it.q)+'</p><div class="opts">';
+  opts.forEach(function(o,i){h+='<button class="opt" data-opt="'+i+'"><kbd>'+(i+1)+'</kbd><span>'+esc(o)+'</span></button>';});
+  h+='</div><div id="fbwrap"></div></div>';
+  $("stage").innerHTML=h;
+}
+function answerMC(i){
+  if(!cur||cur.answered||cur.mode!=="mc")return;
+  var it=cur.item, chosen=cur.opts[i], ok=norm(chosen)===norm(it.a);
+  cur.answered=true; record(it.id,ok);
+  var btns=document.querySelectorAll(".opt");
+  btns.forEach(function(b,j){b.disabled=true;var o=cur.opts[j];
+    if(norm(o)===norm(it.a))b.classList.add("right");else if(j===i)b.classList.add("wrong");else b.classList.add("dim");});
+  showFeedback(ok,it,null);
+}
+function renderFill(it){
+  var h='<div class="card" id="qcard">'+metaHTML(it)+'<p class="q">'+esc(it.q)+'</p>'+
+    '<form class="fill" id="fillform" autocomplete="off"><input id="fillin" type="text" placeholder="Type your answer" aria-label="Your answer" autocapitalize="off" spellcheck="false"><button class="btn primary" type="submit">Check</button></form>'+
+    '<div class="hint" style="margin-top:8px">Spelling slips, abbreviations and formatting are forgiven.</div><div id="fbwrap"></div></div>';
+  $("stage").innerHTML=h;
+  setTimeout(function(){var el=$("fillin");if(el)el.focus();},30);
+}
+function answerFill(){
+  if(!cur||cur.answered||cur.mode!=="fill")return;
+  var val=$("fillin").value; if(!val.trim()){$("fillin").focus();return;}
+  var it=cur.item, ok=checkFill(val,it);
+  cur.answered=true; cur.snap=record(it.id,ok); cur.typed=val;
+  $("fillin").disabled=true; document.querySelector("#fillform button").disabled=true;
+  showFeedback(ok,it,val);
+}
+function showFeedback(ok,it,typed){
+  var h='<div class="fb '+(ok?"ok":"bad")+'" role="status">';
+  h+='<h3>'+(ok?"Correct":"Not quite")+'</h3>';
+  if(!ok&&typed!=null)h+='<p>You typed: <em>'+esc(typed)+'</em></p>';
+  h+='<p><b>Answer:</b> '+esc(it.a)+'</p>';
+  if(ok&&typed!=null&&norm(typed)!==norm(it.a))h+='<p class="src">Accepted. Full answer shown above.</p>';
+  if(it.kind==="case")h+='<div class="why"><p><b>Case:</b> '+esc(it.name)+'</p>'+(it.why?'<p><b>From the lecture:</b> '+esc(it.why)+'</p>':'')+'</div>';
+  else if(it.why)h+='<div class="why"><p><b>Why:</b> '+esc(it.why)+'</p></div>';
+  if(it.note)h+='<div class="why"><p><b>Heads up:</b> '+esc(it.note)+'</p></div>';
+  h+='<div class="src">Source: '+esc(srcLabel(it))+'</div></div>';
+  h+='<div class="next"><span class="hint">'+(cur.mode==="mc"?"Press Enter for next":"Press Enter for next")+'</span><span>';
+  if(!ok&&typed!=null)h+='<button class="linkbtn" data-act="override">I was right, count it</button>&nbsp;&nbsp;';
+  h+='<button class="btn primary" data-act="next" id="nextBtn">Next</button></span></div>';
+  $("fbwrap").innerHTML=h;
+  if(!ok){var c=$("qcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake");}
+  var nb=$("nextBtn"); if(nb)nb.focus({preventScroll:true});
+}
+
+// ---------- matching ----------
+var mt=null;
+function startMatch(pool){
+  var size=5, chosen=[], ex={}, used={};
+  for(var k=0;k<pool.length&&chosen.length<size;k++){
+    var id=pick(pool,ex); if(!id)break; ex[id]=1;
+    var na=norm(ITEMS[id].a); if(used[na])continue; used[na]=1; chosen.push(id);
+  }
+  if(!chosen.length){renderEmpty(pool);return;}
+  if(chosen.length===1){cur={item:ITEMS[chosen[0]],mode:"mc",answered:false};renderMC(ITEMS[chosen[0]]);return;}
+  cur=null;
+  mt={ids:chosen, ans:shuffle(chosen), sel:null, done:{}, ansUsed:{}, miss:{}};
+  renderMatch();
+}
+function renderMatch(){
+  var h='<div class="card"><div class="meta"><span>Match each prompt to its answer</span><span>'+Object.keys(mt.done).length+' / '+mt.ids.length+'</span></div><div class="match"><div class="mcol"><div class="mhead">Prompts</div>';
+  mt.ids.forEach(function(id,i){var it=ITEMS[id],d=mt.done[id];
+    var cls=d===true?"right":d===false?"wrong":(mt.sel&&mt.sel.side==="p"&&mt.sel.i===i?"sel":"");
+    h+='<button class="mcard '+cls+'" data-mp="'+i+'"'+(d!==undefined?" disabled":"")+'>'+esc(it.q)+(d===false?'<span class="fix">'+esc(it.a)+'</span>':"")+'</button>';});
+  h+='</div><div class="mcol"><div class="mhead">Answers</div>';
+  mt.ans.forEach(function(id,i){var u=mt.ansUsed[id];
+    var cls=u==="ok"?"right":u==="miss"?"wrong":(mt.flash===i?"wrong":(mt.sel&&mt.sel.side==="a"&&mt.sel.i===i?"sel":""));
+    h+='<button class="mcard '+cls+'" data-ma="'+i+'"'+(u?" disabled":"")+'>'+esc(ITEMS[id].a)+'</button>';});
+  h+='</div></div>';
+  var all=Object.keys(mt.done).length===mt.ids.length;
+  if(all){
+    var right=mt.ids.filter(function(id){return mt.done[id]===true;}).length;
+    h+='<div class="fb '+(right===mt.ids.length?"ok":"bad")+'"><h3>'+right+' of '+mt.ids.length+' matched</h3>'+(right<mt.ids.length?'<p>Misses are marked in red with the correct answer under the prompt.</p>':'<p>Clean sweep.</p>')+'</div>';
+    h+='<div class="next"><span class="hint">Press Enter for the next set</span><button class="btn primary" data-act="next" id="nextBtn">Next set</button></div>';
+  }else h+='<div class="hint" style="margin-top:12px">Tap a prompt, then its answer (or the other way around).</div>';
+  h+='</div>';
+  $("stage").innerHTML=h;
+  if(all){var nb=$("nextBtn");if(nb)nb.focus({preventScroll:true});}
+}
+function matchClick(side,i){
+  if(!mt)return; mt.flash=null;
+  if(!mt.sel||mt.sel.side===side){mt.sel={side:side,i:i};renderMatch();return;}
+  var pi=side==="p"?i:mt.sel.i, ai=side==="a"?i:mt.sel.i; mt.sel=null;
+  var pid=mt.ids[pi], aid=mt.ans[ai];
+  if(norm(ITEMS[pid].a)===norm(ITEMS[aid].a)){mt.done[pid]=true;mt.ansUsed[aid]="ok";record(pid,true);}
+  else{mt.done[pid]=false;mt.ansUsed[pid]="miss";mt.flash=ai;record(pid,false);}
+  renderMatch();
+}
+
+// ---------- weak panel ----------
+function renderWeakPanel(){
+  var ids=weakIds();
+  var live=ids.filter(function(id){return !retired(id);}).length;
+  $("drillWeak").disabled=!live; $("drillWeak").textContent=live?"Drill only these ("+live+")":"Nothing left to drill";
+  if(!ids.length){$("wlist").innerHTML='<li class="hint">No misses yet. They will show up here as you study.</li>';return;}
+  $("wlist").innerHTML=ids.slice(0,40).map(function(id){var it=ITEMS[id],p=st.p[id];
+    return '<li><span class="wm">'+(retired(id)?'<span class="done">✓ retired</span> · ':"")+p.m+' miss'+(p.m===1?"":"es")+'</span><div class="wq">'+esc(it.q)+'</div><div class="wa">'+esc(it.a)+'</div></li>';}).join("");
+}
+function openPanel(){renderWeakPanel();$("panel").classList.add("open");$("closePanel").focus();}
+function closePanel(){$("panel").classList.remove("open");}
+
+// ---------- theme ----------
+function applyTheme(){
+  if(st.theme)document.documentElement.setAttribute("data-theme",st.theme);else document.documentElement.removeAttribute("data-theme");
+  $("themeBtn").textContent=st.theme==="dark"?"Dark":st.theme==="light"?"Light":"Auto theme";
+}
+
+// ---------- events ----------
+function refresh(){renderTabs();renderControls();next();}
+document.addEventListener("click",function(e){
+  var t=e.target.closest("button"); if(!t)return;
+  if(t.dataset.tab){st.tab=t.dataset.tab;save();refresh();return;}
+  if(t.dataset.fmt){st.fmt=t.dataset.fmt;save();renderControls();next();return;}
+  if(t.dataset.topic){st.topic[st.tab]=t.dataset.topic;save();renderControls();next();return;}
+  if(t.dataset.opt!=null){answerMC(+t.dataset.opt);return;}
+  if(t.dataset.mp!=null){matchClick("p",+t.dataset.mp);return;}
+  if(t.dataset.ma!=null){matchClick("a",+t.dataset.ma);return;}
+  var a=t.dataset.act;
+  if(a==="next"){renderControls();next();}
+  else if(a==="exitweak"){st.weak=false;save();refresh();}
+  else if(a==="override"&&cur&&cur.snap){undoTo(cur.item.id,cur.snap);st.step--;cur.snap=record(cur.item.id,true);cur.snap=null;
+    var fb=document.querySelector(".fb");fb.className="fb ok";fb.querySelector("h3").textContent="Counted as correct";t.remove();}
+  else if(a==="resetset"){poolFor(st.tab).forEach(function(id){if(st.p[id]){st.p[id].s=0;st.p[id].due=0;}});save();renderProgress();next();}
+});
+$("fillform")||document.addEventListener("submit",function(e){if(e.target.id==="fillform"){e.preventDefault();answerFill();}});
+$("weakBtn").onclick=openPanel; $("closePanel").onclick=closePanel;
+$("panel").addEventListener("click",function(e){if(e.target===$("panel"))closePanel();});
+$("drillWeak").onclick=function(){st.weak=true;st.tab="drill";save();closePanel();refresh();};
+$("resetAll").onclick=function(){if(confirm("Erase all mastery progress? This cannot be undone.")){st.p={};st.step=0;st.weak=false;save();renderProgress();renderWeakCount();renderWeakPanel();refresh();}};
+$("themeBtn").onclick=function(){st.theme=st.theme==="light"?"dark":st.theme==="dark"?null:"light";save();applyTheme();};
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&$("panel").classList.contains("open")){closePanel();return;}
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  var typing=e.target&&e.target.tagName==="INPUT"&&!e.target.disabled;
+  if(!typing&&cur&&cur.mode==="mc"&&!cur.answered&&/^[1-4]$/.test(e.key)){var i=+e.key-1;if(cur.opts&&i<cur.opts.length){e.preventDefault();answerMC(i);}return;}
+  if(e.key==="Enter"&&!typing){
+    var nb=$("nextBtn"); if(nb&&document.activeElement!==nb){e.preventDefault();nb.click();}
+  }
+});
+
+// ---------- boot ----------
+applyTheme(); renderExam(); renderProgress(); renderWeakCount(); refresh();
+})();
+</script>
+</body>
+</html>
