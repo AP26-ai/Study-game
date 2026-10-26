@@ -293,7 +293,7 @@ footer p{margin:0 0 7px}
   </div>
 
   <h3 style="font-size:16px;margin:24px 0 10px">Weak spots</h3>
-  <p class="actsub">Items you have missed most. Retired items are excluded.</p>
+  <p class="actsub">Everything you've ever missed, most-missed first, including retired items. In weak review, 2 right in a row clears an item; a miss sends it back to level 0.</p>
   <div id="weakBox"></div>
   <div style="margin-top:12px"><button class="btn sm" id="drillWeak" type="button">Drill only these</button></div>
 
@@ -305,6 +305,9 @@ footer p{margin:0 0 7px}
   <div class="ttab" id="topicTab"></div>
 
   <div style="margin-top:28px;display:flex;gap:9px;flex-wrap:wrap">
+    <button class="btn sm" id="backupBtn" type="button">Save backup file</button>
+    <button class="btn sm" id="restoreBtn" type="button">Restore from backup</button>
+    <input type="file" id="restoreFile" accept=".json,application/json" hidden>
     <button class="btn ghost sm" id="resetBtn" type="button">Reset all progress</button>
   </div>
 </div>
@@ -910,11 +913,15 @@ function record(idx,ok){
     s.lvl=0;
     s.due=S.seq+2;
   }
+  if(weakOnly){ if(ok){s.w=(s.w||0)+1;s.wdue=S.seq+3;} else {s.w=0;s.wdue=S.seq+2;} }
   save();paint();
 }
 
 /* ---------- pools ---------- */
 var weakOnly=false;
+var WEAK_CLEAR=2;
+function weakAll(){var r=[];ITEMS.forEach(function(it,i){if(S.items[i]&&S.items[i].miss>0)r.push(i);});return r;}
+function restartWeak(){weakAll().forEach(function(i){delete S.items[i].w;delete S.items[i].wdue;});save();}
 
 /* Each item's source string names every document it came from.
    W1/W2/W4 = lecture decks, QR = Quiz 1 review sheet, ER = Exam 1 review guide. */
@@ -948,7 +955,7 @@ function pool(){
   ITEMS.forEach(function(it,i){
     if(!srcMatch(it,S.src))return;
     if(S.topic!=="ALL"&&it[0]!==S.topic)return;
-    if(weakOnly&&!(st(i).miss>0&&st(i).lvl<3))return;
+    if(weakOnly){ if(st(i).miss>0&&(st(i).w||0)<WEAK_CLEAR)out.push(i); return; }
     if(st(i).lvl>=3)return;
     out.push(i);
   });
@@ -958,7 +965,7 @@ function nextIdx(){
   var p=pool();
   if(!p.length)return -1;
   p.sort(function(a,b){
-    var da=st(a).due,db=st(b).due;
+    var da=weakOnly?(st(a).wdue==null?-1:st(a).wdue):st(a).due,db=weakOnly?(st(b).wdue==null?-1:st(b).wdue):st(b).due;
     if(da!==db)return da-db;
     return st(a).seen-st(b).seen;
   });
@@ -997,10 +1004,16 @@ function drill(){
   answered=false;
   if(cur<0){
     var c=el("div","card");
-    c.appendChild(el("h2",null,weakOnly?"No weak items left here.":"Everything in this filter is retired."));
-    var p=el("p",null,weakOnly?"Turn off the weak filter, or widen the source and topic filters.":"Widen the source or topic filter, or reset progress on the Progress tab to run it again.");
+    c.appendChild(el("h2",null,weakOnly?(weakAll().length?"Weak review complete.":"No weak spots yet."):"Everything in this filter is retired."));
+    var p=el("p",null,weakOnly?(weakAll().length?"You cleared all "+weakAll().length+" items you've ever missed.":"Items you miss will show up here."):"Widen the source or topic filter, or reset progress on the Progress tab to run it again.");
     p.style.color="var(--ink2)";p.style.marginTop="8px";
     c.appendChild(p);
+    if(weakOnly&&weakAll().length){
+      var rb=el("button","btn sm","Run weak review again");rb.type="button";
+      rb.style.marginTop="14px";rb.style.marginRight="8px";
+      rb.onclick=function(){restartWeak();paint();drill();};
+      c.appendChild(rb);
+    }
     if(weakOnly){
       var b=el("button","btn sm","Show all items");b.type="button";
       b.style.marginTop="14px";
@@ -1188,7 +1201,7 @@ function paintWeak(){
   var rows=[];
   ITEMS.forEach(function(it,i){
     var s=st(i);
-    if(s.miss>0&&s.lvl<3)rows.push({i:i,m:s.miss});
+    if(s.miss>0)rows.push({i:i,m:s.miss});
   });
   rows.sort(function(a,b){return b.m-a.m;});
   if(!rows.length){
@@ -1196,11 +1209,12 @@ function paintWeak(){
     return;
   }
   var w=el("div","weak");
-  rows.slice(0,15).forEach(function(r){
+  rows.slice(0,25).forEach(function(r){
     var it=ITEMS[r.i];
     var row=el("div","wrow");
     var t=el("div","t",it[1]);
-    var sm=el("small",null,it[0]+" · "+it[4]);
+    var tag=(st(r.i).w||0)>=WEAK_CLEAR?"✓ cleared · ":st(r.i).lvl>=3?"retired · ":"";
+    var sm=el("small",null,tag+it[0]+" · "+it[4]);
     t.appendChild(sm);
     row.appendChild(t);
     row.appendChild(el("div","n",r.m+"×"));
@@ -1435,11 +1449,29 @@ $("themeBtn").onclick=function(){
 try{var th=localStorage.getItem(KEY+".theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
 
 $("drillWeak").onclick=function(){
+  if(!weakAll().filter(function(i){return (S.items[i].w||0)<WEAK_CLEAR;}).length)restartWeak();
   weakOnly=true;S.topic="ALL";S.src="ALL";
   ssel.value="ALL";buildTopicSel();save();
   showTab("drill");paint();drill();
 };
 
+$("backupBtn").onclick=function(){
+  var blob=new Blob([JSON.stringify({game:KEY,data:S})],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ITSS4360_Exam1_progress_backup.json";
+  document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+};
+$("restoreBtn").onclick=function(){$("restoreFile").click();};
+$("restoreFile").onchange=function(){
+  var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){
+    try{var o=JSON.parse(r.result);var d=o&&o.data;
+      if(!o||o.game!==KEY||!d||typeof d.items!=="object")throw 0;
+      if(!confirm("Replace current progress with this backup?"))return;
+      localStorage.setItem(KEY,JSON.stringify(d));location.reload();
+    }catch(e){alert("That file isn't an Exam 1 study game backup.");}
+  };
+  r.readAsText(f);this.value="";
+};
 $("resetBtn").onclick=function(){
   if(!confirm("Reset all mastery levels, stats and weak spots? This cannot be undone."))return;
   S.items={};S.stats={ans:0,right:0,streak:0,best:0};S.seq=0;

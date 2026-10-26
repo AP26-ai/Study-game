@@ -172,7 +172,8 @@ h1{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;marg
     <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="drillWeak">Drill only these</button><button class="btn" id="restartWeak" hidden>Start weak review over</button></div>
     <ul class="wlist" id="wlist"></ul>
     <div class="foot">
-      Progress is saved in this browser only.
+      Progress is saved in this browser, for this copy of the game only. To move it to another copy or device, save a backup here and restore it there.
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="backupBtn">Save backup file</button><button class="btn" id="restoreBtn">Restore from backup</button><input type="file" id="restoreFile" accept=".json,application/json" hidden></div>
       <div style="margin-top:8px"><button class="btn" id="resetAll">Reset all progress</button></div>
     </div>
   </div>
@@ -1129,6 +1130,23 @@ function restartWeak(){weakIds().forEach(function(id){var p=st.p[id];delete p.w;
 $("drillWeak").onclick=function(){if(!weakIds().filter(function(id){return !weakDone(id);}).length)restartWeak();st.weak=true;st.tab="drill";save();closePanel();refresh();};
 $("restartWeak").onclick=function(){restartWeak();renderWeakPanel();if(inWeak()){renderControls();next();}};
 $("resetAll").onclick=function(){if(confirm("Erase all mastery progress? This cannot be undone.")){st.p={};st.step=0;st.weak=false;save();renderProgress();renderWeakCount();renderWeakPanel();refresh();}};
+$("backupBtn").onclick=function(){
+  var blob=new Blob([JSON.stringify({game:KEY,data:st})],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ITSS4360_Exam2_progress_backup.json";
+  document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+};
+$("restoreBtn").onclick=function(){$("restoreFile").click();};
+$("restoreFile").onchange=function(){
+  var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){
+    try{var o=JSON.parse(r.result);var d=o&&o.data;
+      if(!o||o.game!==KEY||!d||typeof d.p!=="object")throw 0;
+      if(!confirm("Replace current progress with this backup?"))return;
+      localStorage.setItem(KEY,JSON.stringify(d));location.reload();
+    }catch(e){alert("That file isn't an Exam 2 study game backup.");}
+  };
+  r.readAsText(f);this.value="";
+};
 $("themeBtn").onclick=function(){st.theme=st.theme==="light"?"dark":st.theme==="dark"?null:"light";save();applyTheme();};
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&$("panel").classList.contains("open")){closePanel();return;}
