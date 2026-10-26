@@ -168,8 +168,8 @@ h1{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;marg
       <h2>Weak spots</h2>
       <button class="btn ghost" id="closePanel">Close</button>
     </div>
-    <p class="hint" style="margin:6px 0 0">Everything you've missed, most-missed first. Retired items show a check.</p>
-    <div style="margin-top:12px"><button class="btn primary" id="drillWeak">Drill only these</button></div>
+    <p class="hint" style="margin:6px 0 0">Everything you've ever missed, most-missed first, including items you've since retired. In weak review, 2 right in a row clears an item; a miss sends it back to level 0.</p>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="drillWeak">Drill only these</button><button class="btn" id="restartWeak" hidden>Start weak review over</button></div>
     <ul class="wlist" id="wlist"></ul>
     <div class="foot">
       Progress is saved in this browser only.
@@ -806,12 +806,16 @@ st.tab=st.tab||"drill"; st.weak=!!st.weak;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
 function P(id){return st.p[id]||(st.p[id]={s:0,m:0,seen:0,due:0});}
 function retired(id){return (st.p[id]&&st.p[id].s>=3);}
+var WEAK_CLEAR=2;
+function inWeak(){return st.weak&&st.tab==="drill";}
+function weakDone(id){return !!(st.p[id]&&(st.p[id].w||0)>=WEAK_CLEAR);}
 
 function record(id,ok){
   var p=P(id); var snap=JSON.stringify(p);
   p.seen=1; st.step++;
   if(ok){p.s=Math.min(3,p.s+1); p.due=st.step+3+4*p.s;}
   else{p.s=0; p.m++; p.due=st.step+2;}
+  if(inWeak()){ if(ok){p.w=(p.w||0)+1; p.wdue=st.step+3;} else {p.w=0; p.wdue=st.step+2;} }
   save(); renderProgress(); renderWeakCount();
   return snap;
 }
@@ -858,21 +862,25 @@ function checkFill(input,it){
 // ---------- scheduling ----------
 function pick(pool,exclude){
   exclude=exclude||{};
-  var el=pool.filter(function(id){return !retired(id)&&!exclude[id];});
+  var W=inWeak();
+  var done=W?weakDone:retired;
+  function seenOf(id){var p=st.p[id];return W?!!(p&&p.wdue!=null):!!(p&&p.seen);}
+  function dueOf(id){var p=st.p[id];return W?p.wdue:p.due;}
+  var el=pool.filter(function(id){return !done(id)&&!exclude[id];});
   if(!el.length)return null;
   if(el.length>1&&cur&&cur.item&&!exclude[cur.item.id]){var f=el.filter(function(id){return id!==cur.item.id;});if(f.length)el=f;}
-  var due=el.filter(function(id){var p=st.p[id];return p&&p.seen&&p.due<=st.step;});
-  if(due.length){due.sort(function(x,y){return st.p[x].due-st.p[y].due;});return due[0];}
-  var fresh=el.filter(function(id){return !(st.p[id]&&st.p[id].seen);});
-  if(fresh.length)return fresh[Math.floor(Math.random()*fresh.length)];
-  el.sort(function(x,y){return st.p[x].due-st.p[y].due;});
+  var due=el.filter(function(id){return seenOf(id)&&dueOf(id)<=st.step;});
+  if(due.length){due.sort(function(x,y){return dueOf(x)-dueOf(y);});return due[0];}
+  var fresh=el.filter(function(id){return !seenOf(id);});
+  if(fresh.length){if(W)return fresh[0];return fresh[Math.floor(Math.random()*fresh.length)];}
+  el.sort(function(x,y){return dueOf(x)-dueOf(y);});
   return el[0];
 }
 function weakIds(){
   return ORDER.filter(function(id){return st.p[id]&&st.p[id].m>0;}).sort(function(x,y){return st.p[y].m-st.p[x].m;});
 }
 function poolFor(tab){
-  if(tab==="drill"&&st.weak){return weakIds().filter(function(id){return !retired(id);});}
+  if(tab==="drill"&&st.weak){return weakIds().filter(function(id){return !weakDone(id);});}
   var kind=tab==="drill"?"drill":tab;
   var t=st.topic[tab]||"all";
   return ORDER.filter(function(id){var it=ITEMS[id];return it.kind===kind&&(t==="all"||it.topic===t);});
@@ -913,7 +921,7 @@ function renderProgress(){
   $("legend").innerHTML=[4,3,2,1,0].map(function(l){return '<span><i style="background:var('+LV[l][1]+')"></i>'+LV[l][0]+" · "+c[l]+"</span>";}).join("");
 }
 function renderWeakCount(){
-  var n=weakIds().filter(function(id){return !retired(id);}).length;
+  var n=weakIds().filter(function(id){return !weakDone(id);}).length;
   var el=$("weakCount"); el.hidden=!n; el.textContent=n;
 }
 
@@ -932,7 +940,7 @@ function renderControls(){
     h+='<div class="seg" role="group" aria-label="Question format">'+FMTS.map(function(f){return '<button data-fmt="'+f[0]+'" aria-pressed="'+(st.fmt===f[0])+'">'+f[1]+'</button>';}).join("")+'</div>';
     if(st.weak){
       var n=poolFor("drill").length;
-      h+='<div class="banner"><span>Weak-spots mode · '+n+' item'+(n===1?"":"s")+' left</span><button class="btn" data-act="exitweak">Exit</button></div>';
+      h+='<div class="banner"><span>Weak-spots review · '+n+' item'+(n===1?"":"s")+' left · '+WEAK_CLEAR+' right in a row clears one</span><button class="btn" data-act="exitweak">Exit</button></div>';
       $("controls").innerHTML=h; return;
     }
   }
@@ -952,10 +960,11 @@ function renderControls(){
 var cur=null; // {item, mode, answered, opts, snap}
 function metaHTML(it){
   var p=st.p[it.id]||{s:0}; var dots="";
-  for(var i=0;i<3;i++)dots+='<b class="'+(i<p.s?"on":"")+'"></b>';
+  var W=inWeak(), lvl=W?(p.w||0):p.s, max=W?WEAK_CLEAR:3;
+  for(var i=0;i<max;i++)dots+='<b class="'+(i<lvl?"on":"")+'"></b>';
   var short=it.src&&it.src.indexOf("Lecture")===0?it.src.replace(/^Lecture: /,"").replace(/ \(.*$/,""):(it.src||"");
   var label=TOPICS[it.topic]+(short?" · "+short:"");
-  return '<div class="meta"><span>'+esc(label)+'</span><span class="dots" title="Streak toward retiring (3 in a row)">'+dots+'</span></div>';
+  return '<div class="meta"><span>'+esc(label)+'</span><span class="dots" title="'+(W?"Weak review: 2 right in a row clears it":"Streak toward retiring (3 in a row)")+'">'+dots+'</span></div>';
 }
 function next(){
   var pool=poolFor(st.tab);
@@ -972,7 +981,10 @@ function next(){
 function renderEmpty(pool){
   cur=null;
   var msg, btn="";
-  if(st.tab==="drill"&&st.weak){msg="<h3>No weak spots left</h3><p class='hint'>Everything you missed is now retired.</p>";btn='<button class="btn primary" data-act="exitweak">Back to all items</button>';}
+  if(st.tab==="drill"&&st.weak){
+    if(weakIds().length){msg="<h3>Weak review complete</h3><p class='hint'>You cleared all "+weakIds().length+" items you've ever missed.</p>";btn='<button class="btn primary" data-act="restartweak">Run weak review again</button> <button class="btn" data-act="exitweak">Back to all items</button>';}
+    else{msg="<h3>No weak spots yet</h3><p class='hint'>Items you miss will show up here.</p>";btn='<button class="btn primary" data-act="exitweak">Back to all items</button>';}
+  }
   else if(!pool.length){msg="<h3>Nothing here</h3>";}
   else{msg="<h3>All "+pool.length+" retired</h3><p class='hint'>You answered every item in this set right three times in a row.</p>";btn='<button class="btn primary" data-act="resetset">Bring this set back</button>';}
   $("stage").innerHTML='<div class="card empty">'+msg+btn+'</div>';
@@ -1074,11 +1086,14 @@ function matchClick(side,i){
 // ---------- weak panel ----------
 function renderWeakPanel(){
   var ids=weakIds();
-  var live=ids.filter(function(id){return !retired(id);}).length;
-  $("drillWeak").disabled=!live; $("drillWeak").textContent=live?"Drill only these ("+live+")":"Nothing left to drill";
+  var live=ids.filter(function(id){return !weakDone(id);}).length;
+  var cleared=ids.length-live;
+  $("drillWeak").disabled=!ids.length;
+  $("drillWeak").textContent=!ids.length?"Nothing to drill yet":live?"Drill only these ("+live+")":"Run weak review again ("+ids.length+")";
+  $("restartWeak").hidden=!(cleared&&live);
   if(!ids.length){$("wlist").innerHTML='<li class="hint">No misses yet. They will show up here as you study.</li>';return;}
   $("wlist").innerHTML=ids.slice(0,40).map(function(id){var it=ITEMS[id],p=st.p[id];
-    return '<li><span class="wm">'+(retired(id)?'<span class="done">✓ retired</span> · ':"")+p.m+' miss'+(p.m===1?"":"es")+'</span><div class="wq">'+esc(it.q)+'</div><div class="wa">'+esc(it.a)+'</div></li>';}).join("");
+    return '<li><span class="wm">'+(weakDone(id)?'<span class="done">✓ cleared</span> · ':retired(id)?'<span class="hint">retired</span> · ':"")+p.m+' miss'+(p.m===1?"":"es")+'</span><div class="wq">'+esc(it.q)+'</div><div class="wa">'+esc(it.a)+'</div></li>';}).join("");
 }
 function openPanel(){renderWeakPanel();$("panel").classList.add("open");$("closePanel").focus();}
 function closePanel(){$("panel").classList.remove("open");}
@@ -1102,6 +1117,7 @@ document.addEventListener("click",function(e){
   var a=t.dataset.act;
   if(a==="next"){renderControls();next();}
   else if(a==="exitweak"){st.weak=false;save();refresh();}
+  else if(a==="restartweak"){restartWeak();renderControls();next();}
   else if(a==="override"&&cur&&cur.snap){undoTo(cur.item.id,cur.snap);st.step--;cur.snap=record(cur.item.id,true);cur.snap=null;
     var fb=document.querySelector(".fb");fb.className="fb ok";fb.querySelector("h3").textContent="Counted as correct";t.remove();}
   else if(a==="resetset"){poolFor(st.tab).forEach(function(id){if(st.p[id]){st.p[id].s=0;st.p[id].due=0;}});save();renderProgress();next();}
@@ -1109,7 +1125,9 @@ document.addEventListener("click",function(e){
 $("fillform")||document.addEventListener("submit",function(e){if(e.target.id==="fillform"){e.preventDefault();answerFill();}});
 $("weakBtn").onclick=openPanel; $("closePanel").onclick=closePanel;
 $("panel").addEventListener("click",function(e){if(e.target===$("panel"))closePanel();});
-$("drillWeak").onclick=function(){st.weak=true;st.tab="drill";save();closePanel();refresh();};
+function restartWeak(){weakIds().forEach(function(id){var p=st.p[id];delete p.w;delete p.wdue;});save();renderWeakCount();}
+$("drillWeak").onclick=function(){if(!weakIds().filter(function(id){return !weakDone(id);}).length)restartWeak();st.weak=true;st.tab="drill";save();closePanel();refresh();};
+$("restartWeak").onclick=function(){restartWeak();renderWeakPanel();if(inWeak()){renderControls();next();}};
 $("resetAll").onclick=function(){if(confirm("Erase all mastery progress? This cannot be undone.")){st.p={};st.step=0;st.weak=false;save();renderProgress();renderWeakCount();renderWeakPanel();refresh();}};
 $("themeBtn").onclick=function(){st.theme=st.theme==="light"?"dark":st.theme==="dark"?null:"light";save();applyTheme();};
 document.addEventListener("keydown",function(e){
