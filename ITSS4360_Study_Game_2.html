@@ -53,6 +53,8 @@ h1{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;marg
 .bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--l-unseen);margin:10px 0 8px}
 .bar span{display:block;height:100%;transition:width .35s ease}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend button{background:none;border:1px solid var(--line);border-radius:99px;padding:4px 10px;cursor:pointer;color:inherit;font-size:13px}
+.legend button:hover{border-color:var(--muted)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
@@ -176,6 +178,18 @@ h1{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.15;marg
       <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="backupBtn">Save backup file</button><button class="btn" id="restoreBtn">Restore from backup</button><input type="file" id="restoreFile" accept=".json,application/json" hidden></div>
       <div style="margin-top:8px"><button class="btn" id="resetAll">Reset all progress</button></div>
     </div>
+  </div>
+</div>
+
+<div class="panel" id="lvlPanel" role="dialog" aria-modal="true" aria-label="Items by level">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2 id="lvlTitle">Level</h2>
+      <button class="btn ghost" id="closeLvl">Close</button>
+    </div>
+    <p class="hint" style="margin:6px 0 0" id="lvlHint"></p>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="drillLevel">Drill these</button><button class="btn" id="drillOpen">Drill everything not retired</button></div>
+    <ul class="wlist" id="lvlList"></ul>
   </div>
 </div>
 
@@ -809,7 +823,8 @@ function P(id){return st.p[id]||(st.p[id]={s:0,m:0,seen:0,due:0});}
 function retired(id){return (st.p[id]&&st.p[id].s>=3);}
 var WEAK_CLEAR=2;
 function inWeak(){return st.weak&&st.tab==="drill";}
-function weakDone(id){return !!(st.p[id]&&(st.p[id].w||0)>=WEAK_CLEAR);}
+function weakDone(id){var p=st.p[id];return !!(p&&(p.w||0)>=WEAK_CLEAR&&p.s>=3);}
+function inFocus(){return !st.weak&&!!st.focus&&st.tab==="drill";}
 
 function record(id,ok){
   var p=P(id); var snap=JSON.stringify(p);
@@ -882,6 +897,7 @@ function weakIds(){
 }
 function poolFor(tab){
   if(tab==="drill"&&st.weak){return weakIds().filter(function(id){return !weakDone(id);});}
+  if(tab==="drill"&&st.focus){return st.focus.ids.filter(function(id){return ITEMS[id]&&!retired(id);});}
   var kind=tab==="drill"?"drill":tab;
   var t=st.topic[tab]||"all";
   return ORDER.filter(function(id){var it=ITEMS[id];return it.kind===kind&&(t==="all"||it.topic===t);});
@@ -919,7 +935,7 @@ function renderProgress(){
   var segs=[4,3,2,1].map(function(l){return '<span style="width:'+(100*c[l]/tot)+'%;background:var('+LV[l][1]+')"></span>';}).join("");
   $("bar").innerHTML=segs;
   $("bar").setAttribute("aria-label",LV.map(function(l,i){return l[0]+": "+c[i];}).join(", "));
-  $("legend").innerHTML=[4,3,2,1,0].map(function(l){return '<span><i style="background:var('+LV[l][1]+')"></i>'+LV[l][0]+" · "+c[l]+"</span>";}).join("");
+  $("legend").innerHTML=[4,3,2,1,0].map(function(l){return '<button data-lvl="'+l+'" title="See and drill these"><i style="background:var('+LV[l][1]+')"></i>'+LV[l][0]+" · "+c[l]+"</button>";}).join("")+'<span class="hint" style="align-self:center">Tap a level to see or drill it</span>';
 }
 function renderWeakCount(){
   var n=weakIds().filter(function(id){return !weakDone(id);}).length;
@@ -941,7 +957,12 @@ function renderControls(){
     h+='<div class="seg" role="group" aria-label="Question format">'+FMTS.map(function(f){return '<button data-fmt="'+f[0]+'" aria-pressed="'+(st.fmt===f[0])+'">'+f[1]+'</button>';}).join("")+'</div>';
     if(st.weak){
       var n=poolFor("drill").length;
-      h+='<div class="banner"><span>Weak-spots review · '+n+' item'+(n===1?"":"s")+' left · '+WEAK_CLEAR+' right in a row clears one</span><button class="btn" data-act="exitweak">Exit</button></div>';
+      h+='<div class="banner"><span>Weak-spots review · '+n+' item'+(n===1?"":"s")+' left · each clears once it\'s retired and you\'ve gotten it right twice here</span><button class="btn" data-act="exitweak">Exit</button></div>';
+      $("controls").innerHTML=h; return;
+    }
+    if(st.focus){
+      var nf=poolFor("drill").length;
+      h+='<div class="banner"><span>'+esc(st.focus.label)+' · '+nf+' left until all retired</span><button class="btn" data-act="exitfocus">Exit</button></div>';
       $("controls").innerHTML=h; return;
     }
   }
@@ -961,7 +982,7 @@ function renderControls(){
 var cur=null; // {item, mode, answered, opts, snap}
 function metaHTML(it){
   var p=st.p[it.id]||{s:0}; var dots="";
-  var W=inWeak(), lvl=W?(p.w||0):p.s, max=W?WEAK_CLEAR:3;
+  var W=false, lvl=p.s, max=3;
   for(var i=0;i<max;i++)dots+='<b class="'+(i<lvl?"on":"")+'"></b>';
   var short=it.src&&it.src.indexOf("Lecture")===0?it.src.replace(/^Lecture: /,"").replace(/ \(.*$/,""):(it.src||"");
   var label=TOPICS[it.topic]+(short?" · "+short:"");
@@ -982,8 +1003,9 @@ function next(){
 function renderEmpty(pool){
   cur=null;
   var msg, btn="";
-  if(st.tab==="drill"&&st.weak){
-    if(weakIds().length){msg="<h3>Weak review complete</h3><p class='hint'>You cleared all "+weakIds().length+" items you've ever missed.</p>";btn='<button class="btn primary" data-act="restartweak">Run weak review again</button> <button class="btn" data-act="exitweak">Back to all items</button>';}
+  if(inFocus()){msg="<h3>All "+st.focus.ids.length+" retired</h3><p class='hint'>Everything from "+esc(st.focus.label)+" is now retired.</p>";btn='<button class="btn primary" data-act="exitfocus">Back to all items</button>';}
+  else if(st.tab==="drill"&&st.weak){
+    if(weakIds().length){msg="<h3>Weak review complete</h3><p class='hint'>All "+weakIds().length+" items you've ever missed are retired and cleared.</p>";btn='<button class="btn primary" data-act="restartweak">Run weak review again</button> <button class="btn" data-act="exitweak">Back to all items</button>';}
     else{msg="<h3>No weak spots yet</h3><p class='hint'>Items you miss will show up here.</p>";btn='<button class="btn primary" data-act="exitweak">Back to all items</button>';}
   }
   else if(!pool.length){msg="<h3>Nothing here</h3>";}
@@ -1096,6 +1118,23 @@ function renderWeakPanel(){
   $("wlist").innerHTML=ids.slice(0,40).map(function(id){var it=ITEMS[id],p=st.p[id];
     return '<li><span class="wm">'+(weakDone(id)?'<span class="done">✓ cleared</span> · ':retired(id)?'<span class="hint">retired</span> · ':"")+p.m+' miss'+(p.m===1?"":"es")+'</span><div class="wq">'+esc(it.q)+'</div><div class="wa">'+esc(it.a)+'</div></li>';}).join("");
 }
+var KIND={drill:"Drill",scen:"Scenarios",kc:"Knowledge checks","case":"Cases"};
+var lvlIds=[], openIds=[], curLvl=0;
+function openLevel(l){
+  curLvl=l;
+  lvlIds=ORDER.filter(function(id){return levelOf(id)===l;});
+  openIds=ORDER.filter(function(id){return levelOf(id)<4;});
+  $("lvlTitle").textContent=LV[l][0]+" · "+lvlIds.length;
+  var hints={0:"Never answered yet.",1:"Missed most recently. One right answer moves an item to level 1.",2:"One right in a row since the last miss.",3:"Two right in a row. One more retires it.",4:"Three right in a row. These stay out of regular drilling."};
+  $("lvlHint").textContent=hints[l];
+  $("drillLevel").hidden=(l===4||!lvlIds.length); $("drillLevel").textContent="Drill these ("+lvlIds.length+")";
+  $("drillOpen").hidden=!openIds.length; $("drillOpen").textContent="Drill everything not retired ("+openIds.length+")";
+  $("lvlList").innerHTML=lvlIds.length?lvlIds.map(function(id){var it=ITEMS[id],p=st.p[id]||{m:0};
+    return '<li><span class="wm">'+KIND[it.kind]+' tab'+(p.m?' · '+p.m+' miss'+(p.m===1?"":"es"):"")+'</span><div class="wq">'+esc(it.q)+'</div><div class="wa">'+esc(it.a)+'</div></li>';}).join(""):'<li class="hint">Nothing at this level.</li>';
+  $("lvlPanel").classList.add("open"); $("closeLvl").focus();
+}
+function closeLevel(){$("lvlPanel").classList.remove("open");}
+function startFocus(ids,label){st.focus={ids:ids.slice(),label:label};st.weak=false;st.tab="drill";save();closeLevel();refresh();window.scrollTo(0,0);}
 function openPanel(){renderWeakPanel();$("panel").classList.add("open");$("closePanel").focus();}
 function closePanel(){$("panel").classList.remove("open");}
 
@@ -1109,6 +1148,7 @@ function applyTheme(){
 function refresh(){renderTabs();renderControls();next();}
 document.addEventListener("click",function(e){
   var t=e.target.closest("button"); if(!t)return;
+  if(t.dataset.lvl!=null){openLevel(+t.dataset.lvl);return;}
   if(t.dataset.tab){st.tab=t.dataset.tab;save();refresh();return;}
   if(t.dataset.fmt){st.fmt=t.dataset.fmt;save();renderControls();next();return;}
   if(t.dataset.topic){st.topic[st.tab]=t.dataset.topic;save();renderControls();next();return;}
@@ -1118,6 +1158,7 @@ document.addEventListener("click",function(e){
   var a=t.dataset.act;
   if(a==="next"){renderControls();next();}
   else if(a==="exitweak"){st.weak=false;save();refresh();}
+  else if(a==="exitfocus"){st.focus=null;save();refresh();}
   else if(a==="restartweak"){restartWeak();renderControls();next();}
   else if(a==="override"&&cur&&cur.snap){undoTo(cur.item.id,cur.snap);st.step--;cur.snap=record(cur.item.id,true);cur.snap=null;
     var fb=document.querySelector(".fb");fb.className="fb ok";fb.querySelector("h3").textContent="Counted as correct";t.remove();}
@@ -1127,7 +1168,11 @@ $("fillform")||document.addEventListener("submit",function(e){if(e.target.id==="
 $("weakBtn").onclick=openPanel; $("closePanel").onclick=closePanel;
 $("panel").addEventListener("click",function(e){if(e.target===$("panel"))closePanel();});
 function restartWeak(){weakIds().forEach(function(id){var p=st.p[id];delete p.w;delete p.wdue;});save();renderWeakCount();}
-$("drillWeak").onclick=function(){if(!weakIds().filter(function(id){return !weakDone(id);}).length)restartWeak();st.weak=true;st.tab="drill";save();closePanel();refresh();};
+$("closeLvl").onclick=closeLevel;
+$("lvlPanel").addEventListener("click",function(e){if(e.target===$("lvlPanel"))closeLevel();});
+$("drillLevel").onclick=function(){startFocus(lvlIds,LV[curLvl][0]+" focus");};
+$("drillOpen").onclick=function(){startFocus(openIds,"Everything not retired");};
+$("drillWeak").onclick=function(){if(!weakIds().filter(function(id){return !weakDone(id);}).length)restartWeak();st.focus=null;st.weak=true;st.tab="drill";save();closePanel();refresh();};
 $("restartWeak").onclick=function(){restartWeak();renderWeakPanel();if(inWeak()){renderControls();next();}};
 $("resetAll").onclick=function(){if(confirm("Erase all mastery progress? This cannot be undone.")){st.p={};st.step=0;st.weak=false;save();renderProgress();renderWeakCount();renderWeakPanel();refresh();}};
 $("backupBtn").onclick=function(){
@@ -1150,6 +1195,7 @@ $("restoreFile").onchange=function(){
 $("themeBtn").onclick=function(){st.theme=st.theme==="light"?"dark":st.theme==="dark"?null:"light";save();applyTheme();};
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&$("panel").classList.contains("open")){closePanel();return;}
+  if(e.key==="Escape"&&$("lvlPanel").classList.contains("open")){closeLevel();return;}
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   var typing=e.target&&e.target.tagName==="INPUT"&&!e.target.disabled;
   if(!typing&&cur&&cur.mode==="mc"&&!cur.answered&&/^[1-4]$/.test(e.key)){var i=+e.key-1;if(cur.opts&&i<cur.opts.length){e.preventDefault();answerMC(i);}return;}

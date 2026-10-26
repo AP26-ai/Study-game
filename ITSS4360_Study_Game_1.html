@@ -293,7 +293,7 @@ footer p{margin:0 0 7px}
   </div>
 
   <h3 style="font-size:16px;margin:24px 0 10px">Weak spots</h3>
-  <p class="actsub">Everything you've ever missed, most-missed first, including retired items. In weak review, 2 right in a row clears an item; a miss sends it back to level 0.</p>
+  <p class="actsub">Everything you've ever missed, most-missed first, including retired items. In weak review, an item clears once it's retired and you've gotten it right twice there; a miss sends it back to level 0.</p>
   <div id="weakBox"></div>
   <div style="margin-top:12px"><button class="btn sm" id="drillWeak" type="button">Drill only these</button></div>
 
@@ -921,6 +921,7 @@ function record(idx,ok){
 var weakOnly=false;
 var WEAK_CLEAR=2;
 function weakAll(){var r=[];ITEMS.forEach(function(it,i){if(S.items[i]&&S.items[i].miss>0)r.push(i);});return r;}
+function weakDone(i){var s=S.items[i];return !!(s&&(s.w||0)>=WEAK_CLEAR&&s.lvl>=3);}
 function restartWeak(){weakAll().forEach(function(i){delete S.items[i].w;delete S.items[i].wdue;});save();}
 
 /* Each item's source string names every document it came from.
@@ -955,7 +956,7 @@ function pool(){
   ITEMS.forEach(function(it,i){
     if(!srcMatch(it,S.src))return;
     if(S.topic!=="ALL"&&it[0]!==S.topic)return;
-    if(weakOnly){ if(st(i).miss>0&&(st(i).w||0)<WEAK_CLEAR)out.push(i); return; }
+    if(weakOnly){ if(st(i).miss>0&&!weakDone(i))out.push(i); return; }
     if(st(i).lvl>=3)return;
     out.push(i);
   });
@@ -1213,7 +1214,7 @@ function paintWeak(){
     var it=ITEMS[r.i];
     var row=el("div","wrow");
     var t=el("div","t",it[1]);
-    var tag=(st(r.i).w||0)>=WEAK_CLEAR?"✓ cleared · ":st(r.i).lvl>=3?"retired · ":"";
+    var tag=weakDone(r.i)?"✓ cleared · ":st(r.i).lvl>=3?"retired · ":"";
     var sm=el("small",null,tag+it[0]+" · "+it[4]);
     t.appendChild(sm);
     row.appendChild(t);
@@ -1449,7 +1450,7 @@ $("themeBtn").onclick=function(){
 try{var th=localStorage.getItem(KEY+".theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
 
 $("drillWeak").onclick=function(){
-  if(!weakAll().filter(function(i){return (S.items[i].w||0)<WEAK_CLEAR;}).length)restartWeak();
+  if(!weakAll().filter(function(i){return !weakDone(i);}).length)restartWeak();
   weakOnly=true;S.topic="ALL";S.src="ALL";
   ssel.value="ALL";buildTopicSel();save();
   showTab("drill");paint();drill();
